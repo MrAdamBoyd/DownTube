@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import YoutubeSourceParserKit
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
@@ -18,7 +19,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         // Do any additional setup after loading the view, typically from a nib.
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
 
-        let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(insertNewObject(_:)))
+        let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(self.askUserForURL(_:)))
         self.navigationItem.rightBarButtonItem = addButton
         if let split = self.splitViewController {
             let controllers = split.viewControllers
@@ -38,15 +39,58 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         // Dispose of any resources that can be recreated.
     }
 
-    func insertNewObject(sender: AnyObject) {
+    /**
+     Presents a UIAlertController that gets youtube video URL from user
+     
+     - parameter sender: button
+     */
+    func askUserForURL(sender: AnyObject) {
+        
+        let alertController = UIAlertController(title: "Download YouTube Video", message: "Video will be downloaded in 720p", preferredStyle: .Alert)
+        
+        let saveAction = UIAlertAction(title: "Ok", style: .Default) { action in
+            let textField = alertController.textFields![0]
+            
+            if let text = textField.text {
+                self.createEntityFromVideoURL(text)
+            }
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alertController.addTextFieldWithConfigurationHandler() { textField in
+            textField.placeholder = "Enter YouTube video URL"
+        }
+        
+        alertController.addAction(saveAction)
+        alertController.addAction(cancelAction)
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    
+    /**
+     Creates the entity and cell from provided URL, starts download
+     
+     - parameter URL: stream URL for video
+     */
+    func createEntityFromVideoURL(URL: String) {
         let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
         let entity = CoreDataController.sharedController.fetchedResultsController.fetchRequest.entity!
-        let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context)
-             
+        let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context) as! Video
+        
         // If appropriate, configure the new managed object.
         // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
-        newManagedObject.setValue(NSDate(), forKey: "created")
-             
+        newManagedObject.created = NSDate()
+        
+        if let url = NSURL(string: URL) {
+            Youtube.h264videosWithYoutubeURL(url) { videoInfo, error in
+                if let videoURLString = videoInfo?["url"] as? String,
+                    videoTitle = videoInfo?["title"] as? String {
+                    print("\(videoTitle)")
+                    print("\(videoURLString)")
+                }
+            }
+        }
+        
         // Save the context.
         do {
             try context.save()
@@ -85,8 +129,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath)
-        let object = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject
-        self.configureCell(cell, withVideo: object as! Video)
+        let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
+        self.configureCell(cell, withVideo: video)
         return cell
     }
 

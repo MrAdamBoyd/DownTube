@@ -148,8 +148,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let title = (download.isDownloading) ? "Pause" : "Resume"
             cell.pauseButton.setTitle(title, forState: UIControlState.Normal)
         }
-        cell.progressView.hidden = !showDownloadControls
-        cell.progressLabel.hidden = !showDownloadControls
+//        cell.progressView.hidden = !showDownloadControls
+//        cell.progressLabel.hidden = !showDownloadControls
         
         //Hiding or showing the download button
         let downloaded = self.localFileExistsFor(video)
@@ -185,7 +185,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     func configureCell(cell: VideoCell, withVideo video: Video) {
-        cell.uploaderLabel.text = video.created?.description
+        let components = NSCalendar.currentCalendar().components([.Day, .Month, .Year], fromDate: video.created!)
+        
+        cell.videoNameLabel.text = video.title
+        cell.uploaderLabel.text = "Downloaded on \(components.year)/\(components.month)/\(components.day)"
     }
 
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
@@ -304,8 +307,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             print("\(streamUrlString)")
             
             if let index = self.videoIndexForYouTubeUrl(youTubeUrl) {
+                let indexPath = NSIndexPath(forRow: index, inSection: 0)
+                
                 let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
-                let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(NSIndexPath(forRow: index, inSection: 0)) as! Video
+                let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
                 
                 video.title = videoTitle
                 video.streamUrl = streamUrlString
@@ -484,6 +489,8 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
             let totalSize = NSByteCountFormatter.stringFromByteCount(totalBytesExpectedToWrite, countStyle: NSByteCountFormatterCountStyle.Binary)
             if let trackIndex = self.videoIndexForDownloadTask(downloadTask), let videoCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: trackIndex, inSection: 0)) as? VideoCell {
                 dispatch_async(dispatch_get_main_queue(), {
+                    videoCell.progressView.hidden = false
+                    videoCell.progressLabel.hidden = false
                     videoCell.progressView.progress = download.progress
                     videoCell.progressLabel.text =  String(format: "%.1f%% of %@",  download.progress * 100, totalSize)
                 })

@@ -18,5 +18,7 @@ extension Video {
     @NSManaged var quality: NSNumber?
     @NSManaged var uploader: String?
     @NSManaged var created: NSDate?
+    @NSManaged var streamUrl: String?
+    @NSManaged var youtubeUrl: String?
 
 }

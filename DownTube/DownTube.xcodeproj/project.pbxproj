@@ -11,6 +11,8 @@
 		662FDE271CFD394C00E87BD8 /* Video+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662FDE251CFD394C00E87BD8 /* Video+CoreDataProperties.swift */; };
 		662FDE281CFD394C00E87BD8 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662FDE261CFD394C00E87BD8 /* Video.swift */; };
 		662FDE2A1CFD398200E87BD8 /* CoreDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662FDE291CFD398200E87BD8 /* CoreDataController.swift */; };
+		665188981D04D23E00ACD7BA /* Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665188971D04D23E00ACD7BA /* Download.swift */; };
+		6651889A1D04DD3E00ACD7BA /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665188991D04DD3E00ACD7BA /* VideoCell.swift */; };
 		66BF69B11CFD2AE3004FEFF7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69B01CFD2AE3004FEFF7 /* AppDelegate.swift */; };
 		66BF69B41CFD2AE3004FEFF7 /* DownTube.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69B21CFD2AE3004FEFF7 /* DownTube.xcdatamodeld */; };
 		66BF69B61CFD2AE3004FEFF7 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69B51CFD2AE3004FEFF7 /* MasterViewController.swift */; };
@@ -36,6 +38,8 @@
 		662FDE251CFD394C00E87BD8 /* Video+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Video+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		662FDE261CFD394C00E87BD8 /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
 		662FDE291CFD398200E87BD8 /* CoreDataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataController.swift; sourceTree = "<group>"; };
+		665188971D04D23E00ACD7BA /* Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Download.swift; sourceTree = "<group>"; };
+		665188991D04DD3E00ACD7BA /* VideoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 		66BF69AD1CFD2AE3004FEFF7 /* DownTube.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DownTube.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66BF69B01CFD2AE3004FEFF7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		66BF69B31CFD2AE3004FEFF7 /* DownTube.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DownTube.xcdatamodel; sourceTree = "<group>"; };
@@ -95,7 +99,9 @@
 			isa = PBXGroup;
 			children = (
 				66BF69B01CFD2AE3004FEFF7 /* AppDelegate.swift */,
+				665188971D04D23E00ACD7BA /* Download.swift */,
 				66BF69B51CFD2AE3004FEFF7 /* MasterViewController.swift */,
+				665188991D04DD3E00ACD7BA /* VideoCell.swift */,
 				66BF69B71CFD2AE3004FEFF7 /* DetailViewController.swift */,
 				662FDE251CFD394C00E87BD8 /* Video+CoreDataProperties.swift */,
 				662FDE261CFD394C00E87BD8 /* Video.swift */,
@@ -288,6 +294,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				66BF69B11CFD2AE3004FEFF7 /* AppDelegate.swift in Sources */,
+				665188981D04D23E00ACD7BA /* Download.swift in Sources */,
+				6651889A1D04DD3E00ACD7BA /* VideoCell.swift in Sources */,
 				662FDE281CFD394C00E87BD8 /* Video.swift in Sources */,
 				66BF69B41CFD2AE3004FEFF7 /* DownTube.xcdatamodeld in Sources */,
 				662FDE2A1CFD398200E87BD8 /* CoreDataController.swift in Sources */,

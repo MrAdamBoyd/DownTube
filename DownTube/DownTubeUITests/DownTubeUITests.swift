@@ -28,6 +28,29 @@ class DownTubeUITests: XCTestCase {
         super.tearDown()
     }
     
+    func testValidURL() {
+        
+        let app = XCUIApplication()
+        
+        app.navigationBars["DownTube"].buttons["Add"].tap()
+        
+        let collectionViewsQuery = app.alerts["Download YouTube Video"].collectionViews
+        collectionViewsQuery.textFields["Enter YouTube video URL"].typeText("https://www.youtube.com/watch?v=tPEE9ZwTmy0")
+        collectionViewsQuery.buttons["Ok"].tap()
+        
+        //Wait for video to be downloaded
+        sleep(5)
+        
+        let downtubeNavigationBar = app.navigationBars["DownTube"]
+        downtubeNavigationBar.buttons["Edit"].tap()
+        
+        let tablesQuery = app.tables
+        tablesQuery.buttons["Delete Shortest Video on Youtube, Downloaded on 2016/6/6"].tap()
+        tablesQuery.buttons["Delete"].tap()
+        downtubeNavigationBar.buttons["Done"].tap()
+        
+    }
+    
     func testNonValidURL() {
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.

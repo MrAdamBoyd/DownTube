@@ -20,7 +20,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     var activeDownloads: [String: Download] = [:]
     
     lazy var downloadsSession: NSURLSession = {
-        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let configuration = NSURLSessionConfiguration.backgroundSessionConfigurationWithIdentifier("bgSessionConfiguration")
         let session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: nil)
         return session
     }()
@@ -34,6 +34,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         self.navigationItem.rightBarButtonItem = addButton
         
         CoreDataController.sharedController.fetchedResultsController.delegate = self
+        
+        _ = self.downloadsSession //Initializes the background NSURLSession
     }
 
     /**
@@ -524,6 +526,22 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
                     videoCell.progressLabel.hidden = done
                     videoCell.progressView.progress = download.progress
                     videoCell.progressLabel.text =  String(format: "%.1f%% of %@",  download.progress * 100, totalSize)
+                })
+            }
+        }
+    }
+}
+
+//MARK: - NSURLSessionDelegate
+
+extension MasterViewController: NSURLSessionDelegate {
+    
+    func URLSessionDidFinishEventsForBackgroundURLSession(session: NSURLSession) {
+        if let appDelegate = UIApplication.sharedApplication().delegate as? AppDelegate {
+            if let completionHandler = appDelegate.backgroundSessionCompletionHandler {
+                appDelegate.backgroundSessionCompletionHandler = nil
+                dispatch_async(dispatch_get_main_queue(), {
+                    completionHandler()
                 })
             }
         }

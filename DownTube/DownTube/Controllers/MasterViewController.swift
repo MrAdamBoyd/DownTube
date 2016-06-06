@@ -86,7 +86,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             if let youtubeUrl = NSURL(string: url) {
                 Youtube.h264videosWithYoutubeURL(youtubeUrl) { videoInfo, error in
-                    self.videoInfo(videoInfo, downloadedForVideoAt: url)
+                    self.videoInfo(videoInfo, downloadedForVideoAt: url, error: error)
                 }
             }
             
@@ -293,7 +293,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      
      - parameter youTubeUrl: youtube url for the video
      */
-    func videoInfo(videoInfo: [String: AnyObject]?, downloadedForVideoAt youTubeUrl: String) {
+    func videoInfo(videoInfo: [String: AnyObject]?, downloadedForVideoAt youTubeUrl: String, error: NSError?) {
         if let streamUrlString = videoInfo?["url"] as? String,
             videoTitle = videoInfo?["title"] as? String {
             print("\(videoTitle)")

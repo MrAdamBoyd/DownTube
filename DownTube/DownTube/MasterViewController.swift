@@ -122,8 +122,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let title = (download.isDownloading) ? "Pause" : "Resume"
             cell.pauseButton.setTitle(title, forState: UIControlState.Normal)
         }
-//        cell.progressView.hidden = !showDownloadControls
-//        cell.progressLabel.hidden = !showDownloadControls
+        cell.progressView.hidden = !showDownloadControls
+        cell.progressLabel.hidden = !showDownloadControls
         
         //Hiding or showing the download button
         let downloaded = self.localFileExistsFor(video)
@@ -300,6 +300,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 video.streamUrl = streamUrlString
                 
                 self.startDownload(video)
+                
+                self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: index, inSection: 0)], withRowAnimation: .None)
                 
                 do {
                     try context.save()

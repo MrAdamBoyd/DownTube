@@ -9,7 +9,8 @@
 import UIKit
 import CoreData
 import YoutubeSourceParserKit
-import MediaPlayer
+import AVKit
+import AVFoundation
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
@@ -369,9 +370,16 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func localFilePathForUrl(previewUrl: String) -> NSURL? {
         let documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString
-        if let url = NSURL(string: previewUrl), lastPathComponent = url.lastPathComponent {
-            let fullPath = documentsPath.stringByAppendingPathComponent(lastPathComponent)
-            return NSURL(fileURLWithPath:fullPath)
+        if let url = NSURL(string: previewUrl), query = url.query {
+            //Getting the video ID using regex
+            
+            if let match = query.rangeOfString("&id=.*", options: .RegularExpressionSearch) {
+                //Trimming the values
+                let videoID = query.substringWithRange(match.startIndex.advancedBy(4)...match.startIndex.advancedBy(20))
+                
+                let fullPath = documentsPath.stringByAppendingPathComponent(videoID)
+                return NSURL(fileURLWithPath: fullPath + ".mp4")
+            }
         }
         return nil
     }
@@ -407,6 +415,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             //Removing the file at the path if one exists
             do {
                 try NSFileManager.defaultManager().removeItemAtURL(fileUrl)
+                print("Successfully removed file")
             } catch {
                 print("No file to remove. Proceeding...")
             }
@@ -420,8 +429,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func playDownload(video: Video) {
         if let urlString = video.streamUrl, url = self.localFilePathForUrl(urlString) {
-            let moviePlayer:MPMoviePlayerViewController! = MPMoviePlayerViewController(contentURL: url)
-            self.presentMoviePlayerViewControllerAnimated(moviePlayer)
+            let player = AVPlayer(URL: url)
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = player
+            self.presentViewController(playerViewController, animated: true) {
+                playerViewController.player!.play()
+            }
         }
     }
 
@@ -461,7 +474,9 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
     
     //Download finished
     func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didFinishDownloadingToURL location: NSURL) {
-        if let originalURL = downloadTask.originalRequest?.URL?.absoluteString, destinationURL = self.localFilePathForUrl(originalURL) {
+        if let originalURL = downloadTask.originalRequest?.URL?.absoluteString {
+            
+            if let destinationURL = self.localFilePathForUrl(originalURL) {
             print("Destination URL: \(destinationURL)")
             
             let fileManager = NSFileManager.defaultManager()
@@ -491,6 +506,7 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
                 }
             }
         }
+        }
     }
     
     //Updating download status
@@ -501,8 +517,11 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
             let totalSize = NSByteCountFormatter.stringFromByteCount(totalBytesExpectedToWrite, countStyle: NSByteCountFormatterCountStyle.Binary)
             if let trackIndex = self.videoIndexForDownloadTask(downloadTask), let videoCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: trackIndex, inSection: 0)) as? VideoCell {
                 dispatch_async(dispatch_get_main_queue(), {
-                    videoCell.progressView.hidden = false
-                    videoCell.progressLabel.hidden = false
+                    
+                    let done = (download.progress == 1)
+                    
+                    videoCell.progressView.hidden = done
+                    videoCell.progressLabel.hidden = done
                     videoCell.progressView.progress = download.progress
                     videoCell.progressLabel.text =  String(format: "%.1f%% of %@",  download.progress * 100, totalSize)
                 })

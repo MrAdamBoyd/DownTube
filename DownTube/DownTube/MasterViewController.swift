@@ -211,6 +211,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             case .Insert:
                 tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
             case .Delete:
+                self.deleteDownloadedVideoAt(indexPath!)
                 tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
             case .Update:
                 self.configureCell((tableView.cellForRowAtIndexPath(indexPath!)! as! VideoCell), withVideo: anObject as! Video)
@@ -412,6 +413,25 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         return false
     }
+    
+    /**
+     Deletes the file for the video at the index path
+     
+     - parameter indexPath: index path of the cell that represents the video
+     */
+    func deleteDownloadedVideoAt(indexPath: NSIndexPath) {
+        let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
+        self.cancelDownload(video)
+        
+        if let fileUrl = self.localFilePathForUrl(video.streamUrl!) {
+            //Removing the file at the path if one exists
+            do {
+                try NSFileManager.defaultManager().removeItemAtURL(fileUrl)
+            } catch {
+                print("No file to remove. Proceeding...")
+            }
+        }
+    }
 
 }
 
@@ -458,7 +478,7 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
             do {
                 try fileManager.removeItemAtURL(destinationURL)
             } catch {
-                print("No file to remove, file doesn't exist. Proceeding...")
+                print("No file to remove. Proceeding...")
             }
             
             //Moving the downloaded file to the new location

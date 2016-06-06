@@ -72,26 +72,40 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      - parameter URL: stream URL for video
      */
     func createEntityFromVideoUrl(url: String) {
-        let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
-        let entity = CoreDataController.sharedController.fetchedResultsController.fetchRequest.entity!
-        let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context) as! Video
-        
-        // If appropriate, configure the new managed object.
-        // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
-        newManagedObject.created = NSDate()
-        newManagedObject.youtubeUrl = url
-        
-        if let youtubeUrl = NSURL(string: url) {
-            Youtube.h264videosWithYoutubeURL(youtubeUrl) { videoInfo, error in
-                self.videoInfo(videoInfo, downloadedForVideoAt: url)
+        if url.containsString("youtube") || url.containsString("youtu.be") {
+            //Valid URL, add cell and video
+            
+            let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
+            let entity = CoreDataController.sharedController.fetchedResultsController.fetchRequest.entity!
+            let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context) as! Video
+            
+            // If appropriate, configure the new managed object.
+            // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
+            newManagedObject.created = NSDate()
+            newManagedObject.youtubeUrl = url
+            
+            if let youtubeUrl = NSURL(string: url) {
+                Youtube.h264videosWithYoutubeURL(youtubeUrl) { videoInfo, error in
+                    self.videoInfo(videoInfo, downloadedForVideoAt: url)
+                }
             }
-        }
+            
+            // Save the context.
+            do {
+                try context.save()
+            } catch {
+                abort()
+            }
+            
+        } else {
+            //Not a valid URL, show alert
+            
+            let alertController = UIAlertController(title: "Error", message: "Not a valid YouTube URL", preferredStyle: .Alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            
+            self.presentViewController(alertController, animated: true, completion: nil)
         
-        // Save the context.
-        do {
-            try context.save()
-        } catch {
-            abort()
         }
     }
 

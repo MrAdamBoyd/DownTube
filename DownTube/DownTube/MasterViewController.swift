@@ -157,14 +157,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if editingStyle == .Delete {
             self.deleteDownloadedVideoAt(indexPath)
             
-            let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
-            context.deleteObject(CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject)
-                
-            do {
-                try context.save()
-            } catch {
-                abort()
-            }
+            self.deleteVideoObjectAt(indexPath)
         }
     }
 
@@ -251,10 +244,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func cancelDownload(video: Video) {
         print("Canceling download of video \(video.title) by \(video.uploader)")
-        if let urlString = video.streamUrl , download = self.activeDownloads[urlString] {
+        if let urlString = video.streamUrl , download = self.activeDownloads[urlString], index = self.videoIndexForStreamUrl(urlString) {
             download.downloadTask?.cancel()
             self.activeDownloads[urlString] = nil
+            
+            self.deleteVideoObjectAt(NSIndexPath(forRow: index, inSection: 0))
         }
+        
+        
     }
     
     /**
@@ -423,6 +420,25 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             } catch {
                 print("No file to remove. Proceeding...")
             }
+        }
+    }
+    
+    
+    /**
+     Deletes video object from core data
+     
+     - parameter indexPath: location of the video
+     */
+    func deleteVideoObjectAt(indexPath: NSIndexPath) {
+        let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
+        
+        let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
+        context.deleteObject(video)
+        
+        do {
+            try context.save()
+        } catch {
+            abort()
         }
     }
     

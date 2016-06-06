@@ -261,8 +261,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if let urlString = video.streamUrl , download = self.activeDownloads[urlString], index = self.videoIndexForStreamUrl(urlString) {
             download.downloadTask?.cancel()
             self.activeDownloads[urlString] = nil
-            
-            self.deleteVideoObjectAt(NSIndexPath(forRow: index, inSection: 0))
         }
         
         
@@ -444,7 +442,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      - parameter indexPath: location of the video
      */
     func deleteVideoObjectAt(indexPath: NSIndexPath) {
-        let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
+        let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject
         
         let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
         context.deleteObject(video)
@@ -498,6 +496,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
             let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
             self.cancelDownload(video)
             tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: indexPath.row, inSection: 0)], withRowAnimation: .None)
+            self.deleteVideoObjectAt(indexPath)
         }
     }
 }

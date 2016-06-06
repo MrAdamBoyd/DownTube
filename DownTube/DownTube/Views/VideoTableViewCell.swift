@@ -1,5 +1,5 @@
 //
-//  VideoCell.swift
+//  VideoTableViewCell.swift
 //  DownTube
 //
 //  Created by Adam Boyd on 2016-06-05.
@@ -9,15 +9,15 @@
 import Foundation
 import UIKit
 
-protocol VideoCellDelegate {
-    func pauseTapped(cell: VideoCell)
-    func resumeTapped(cell: VideoCell)
-    func cancelTapped(cell: VideoCell)
+protocol VideoTableViewCellDelegate {
+    func pauseTapped(cell: VideoTableViewCell)
+    func resumeTapped(cell: VideoTableViewCell)
+    func cancelTapped(cell: VideoTableViewCell)
 }
 
-class VideoCell: UITableViewCell {
+class VideoTableViewCell: UITableViewCell {
     
-    var delegate: VideoCellDelegate?
+    var delegate: VideoTableViewCellDelegate?
     
     @IBOutlet weak var videoNameLabel: UILabel!
     @IBOutlet weak var uploaderLabel: UILabel!

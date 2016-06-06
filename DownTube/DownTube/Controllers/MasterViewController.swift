@@ -121,7 +121,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("VideoCell", forIndexPath: indexPath) as! VideoCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("VideoTableViewCell", forIndexPath: indexPath) as! VideoTableViewCell
         let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
         self.configureCell(cell, withVideo: video)
         
@@ -175,7 +175,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
 
-    func configureCell(cell: VideoCell, withVideo video: Video) {
+    func configureCell(cell: VideoTableViewCell, withVideo video: Video) {
         let components = NSCalendar.currentCalendar().components([.Day, .Month, .Year], fromDate: video.created!)
         
         cell.videoNameLabel.text = video.title
@@ -204,7 +204,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             case .Delete:
                 tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
             case .Update:
-                self.configureCell((tableView.cellForRowAtIndexPath(indexPath!)! as! VideoCell), withVideo: anObject as! Video)
+                self.configureCell((tableView.cellForRowAtIndexPath(indexPath!)! as! VideoTableViewCell), withVideo: anObject as! Video)
             case .Move:
                 tableView.moveRowAtIndexPath(indexPath!, toIndexPath: newIndexPath!)
         }
@@ -474,10 +474,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
 }
 
-// MARK: VideoCellDelegate
+// MARK: VideoTableViewCellDelegate
 
-extension MasterViewController: VideoCellDelegate {
-    func pauseTapped(cell: VideoCell) {
+extension MasterViewController: VideoTableViewCellDelegate {
+    func pauseTapped(cell: VideoTableViewCell) {
         if let indexPath = tableView.indexPathForCell(cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
             self.pauseDownload(video)
@@ -485,7 +485,7 @@ extension MasterViewController: VideoCellDelegate {
         }
     }
     
-    func resumeTapped(cell: VideoCell) {
+    func resumeTapped(cell: VideoTableViewCell) {
         if let indexPath = tableView.indexPathForCell(cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
             self.resumeDownload(video)
@@ -493,7 +493,7 @@ extension MasterViewController: VideoCellDelegate {
         }
     }
     
-    func cancelTapped(cell: VideoCell) {
+    func cancelTapped(cell: VideoTableViewCell) {
         if let indexPath = tableView.indexPathForCell(cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
             self.cancelDownload(video)
@@ -549,15 +549,15 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
         if let downloadUrl = downloadTask.originalRequest?.URL?.absoluteString, download = self.activeDownloads[downloadUrl] {
             download.progress = Float(totalBytesWritten)/Float(totalBytesExpectedToWrite)
             let totalSize = NSByteCountFormatter.stringFromByteCount(totalBytesExpectedToWrite, countStyle: NSByteCountFormatterCountStyle.Binary)
-            if let trackIndex = self.videoIndexForDownloadTask(downloadTask), let videoCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: trackIndex, inSection: 0)) as? VideoCell {
+            if let trackIndex = self.videoIndexForDownloadTask(downloadTask), let VideoTableViewCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: trackIndex, inSection: 0)) as? VideoTableViewCell {
                 dispatch_async(dispatch_get_main_queue(), {
                     
                     let done = (download.progress == 1)
                     
-                    videoCell.progressView.hidden = done
-                    videoCell.progressLabel.hidden = done
-                    videoCell.progressView.progress = download.progress
-                    videoCell.progressLabel.text =  String(format: "%.1f%% of %@",  download.progress * 100, totalSize)
+                    VideoTableViewCell.progressView.hidden = done
+                    VideoTableViewCell.progressLabel.hidden = done
+                    VideoTableViewCell.progressView.progress = download.progress
+                    VideoTableViewCell.progressLabel.text =  String(format: "%.1f%% of %@",  download.progress * 100, totalSize)
                 })
             }
         }

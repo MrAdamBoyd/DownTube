@@ -34,11 +34,11 @@
                         <color key="sectionIndexBackgroundColor" cocoaTouchSystemColor="darkTextColor"/>
                         <color key="sectionIndexTrackingBackgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" indentationWidth="10" reuseIdentifier="VideoCell" rowHeight="62" id="dDJ-iN-7C4" customClass="VideoCell" customModule="DownTube" customModuleProvider="target">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" indentationWidth="10" reuseIdentifier="VideoTableViewCell" rowHeight="62" id="dDJ-iN-7C4" customClass="VideoTableViewCell" customModule="DownTube" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="22" width="600" height="62"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dDJ-iN-7C4" id="YKm-zx-e49">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="61"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="61.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Downloaded on" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sz3-i9-8IS">

@@ -258,7 +258,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func cancelDownload(video: Video) {
         print("Canceling download of video \(video.title) by \(video.uploader)")
-        if let urlString = video.streamUrl , download = self.activeDownloads[urlString], index = self.videoIndexForStreamUrl(urlString) {
+        if let urlString = video.streamUrl , download = self.activeDownloads[urlString] {
             download.downloadTask?.cancel()
             self.activeDownloads[urlString] = nil
         }

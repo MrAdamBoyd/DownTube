@@ -8,8 +8,8 @@ DownTube is a very lightweight app that allows you to download any YouTube video
 * [License](#license)
 
 ## Screenshots
-![Screenshot](https://raw.githubusercontent.com/MrAdamBoyd/DownTube/master/screenshots/screenshot1.png)
-![Screenshot](https://raw.githubusercontent.com/MrAdamBoyd/DownTube/master/screenshots/screenshot2.png)
+![Screenshot](https://raw.githubusercontent.com/MrAdamBoyd/DownTube/master/Screenshots/screenshot1.png)
+![Screenshot](https://raw.githubusercontent.com/MrAdamBoyd/DownTube/master/Screenshots/screenshot2.png)
 
 
 ## Author

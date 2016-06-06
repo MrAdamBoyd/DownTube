@@ -100,12 +100,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         } else {
             //Not a valid URL, show alert
             
-            let alertController = UIAlertController(title: "Error", message: "Not a valid YouTube URL", preferredStyle: .Alert)
-            let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
-            alertController.addAction(cancelAction)
-            
-            self.presentViewController(alertController, animated: true, completion: nil)
-        
+            dispatch_async(dispatch_get_main_queue()) {
+                let alertController = UIAlertController(title: "Error", message: "Not a valid YouTube URL", preferredStyle: .Alert)
+                let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                
+                self.presentViewController(alertController, animated: true, completion: nil)
+            }
         }
     }
 
@@ -318,6 +319,33 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     abort()
                 }
             }
+        } else if let error = error {
+            //Show error to user, remove all unused cells from list
+            dispatch_async(dispatch_get_main_queue()) {
+                print("Couldn't get video: \(error)")
+                let message = error.userInfo["error"] as? String
+                let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
+                let cancelAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                
+                self.presentViewController(alertController, animated: true, completion: nil)
+            }
+            
+            //Getting all blank videos with no downloaded data
+            var objectsToRemove: [NSIndexPath] = []
+            for (index, object) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerate() {
+                let video = object as! Video
+                
+                if video.streamUrl == nil {
+                    objectsToRemove.append(NSIndexPath(forRow: index, inSection: 0))
+                }
+            }
+            
+            //Deleting them
+            for indexPath in objectsToRemove {
+                self.deleteDownloadedVideoAt(indexPath)
+                self.deleteVideoObjectAt(indexPath)
+            }
         }
     }
     
@@ -424,7 +452,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
         self.cancelDownload(video)
         
-        if let fileUrl = self.localFilePathForUrl(video.streamUrl!) {
+        if let urlString = video.streamUrl, fileUrl = self.localFilePathForUrl(urlString) {
             //Removing the file at the path if one exists
             do {
                 try NSFileManager.defaultManager().removeItemAtURL(fileUrl)

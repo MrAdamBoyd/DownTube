@@ -16,7 +16,6 @@
 		66BF69B11CFD2AE3004FEFF7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69B01CFD2AE3004FEFF7 /* AppDelegate.swift */; };
 		66BF69B41CFD2AE3004FEFF7 /* DownTube.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69B21CFD2AE3004FEFF7 /* DownTube.xcdatamodeld */; };
 		66BF69B61CFD2AE3004FEFF7 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69B51CFD2AE3004FEFF7 /* MasterViewController.swift */; };
-		66BF69B81CFD2AE3004FEFF7 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69B71CFD2AE3004FEFF7 /* DetailViewController.swift */; };
 		66BF69BB1CFD2AE3004FEFF7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69B91CFD2AE3004FEFF7 /* Main.storyboard */; };
 		66BF69BD1CFD2AE3004FEFF7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69BC1CFD2AE3004FEFF7 /* Assets.xcassets */; };
 		66BF69C01CFD2AE3004FEFF7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69BE1CFD2AE3004FEFF7 /* LaunchScreen.storyboard */; };
@@ -44,7 +43,6 @@
 		66BF69B01CFD2AE3004FEFF7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		66BF69B31CFD2AE3004FEFF7 /* DownTube.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DownTube.xcdatamodel; sourceTree = "<group>"; };
 		66BF69B51CFD2AE3004FEFF7 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
-		66BF69B71CFD2AE3004FEFF7 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		66BF69BA1CFD2AE3004FEFF7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		66BF69BC1CFD2AE3004FEFF7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		66BF69BF1CFD2AE3004FEFF7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -102,7 +100,6 @@
 				665188971D04D23E00ACD7BA /* Download.swift */,
 				66BF69B51CFD2AE3004FEFF7 /* MasterViewController.swift */,
 				665188991D04DD3E00ACD7BA /* VideoCell.swift */,
-				66BF69B71CFD2AE3004FEFF7 /* DetailViewController.swift */,
 				662FDE251CFD394C00E87BD8 /* Video+CoreDataProperties.swift */,
 				662FDE261CFD394C00E87BD8 /* Video.swift */,
 				662FDE291CFD398200E87BD8 /* CoreDataController.swift */,
@@ -301,7 +298,6 @@
 				662FDE2A1CFD398200E87BD8 /* CoreDataController.swift in Sources */,
 				662FDE271CFD394C00E87BD8 /* Video+CoreDataProperties.swift in Sources */,
 				66BF69B61CFD2AE3004FEFF7 /* MasterViewController.swift in Sources */,
-				66BF69B81CFD2AE3004FEFF7 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

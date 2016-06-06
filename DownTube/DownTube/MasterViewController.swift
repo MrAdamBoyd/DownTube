@@ -9,10 +9,9 @@
 import UIKit
 import CoreData
 import YoutubeSourceParserKit
+import MediaPlayer
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
-
-    var detailViewController: DetailViewController? = nil
     
     //For the downloads
     let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
@@ -32,22 +31,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
         let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(self.askUserForURL(_:)))
         self.navigationItem.rightBarButtonItem = addButton
-        if let split = self.splitViewController {
-            let controllers = split.viewControllers
-            self.detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
-        }
         
         CoreDataController.sharedController.fetchedResultsController.delegate = self
-    }
-
-    override func viewWillAppear(animated: Bool) {
-        self.clearsSelectionOnViewWillAppear = self.splitViewController!.collapsed
-        super.viewWillAppear(animated)
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     /**
@@ -107,20 +92,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
 
-    // MARK: - Segues
-
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "showDetail" {
-            if let indexPath = self.tableView.indexPathForSelectedRow {
-            let object = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath)
-                let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
-                controller.detailItem = object
-                controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
-                controller.navigationItem.leftItemsSupplementBackButton = true
-            }
-        }
-    }
-
     // MARK: - Table View
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -161,6 +132,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         return cell
     }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
+        if self.localFileExistsFor(video) {
+            self.playDownload(video)
+        }
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
 
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
@@ -173,6 +152,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
+            self.deleteDownloadedVideoAt(indexPath)
+            
             let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
             context.deleteObject(CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject)
                 
@@ -211,7 +192,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             case .Insert:
                 tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
             case .Delete:
-                self.deleteDownloadedVideoAt(indexPath!)
                 tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
             case .Update:
                 self.configureCell((tableView.cellForRowAtIndexPath(indexPath!)! as! VideoCell), withVideo: anObject as! Video)
@@ -430,6 +410,18 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             } catch {
                 print("No file to remove. Proceeding...")
             }
+        }
+    }
+    
+    /**
+     Plays video in fullscreen player
+     
+     - parameter video: video that is going to be played
+     */
+    func playDownload(video: Video) {
+        if let urlString = video.streamUrl, url = self.localFilePathForUrl(urlString) {
+            let moviePlayer:MPMoviePlayerViewController! = MPMoviePlayerViewController(contentURL: url)
+            self.presentMoviePlayerViewControllerAnimated(moviePlayer)
         }
     }
 

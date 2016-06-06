@@ -5,6 +5,7 @@ DownTube is a very lightweight app that allows you to download any YouTube video
 * [Screenshots](#screenshots)
 * [Author](#author)
 * [Changelog](#changelog)
+* [Contributing](#contributing)
 * [License](#license)
 
 ## Screenshots
@@ -21,6 +22,9 @@ My website is [adamjboyd.com](http://www.adamjboyd.com).
 
 ## Changelog
 1.0: Initial Release
+
+## Contributing
+I'll take all the help I can get! Submit an issue or a pull request and I'll try to get it sorted as soon as I can :)
 
 ## License
 

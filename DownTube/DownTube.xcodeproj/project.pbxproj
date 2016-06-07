@@ -175,6 +175,7 @@
 				66BF69AB1CFD2AE3004FEFF7 /* Resources */,
 				8B4AA6E3BA885B25C50B8D21 /* Embed Pods Frameworks */,
 				0B65F3FF512142F1F0D5A791 /* Copy Pods Resources */,
+				660FDD8B1D0663C30015763F /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -292,6 +293,19 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
+		};
+		660FDD8B1D0663C30015763F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Fabric/run\" ddc2645d54ae392a8abd36a8dbbccb41fca3541d ec4418504bf66c40bfd19499c14e2f454e4ae3fa366b7699d1092e7ef7815f1b";
 		};
 		8B4AA6E3BA885B25C50B8D21 /* Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -455,6 +469,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				INFOPLIST_FILE = DownTube/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube;
@@ -478,6 +493,7 @@
 		66BF69D31CFD2AE3004FEFF7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				INFOPLIST_FILE = DownTubeUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTubeUITests;

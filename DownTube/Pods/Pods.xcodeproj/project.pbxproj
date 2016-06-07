@@ -113,6 +113,19 @@
 			<key>sourceTree</key>
 			<string>BUILT_PRODUCTS_DIR</string>
 		</dict>
+		<key>26DFC4F6D200879B8898610840ADCE4C</key>
+		<dict>
+			<key>includeInIndex</key>
+			<string>1</string>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>text.xcconfig</string>
+			<key>path</key>
+			<string>YoutubeSourceParserKit.xcconfig</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
 		<key>2803AF3F64940563D8AA3440102BBF41</key>
 		<dict>
 			<key>children</key>
@@ -142,7 +155,7 @@
 		<key>292985F1326991E539AA296CFE9E5793</key>
 		<dict>
 			<key>fileRef</key>
-			<string>A89D91EA400D7F367E623BA176740437</string>
+			<string>AC9E74CEC61ED5F8B70D8F7B23C79823</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 			<key>settings</key>
@@ -253,16 +266,31 @@
 			<key>isa</key>
 			<string>XCConfigurationList</string>
 		</dict>
-		<key>3F6D2474E61BFFBA6ED7AD1AF6266C84</key>
+		<key>326262B4A6E03F49C339CE22AA9A97A4</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>E7EC933A37A2DEAC907953F85FBE0303</string>
+				<string>7C6BE49B463F851FDA5FA4B9F603E1D2</string>
+				<string>DB36115C34F88D5C4049299AEA92384F</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>Pods</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>37978C0B240D67A30DB0723A5156279C</key>
 		<dict>
 			<key>includeInIndex</key>
 			<string>1</string>
 			<key>isa</key>
 			<string>PBXFileReference</string>
 			<key>lastKnownFileType</key>
-			<string>sourcecode.c.objc</string>
+			<string>text.plist.xml</string>
 			<key>path</key>
-			<string>YoutubeSourceParserKit-dummy.m</string>
+			<string>Info.plist</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
@@ -284,6 +312,19 @@
 			<key>children</key>
 			<array>
 				<string>18340F12838DEE43507667CC74401EB1</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>Frameworks</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>438A694FC0421E67140AA78D7C4ECFEE</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>68AB3AF4D838CCD3ABED8A8E06DF26E6</string>
 			</array>
 			<key>isa</key>
 			<string>PBXGroup</string>
@@ -407,6 +448,19 @@
 			<key>name</key>
 			<string>Release</string>
 		</dict>
+		<key>68AB3AF4D838CCD3ABED8A8E06DF26E6</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>wrapper.framework</string>
+			<key>name</key>
+			<string>Fabric.framework</string>
+			<key>path</key>
+			<string>iOS/Fabric.framework</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
 		<key>696D4C540EC0485659F4AAB65F07CEC1</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -417,19 +471,6 @@
 			<string>sourcecode.c.objc</string>
 			<key>path</key>
 			<string>Pods-DownTube-dummy.m</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>6C5701E8A534611E6D51026464619AC0</key>
-		<dict>
-			<key>includeInIndex</key>
-			<string>1</string>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>text.plist.xml</string>
-			<key>path</key>
-			<string>Info.plist</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
@@ -473,13 +514,41 @@
 			<key>runOnlyForDeploymentPostprocessing</key>
 			<string>0</string>
 		</dict>
+		<key>75ECB0036E61AD035DF264CB9D1261A5</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>wrapper.framework</string>
+			<key>name</key>
+			<string>Crashlytics.framework</string>
+			<key>path</key>
+			<string>iOS/Crashlytics.framework</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>7C6BE49B463F851FDA5FA4B9F603E1D2</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>438A694FC0421E67140AA78D7C4ECFEE</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>Fabric</string>
+			<key>path</key>
+			<string>Fabric</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
 		<key>7DB346D0F39D3F0E887471402A8071AB</key>
 		<dict>
 			<key>children</key>
 			<array>
 				<string>BA6428E9F66FD5A23C0A2E06ED26CD2F</string>
 				<string>433CD3331B6C3787F473C941B61FC68F</string>
-				<string>9C8490FE8E17C81FD7318F1B223DAD33</string>
+				<string>326262B4A6E03F49C339CE22AA9A97A4</string>
 				<string>935E315DF65F89FD47C3C2CBB48239FB</string>
 				<string>2803AF3F64940563D8AA3440102BBF41</string>
 			</array>
@@ -550,19 +619,6 @@
 			<key>name</key>
 			<string>Release</string>
 		</dict>
-		<key>8137C5739042D5A4BCE81ED6DAE7E978</key>
-		<dict>
-			<key>includeInIndex</key>
-			<string>1</string>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>text.xcconfig</string>
-			<key>path</key>
-			<string>YoutubeSourceParserKit.xcconfig</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
 		<key>83984ED5CAB530E840539AFC891EC2C1</key>
 		<dict>
 			<key>explicitFileType</key>
@@ -577,21 +633,6 @@
 			<string>Pods_DownTube.framework</string>
 			<key>sourceTree</key>
 			<string>BUILT_PRODUCTS_DIR</string>
-		</dict>
-		<key>90C6D70E238EDBB1231E4D1B558013E4</key>
-		<dict>
-			<key>includeInIndex</key>
-			<string>1</string>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>sourcecode.swift</string>
-			<key>name</key>
-			<string>Youtube.swift</string>
-			<key>path</key>
-			<string>YoutubeSourceParserKit/Youtube.swift</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
 		</dict>
 		<key>935E315DF65F89FD47C3C2CBB48239FB</key>
 		<dict>
@@ -684,16 +725,14 @@
 			<key>runOnlyForDeploymentPostprocessing</key>
 			<string>0</string>
 		</dict>
-		<key>9C8490FE8E17C81FD7318F1B223DAD33</key>
+		<key>97C3F43A40773277FE5983AA7AF0C906</key>
 		<dict>
-			<key>children</key>
-			<array>
-				<string>FC37ED30E5A7858B4E8C90A4B26F9332</string>
-			</array>
+			<key>includeInIndex</key>
+			<string>1</string>
 			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>name</key>
-			<string>Pods</string>
+			<string>PBXFileReference</string>
+			<key>path</key>
+			<string>YoutubeSourceParserKit.modulemap</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
@@ -723,7 +762,27 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>A89D91EA400D7F367E623BA176740437</key>
+		<key>A8AB80E0C703BB5BF6D04B591B2DA38F</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>37978C0B240D67A30DB0723A5156279C</string>
+				<string>97C3F43A40773277FE5983AA7AF0C906</string>
+				<string>26DFC4F6D200879B8898610840ADCE4C</string>
+				<string>E091FA38D67A549E6947F87F174125E7</string>
+				<string>D7CB424A8B580C8A5C5E157F5154C0C2</string>
+				<string>AC9E74CEC61ED5F8B70D8F7B23C79823</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>Support Files</string>
+			<key>path</key>
+			<string>../Target Support Files/YoutubeSourceParserKit</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>AC9E74CEC61ED5F8B70D8F7B23C79823</key>
 		<dict>
 			<key>includeInIndex</key>
 			<string>1</string>
@@ -733,6 +792,21 @@
 			<string>sourcecode.c.h</string>
 			<key>path</key>
 			<string>YoutubeSourceParserKit-umbrella.h</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>B1B13B4A5992DE502E078DB16366A676</key>
+		<dict>
+			<key>includeInIndex</key>
+			<string>1</string>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.swift</string>
+			<key>name</key>
+			<string>Youtube.swift</string>
+			<key>path</key>
+			<string>YoutubeSourceParserKit/Youtube.swift</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
@@ -746,6 +820,19 @@
 			<string>text.xcconfig</string>
 			<key>path</key>
 			<string>Pods-DownTube.release.xcconfig</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
+		<key>B401D5B21E763BA4D5E28970F5CC0E37</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>75ECB0036E61AD035DF264CB9D1261A5</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>Frameworks</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
@@ -832,7 +919,7 @@
 		<key>BE2F7AB93C87EA6C0F091DE7100E0260</key>
 		<dict>
 			<key>fileRef</key>
-			<string>3F6D2474E61BFFBA6ED7AD1AF6266C84</string>
+			<string>E091FA38D67A549E6947F87F174125E7</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
@@ -859,7 +946,7 @@
 		<key>C7843743296E18517B2D9F8272339585</key>
 		<dict>
 			<key>baseConfigurationReference</key>
-			<string>8137C5739042D5A4BCE81ED6DAE7E978</string>
+			<string>26DFC4F6D200879B8898610840ADCE4C</string>
 			<key>buildSettings</key>
 			<dict>
 				<key>CODE_SIGN_IDENTITY[sdk=iphoneos*]</key>
@@ -953,7 +1040,7 @@
 				<string>B72F3E7D86570343A95958BA18CDA536</string>
 			</array>
 		</dict>
-		<key>D685EBC5A2FA3EB603593A8A43A356BA</key>
+		<key>D7CB424A8B580C8A5C5E157F5154C0C2</key>
 		<dict>
 			<key>includeInIndex</key>
 			<string>1</string>
@@ -969,7 +1056,7 @@
 		<key>D7E93EDF7CD2E5556F3BD4740D5F0C51</key>
 		<dict>
 			<key>baseConfigurationReference</key>
-			<string>8137C5739042D5A4BCE81ED6DAE7E978</string>
+			<string>26DFC4F6D200879B8898610840ADCE4C</string>
 			<key>buildSettings</key>
 			<dict>
 				<key>CODE_SIGN_IDENTITY[sdk=iphoneos*]</key>
@@ -1029,23 +1116,41 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
-		<key>DA85517D658F1BC1BD92D9BEE07CA5A5</key>
+		<key>DB36115C34F88D5C4049299AEA92384F</key>
 		<dict>
-			<key>includeInIndex</key>
-			<string>1</string>
+			<key>children</key>
+			<array>
+				<string>B1B13B4A5992DE502E078DB16366A676</string>
+				<string>A8AB80E0C703BB5BF6D04B591B2DA38F</string>
+			</array>
 			<key>isa</key>
-			<string>PBXFileReference</string>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>YoutubeSourceParserKit</string>
 			<key>path</key>
-			<string>YoutubeSourceParserKit.modulemap</string>
+			<string>YoutubeSourceParserKit</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
 		<key>DD21FBF9B7BBDA23D890AFC6E6051ADD</key>
 		<dict>
 			<key>fileRef</key>
-			<string>90C6D70E238EDBB1231E4D1B558013E4</string>
+			<string>B1B13B4A5992DE502E078DB16366A676</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+		</dict>
+		<key>E091FA38D67A549E6947F87F174125E7</key>
+		<dict>
+			<key>includeInIndex</key>
+			<string>1</string>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>sourcecode.c.objc</string>
+			<key>path</key>
+			<string>YoutubeSourceParserKit-dummy.m</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
 		</dict>
 		<key>E76D5DB9A67AD77C64BF140F17433BB5</key>
 		<dict>
@@ -1060,6 +1165,21 @@
 			<string>Release</string>
 			<key>isa</key>
 			<string>XCConfigurationList</string>
+		</dict>
+		<key>E7EC933A37A2DEAC907953F85FBE0303</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>B401D5B21E763BA4D5E28970F5CC0E37</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>Crashlytics</string>
+			<key>path</key>
+			<string>Crashlytics</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
 		</dict>
 		<key>E7FF652F84560E9175D22F92DFDB1FCD</key>
 		<dict>
@@ -1082,42 +1202,6 @@
 			<string>text</string>
 			<key>path</key>
 			<string>Pods-DownTube-acknowledgements.markdown</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>F93DF0A02E130AE7BA28803208F5EC68</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>6C5701E8A534611E6D51026464619AC0</string>
-				<string>DA85517D658F1BC1BD92D9BEE07CA5A5</string>
-				<string>8137C5739042D5A4BCE81ED6DAE7E978</string>
-				<string>3F6D2474E61BFFBA6ED7AD1AF6266C84</string>
-				<string>D685EBC5A2FA3EB603593A8A43A356BA</string>
-				<string>A89D91EA400D7F367E623BA176740437</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>name</key>
-			<string>Support Files</string>
-			<key>path</key>
-			<string>../Target Support Files/YoutubeSourceParserKit</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>FC37ED30E5A7858B4E8C90A4B26F9332</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>90C6D70E238EDBB1231E4D1B558013E4</string>
-				<string>F93DF0A02E130AE7BA28803208F5EC68</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>name</key>
-			<string>YoutubeSourceParserKit</string>
-			<key>path</key>
-			<string>YoutubeSourceParserKit</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>

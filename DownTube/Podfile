@@ -5,6 +5,8 @@ use_frameworks!
 
 target 'DownTube' do
   pod 'YoutubeSourceParserKit'
+  pod 'Fabric'
+  pod 'Crashlytics'
 end
 
 target 'DownTubeUITests' do

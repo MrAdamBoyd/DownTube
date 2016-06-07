@@ -27,13 +27,13 @@ class VideoTableViewCell: UITableViewCell {
     @IBOutlet weak var cancelButton: UIButton!
     
     @IBAction func pauseOrResumeTapped(sender: AnyObject) {
-        if(self.pauseButton.titleLabel!.text == "Pause") {
+        if self.pauseButton.titleLabel!.text == "Pause" {
             self.delegate?.pauseTapped(self)
         } else {
             self.delegate?.resumeTapped(self)
         }
     }
-    
+
     @IBAction func cancelTapped(sender: AnyObject) {
         self.delegate?.cancelTapped(self)
     }

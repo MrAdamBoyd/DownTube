@@ -52,4 +52,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.backgroundSessionCompletionHandler = completionHandler
     }
 }
-

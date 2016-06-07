@@ -69,7 +69,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     /**
      Creates the entity and cell from provided URL, starts download
      
-     - parameter URL: stream URL for video
+     - parameter url: stream URL for video
      */
     func createEntityFromVideoUrl(url: String) {
         //Valid URL, add cell and video
@@ -248,7 +248,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func cancelDownload(video: Video) {
         print("Canceling download of video \(video.title) by \(video.uploader)")
-        if let urlString = video.streamUrl , download = self.activeDownloads[urlString] {
+        if let urlString = video.streamUrl, download = self.activeDownloads[urlString] {
             download.downloadTask?.cancel()
             self.activeDownloads[urlString] = nil
         }
@@ -281,7 +281,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     /**
      Called when the video info for a video is downloaded
      
-     - parameter youTubeUrl: youtube url for the video
+     - parameter videoInfo:  optional array of video info
+     - parameter youTubeUrl: youtube URL of the video
+     - parameter error:      optional erro
      */
     func videoInfo(videoInfo: [String: AnyObject]?, downloadedForVideoAt youTubeUrl: String, error: NSError?) {
         if let streamUrlString = videoInfo?["url"] as? String,
@@ -290,52 +292,77 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             print("\(streamUrlString)")
             
             if let index = self.videoIndexForYouTubeUrl(youTubeUrl) {
-                let indexPath = NSIndexPath(forRow: index, inSection: 0)
-                
-                let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
-                let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
-                
-                video.title = videoTitle
-                video.streamUrl = streamUrlString
-                
-                self.startDownload(video)
-                
-                self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: index, inSection: 0)], withRowAnimation: .None)
-                
-                do {
-                    try context.save()
-                } catch {
-                    abort()
-                }
+                self.updateInfoAndStartDownloadForVideoAt(index, withTitle: videoTitle, andStreamUrl: streamUrlString)
             }
+            
         } else if let error = error {
-            //Show error to user, remove all unused cells from list
-            dispatch_async(dispatch_get_main_queue()) {
-                print("Couldn't get video: \(error)")
-                let message = error.userInfo["error"] as? String
-                let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
-                let cancelAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
-                alertController.addAction(cancelAction)
-                
-                self.presentViewController(alertController, animated: true, completion: nil)
-            }
             
-            //Getting all blank videos with no downloaded data
-            var objectsToRemove: [NSIndexPath] = []
-            for (index, object) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerate() {
-                let video = object as! Video
-                
-                if video.streamUrl == nil {
-                    objectsToRemove.append(NSIndexPath(forRow: index, inSection: 0))
-                }
-            }
+            //Show error to user and remove all videos without streaming urls
+            self.showErrorAndRemoveErrorVideo(error)
+        
+        }
+    }
+    
+    /**
+     Updates the info for the video and starts the download of that video
+     
+     - parameter index:     index of the video
+     - parameter title:     title of the video
+     - parameter streamUrl: streaming URL for the video
+     */
+    func updateInfoAndStartDownloadForVideoAt(index: Int, withTitle title: String, andStreamUrl streamUrl: String) {
+        let indexPath = NSIndexPath(forRow: index, inSection: 0)
+        
+        let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
+        let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
+        
+        video.title = title
+        video.streamUrl = streamUrl
+        
+        self.startDownload(video)
+        
+        self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: index, inSection: 0)], withRowAnimation: .None)
+        
+        do {
+            try context.save()
+        } catch {
+            abort()
+        }
+    }
+    
+    /**
+     Shows error to user in UIAlertController and then removes all errored out videos from core data
+     
+     - parameter error: error from getting the video info
+     */
+    func showErrorAndRemoveErrorVideo(error: NSError) {
+        //Show error to user, remove all unused cells from list
+        dispatch_async(dispatch_get_main_queue()) {
+            print("Couldn't get video: \(error)")
+            let message = error.userInfo["error"] as? String
+            let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
+            let cancelAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
+            alertController.addAction(cancelAction)
             
-            //Deleting them
-            for indexPath in objectsToRemove {
-                self.deleteDownloadedVideoAt(indexPath)
-                self.deleteVideoObjectAt(indexPath)
+            self.presentViewController(alertController, animated: true, completion: nil)
+        }
+        
+        //Getting all blank videos with no downloaded data
+        var objectsToRemove: [NSIndexPath] = []
+        for (index, object) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerate() {
+            let video = object as! Video
+            
+            if video.streamUrl == nil {
+                objectsToRemove.append(NSIndexPath(forRow: index, inSection: 0))
             }
         }
+        
+        //Deleting them
+        for indexPath in objectsToRemove {
+            self.deleteDownloadedVideoAt(indexPath)
+            self.deleteVideoObjectAt(indexPath)
+        }
+
     }
     
     /**
@@ -595,4 +622,3 @@ extension MasterViewController: NSURLSessionDelegate {
         }
     }
 }
-

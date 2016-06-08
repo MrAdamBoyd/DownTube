@@ -315,14 +315,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             if let index = self.videoIndexForYouTubeUrl(youTubeUrl), streamUrl = streamUrl {
                 self.updateInfoAndStartDownloadForVideoAt(index, withTitle: videoTitle, andStreamUrl: streamUrl)
+                
+                return
             }
             
-        } else if let error = error {
-            
-            //Show error to user and remove all videos without streaming urls
-            self.showErrorAndRemoveErrorVideo(error)
-        
         }
+        
+        //Show error to user and remove all errored out videos
+        self.showErrorAndRemoveErrorVideo(error)
     }
     
     /**
@@ -357,12 +357,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      
      - parameter error: error from getting the video info
      */
-    func showErrorAndRemoveErrorVideo(error: NSError) {
+    func showErrorAndRemoveErrorVideo(error: NSError?) {
         //Show error to user, remove all unused cells from list
         dispatch_async(dispatch_get_main_queue()) {
             print("Couldn't get video: \(error)")
             
-            let message = error.userInfo["error"] as? String
+            let message = error?.userInfo["error"] as? String
             self.showErrorAlertControllerWithMessage(message)
         }
         

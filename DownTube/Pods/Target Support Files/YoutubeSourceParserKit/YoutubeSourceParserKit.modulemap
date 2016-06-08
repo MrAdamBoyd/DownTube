@@ -1,6 +1,0 @@
-framework module YoutubeSourceParserKit {
-  umbrella header "YoutubeSourceParserKit-umbrella.h"
-
-  export *
-  module * { export * }
-}

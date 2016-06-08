@@ -50,6 +50,7 @@
 		66BF69C61CFD2AE3004FEFF7 /* DownTubeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DownTubeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		66BF69CA1CFD2AE3004FEFF7 /* DownTubeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownTubeUITests.swift; sourceTree = "<group>"; };
 		66BF69CC1CFD2AE3004FEFF7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		66E125561D07C19A008C8D39 /* DownTube-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DownTube-Bridging-Header.h"; sourceTree = "<group>"; };
 		8513753E4FDB75045216F0B1 /* Pods-DownTube.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTube.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DownTube/Pods-DownTube.debug.xcconfig"; sourceTree = "<group>"; };
 		8B155E499B6CE46F27A8B338 /* Pods_DownTube.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DownTube.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -124,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				66BF69B01CFD2AE3004FEFF7 /* AppDelegate.swift */,
+				66E125561D07C19A008C8D39 /* DownTube-Bridging-Header.h */,
 				66424C5A1D053556004C75B6 /* Controllers */,
 				66424C5B1D053562004C75B6 /* Views */,
 				66424C5C1D053567004C75B6 /* Models */,
@@ -488,6 +490,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Debug;
 		};
@@ -501,6 +504,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
 		};

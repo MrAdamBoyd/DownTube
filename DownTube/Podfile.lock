@@ -2,16 +2,16 @@ PODS:
   - Crashlytics (3.7.0):
     - Fabric (~> 1.6.3)
   - Fabric (1.6.7)
-  - YoutubeSourceParserKit (0.2.4)
+  - XCDYouTubeKit (2.5.2)
 
 DEPENDENCIES:
   - Crashlytics
   - Fabric
-  - YoutubeSourceParserKit
+  - XCDYouTubeKit
 
 SPEC CHECKSUMS:
   Crashlytics: c3a2333dea9e2733d2777f730910321fc9e25c0d
   Fabric: caf7580c725e64db144f610ac65cd60956911dc7
-  YoutubeSourceParserKit: d1506222a62718ed41f18ab52ebbc1b1d9ecabcc
+  XCDYouTubeKit: bb81db52d5539f8f34c4081f344980ef38f4644d
 
 COCOAPODS: 0.39.0

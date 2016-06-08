@@ -8,9 +8,9 @@
 
 import UIKit
 import CoreData
-import YoutubeSourceParserKit
 import AVKit
 import AVFoundation
+import XCDYouTubeKit
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
@@ -45,19 +45,24 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func askUserForURL(sender: AnyObject) {
         
-        let alertController = UIAlertController(title: "Download YouTube Video", message: "Video will be downloaded in 720p", preferredStyle: .Alert)
+        let alertController = UIAlertController(title: "Download YouTube Video", message: "Video will be downloaded in 720p or the highest available quality", preferredStyle: .Alert)
         
         let saveAction = UIAlertAction(title: "Ok", style: .Default) { action in
             let textField = alertController.textFields![0]
             
             if let text = textField.text {
-                self.createEntityFromVideoUrl(text)
+                if text.characters.count > 10 {
+                    self.createEntityFromVideoUrl(text)
+                } else {
+                    self.showErrorAlertControllerWithMessage("URL too short to be valid")
+                }
             }
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
         alertController.addTextFieldWithConfigurationHandler() { textField in
             textField.placeholder = "Enter YouTube video URL"
+            textField.keyboardType = .URL
         }
         
         alertController.addAction(saveAction)
@@ -83,12 +88,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         newManagedObject.created = NSDate()
         newManagedObject.youtubeUrl = url
         
-        if let youtubeUrl = NSURL(string: url) {
-            UIApplication.sharedApplication().networkActivityIndicatorVisible = true
-            Youtube.h264videosWithYoutubeURL(youtubeUrl) { videoInfo, error in
-                UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-                self.videoInfo(videoInfo, downloadedForVideoAt: url, error: error)
-            }
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+        //Gets the video id, which is the last 11 characters of the string
+        XCDYouTubeClient.defaultClient().getVideoWithIdentifier(String(url.characters.suffix(11))) { video, error in
+            UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+            self.videoObject(video, downloadedForVideoAt: url, error: error)
+            
         }
         
         // Save the context.
@@ -281,18 +286,35 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     /**
      Called when the video info for a video is downloaded
      
-     - parameter videoInfo:  optional array of video info
+     - parameter video:      optional video object that was downloaded, contains stream info, title, etc.
      - parameter youTubeUrl: youtube URL of the video
-     - parameter error:      optional erro
+     - parameter error:      optional error
      */
-    func videoInfo(videoInfo: [String: AnyObject]?, downloadedForVideoAt youTubeUrl: String, error: NSError?) {
-        if let streamUrlString = videoInfo?["url"] as? String,
-            videoTitle = videoInfo?["title"] as? String {
+    func videoObject(video: XCDYouTubeVideo?, downloadedForVideoAt youTubeUrl: String, error: NSError?) {
+        if let videoTitle = video?.title {
             print("\(videoTitle)")
-            print("\(streamUrlString)")
             
-            if let index = self.videoIndexForYouTubeUrl(youTubeUrl) {
-                self.updateInfoAndStartDownloadForVideoAt(index, withTitle: videoTitle, andStreamUrl: streamUrlString)
+            var streamUrl: String?
+            
+            if let highQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.HD720.rawValue]?.absoluteString {
+                
+                //If 720p video exists
+                streamUrl = highQualityStream
+            
+            } else if let mediumQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.Medium360.rawValue]?.absoluteString {
+            
+                //If 360p video exists
+                streamUrl = mediumQualityStream
+            
+            } else if let lowQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.Small240.rawValue]?.absoluteString {
+                
+                //If 240p video exists
+                streamUrl = lowQualityStream
+            }
+            
+            
+            if let index = self.videoIndexForYouTubeUrl(youTubeUrl), streamUrl = streamUrl {
+                self.updateInfoAndStartDownloadForVideoAt(index, withTitle: videoTitle, andStreamUrl: streamUrl)
             }
             
         } else if let error = error {
@@ -339,12 +361,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         //Show error to user, remove all unused cells from list
         dispatch_async(dispatch_get_main_queue()) {
             print("Couldn't get video: \(error)")
-            let message = error.userInfo["error"] as? String
-            let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
-            let cancelAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
-            alertController.addAction(cancelAction)
             
-            self.presentViewController(alertController, animated: true, completion: nil)
+            let message = error.userInfo["error"] as? String
+            self.showErrorAlertControllerWithMessage(message)
         }
         
         //Getting all blank videos with no downloaded data
@@ -363,6 +382,19 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             self.deleteVideoObjectAt(indexPath)
         }
 
+    }
+    
+    /**
+     Presents UIAlertController error message to user with ok button
+     
+     - parameter message: message to show
+     */
+    func showErrorAlertControllerWithMessage(message: String?) {
+        let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
+        let cancelAction = UIAlertAction(title: "Ok", style: .Cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
     }
     
     /**

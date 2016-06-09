@@ -210,12 +210,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func startDownload(video: Video) {
         print("Starting download of video \(video.title) by \(video.uploader)")
-        if let urlString = video.streamUrl, url = NSURL(string: urlString) {
+        if let urlString = video.streamUrl, url = NSURL(string: urlString), index = self.videoIndexForStreamUrl(urlString) {
             let download = Download(url: urlString)
             download.downloadTask = self.downloadsSession.downloadTaskWithURL(url)
             download.downloadTask?.resume()
             download.isDownloading = true
             self.activeDownloads[download.url] = download
+            
+            self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: index, inSection: 0)], withRowAnimation: .None)
         }
     }
     
@@ -546,18 +548,18 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
 extension MasterViewController: VideoTableViewCellDelegate {
     func pauseTapped(cell: VideoTableViewCell) {
-        if let indexPath = tableView.indexPathForCell(cell) {
+        if let indexPath = self.tableView.indexPathForCell(cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
             self.pauseDownload(video)
-            tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: indexPath.row, inSection: 0)], withRowAnimation: .None)
+            self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: indexPath.row, inSection: 0)], withRowAnimation: .None)
         }
     }
     
     func resumeTapped(cell: VideoTableViewCell) {
-        if let indexPath = tableView.indexPathForCell(cell) {
+        if let indexPath = self.tableView.indexPathForCell(cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
             self.resumeDownload(video)
-            tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: indexPath.row, inSection: 0)], withRowAnimation: .None)
+            self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: indexPath.row, inSection: 0)], withRowAnimation: .None)
         }
     }
     

@@ -32,20 +32,18 @@ class ShareViewController: UIViewController {
                             itemProvider.loadItemForTypeIdentifier(kUTTypeURL as String, options: nil, completionHandler: { (content, error) -> Void in
                                 
                                 dispatch_async(dispatch_get_main_queue()) {
-                                    guard let url = content as? NSURL else {
-                                        self.setTitleOfTextView("Invalid URL. DownTube only works with YouTube.")
+                                    if let url = content as? NSURL {
+                                        if url.absoluteString.containsString("youtube.com") || url.absoluteString.containsString("youtu.be") {
+                                            self.setTitleOfTextView("Video Added to Download Queue")
+                                            
+                                            //Passing YouTube URL
+                                            self.wormhole.passMessageObject(url.absoluteString, identifier: "youTubeUrl")
+                                            
                                         return
+                                        }
                                     }
                                     
-                                    if url.absoluteString.containsString("youtube.com") || url.absoluteString.containsString("youtu.be") {
-                                        self.setTitleOfTextView("Video Added to Download Queue")
-                                        
-                                        //Passing YouTube URL
-                                        self.wormhole.passMessageObject(url.absoluteString, identifier: "youTubeUrl")
-                                        
-                                    } else {
-                                        self.setTitleOfTextView("Invalid URL. DownTube only works with YouTube.")
-                                    }
+                                    self.setTitleOfTextView("Invalid URL. DownTube only works with YouTube.")
                                 }
                             })
                         }

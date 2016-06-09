@@ -52,7 +52,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             if let text = textField.text {
                 if text.characters.count > 10 {
-                    self.createEntityFromVideoUrl(text)
+                    self.startDownloadOfVideoInfoFor(text)
                 } else {
                     self.showErrorAlertControllerWithMessage("URL too short to be valid")
                 }
@@ -76,31 +76,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      
      - parameter url: stream URL for video
      */
-    func createEntityFromVideoUrl(url: String) {
-        //Valid URL, add cell and video
-        
-        let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
-        let entity = CoreDataController.sharedController.fetchedResultsController.fetchRequest.entity!
-        let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context) as! Video
-        
-        // If appropriate, configure the new managed object.
-        // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
-        newManagedObject.created = NSDate()
-        newManagedObject.youtubeUrl = url
-        
+    func startDownloadOfVideoInfoFor(url: String) {
         UIApplication.sharedApplication().networkActivityIndicatorVisible = true
         //Gets the video id, which is the last 11 characters of the string
         XCDYouTubeClient.defaultClient().getVideoWithIdentifier(String(url.characters.suffix(11))) { video, error in
-            UIApplication.sharedApplication().networkActivityIndicatorVisible = false
             self.videoObject(video, downloadedForVideoAt: url, error: error)
+            UIApplication.sharedApplication().networkActivityIndicatorVisible = false
             
-        }
-        
-        // Save the context.
-        do {
-            try context.save()
-        } catch {
-            abort()
         }
     }
 
@@ -313,8 +295,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
             
             
-            if let index = self.videoIndexForYouTubeUrl(youTubeUrl), streamUrl = streamUrl {
-                self.updateInfoAndStartDownloadForVideoAt(index, withTitle: videoTitle, andStreamUrl: streamUrl)
+            if let video = video, streamUrl = streamUrl {
+                self.createObjectInCoreDataAndStartDownloadFor(video, withStreamUrl: streamUrl, andYouTubeUrl: youTubeUrl)
                 
                 return
             }
@@ -322,42 +304,44 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         
         //Show error to user and remove all errored out videos
-        self.showErrorAndRemoveErrorVideo(error)
+        self.showErrorAndRemoveErroredVideos(error)
     }
     
+    
     /**
-     Updates the info for the video and starts the download of that video
+     Creates new video object in core data, saves the information for that video, and starts the download of the video stream
      
-     - parameter index:     index of the video
-     - parameter title:     title of the video
-     - parameter streamUrl: streaming URL for the video
+     - parameter video:      video object
+     - parameter streamUrl:  streaming URL for the video
+     - parameter youTubeUrl: youtube URL for the video (youtube.com/watch?=v...)
      */
-    func updateInfoAndStartDownloadForVideoAt(index: Int, withTitle title: String, andStreamUrl streamUrl: String) {
-        let indexPath = NSIndexPath(forRow: index, inSection: 0)
-        
+    func createObjectInCoreDataAndStartDownloadFor(video: XCDYouTubeVideo?, withStreamUrl streamUrl: String, andYouTubeUrl youTubeUrl: String) {
         let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
-        let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
+        let entity = CoreDataController.sharedController.fetchedResultsController.fetchRequest.entity!
+        let newVideo = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context) as! Video
         
-        video.title = title
-        video.streamUrl = streamUrl
-        
-        self.startDownload(video)
-        
-        self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: index, inSection: 0)], withRowAnimation: .None)
+        newVideo.created = NSDate()
+        newVideo.youtubeUrl = youTubeUrl
+        newVideo.title = video?.title
+        newVideo.streamUrl = streamUrl
         
         do {
             try context.save()
         } catch {
             abort()
         }
+        
+        //Starts the download of the video
+        self.startDownload(newVideo)
     }
+    
     
     /**
      Shows error to user in UIAlertController and then removes all errored out videos from core data
      
      - parameter error: error from getting the video info
      */
-    func showErrorAndRemoveErrorVideo(error: NSError?) {
+    func showErrorAndRemoveErroredVideos(error: NSError?) {
         //Show error to user, remove all unused cells from list
         dispatch_async(dispatch_get_main_queue()) {
             print("Couldn't get video: \(error)")

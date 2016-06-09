@@ -7,6 +7,11 @@ target 'DownTube' do
   pod 'XCDYouTubeKit'
   pod 'Fabric'
   pod 'Crashlytics'
+  pod 'MMWormhole'
+end
+
+target 'DownTubeShareExtension' do
+  pod 'MMWormhole'
 end
 
 target 'DownTubeUITests' do

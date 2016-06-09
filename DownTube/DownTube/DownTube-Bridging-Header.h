@@ -10,5 +10,6 @@
 #define DownTube_Bridging_Header_h
 
 #import "XCDYouTubeKit/XCDYouTubeKit.h"
+#import "MMWormhole/MMWormhole.h"
 
 #endif /* DownTube_Bridging_Header_h */

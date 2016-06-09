@@ -84,10 +84,8 @@ strip_invalid_archs() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework "Pods-DownTube/MMWormhole.framework"
-  install_framework "Pods-DownTube/XCDYouTubeKit.framework"
+  install_framework "Pods-DownTubeShareExtension/MMWormhole.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework "Pods-DownTube/MMWormhole.framework"
-  install_framework "Pods-DownTube/XCDYouTubeKit.framework"
+  install_framework "Pods-DownTubeShareExtension/MMWormhole.framework"
 fi

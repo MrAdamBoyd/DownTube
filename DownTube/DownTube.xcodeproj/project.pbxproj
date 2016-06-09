@@ -14,15 +14,27 @@
 		66424C641D0535BB004C75B6 /* Video+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C631D0535BB004C75B6 /* Video+CoreDataProperties.swift */; };
 		66424C661D0535C1004C75B6 /* VideoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C651D0535C1004C75B6 /* VideoTableViewCell.swift */; };
 		66424C681D053684004C75B6 /* Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C671D053684004C75B6 /* Download.swift */; };
+		664C9C841D091F3C00B4D413 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69BC1CFD2AE3004FEFF7 /* Assets.xcassets */; };
+		6698ABCB1D0910AF00985368 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698ABCA1D0910AF00985368 /* ShareViewController.swift */; };
+		6698ABCE1D0910AF00985368 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6698ABCC1D0910AF00985368 /* MainInterface.storyboard */; };
+		6698ABD21D0910AF00985368 /* DownTubeShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 6698ABC81D0910AF00985368 /* DownTubeShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		66BF69B11CFD2AE3004FEFF7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69B01CFD2AE3004FEFF7 /* AppDelegate.swift */; };
 		66BF69B41CFD2AE3004FEFF7 /* DownTube.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69B21CFD2AE3004FEFF7 /* DownTube.xcdatamodeld */; };
 		66BF69BB1CFD2AE3004FEFF7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69B91CFD2AE3004FEFF7 /* Main.storyboard */; };
 		66BF69BD1CFD2AE3004FEFF7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69BC1CFD2AE3004FEFF7 /* Assets.xcassets */; };
 		66BF69C01CFD2AE3004FEFF7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69BE1CFD2AE3004FEFF7 /* LaunchScreen.storyboard */; };
 		66BF69CB1CFD2AE3004FEFF7 /* DownTubeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69CA1CFD2AE3004FEFF7 /* DownTubeUITests.swift */; };
+		739720C2C42941DC2135B036 /* Pods_DownTubeShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7089BB0158F82871B2AA93DF /* Pods_DownTubeShareExtension.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		6698ABD01D0910AF00985368 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66BF69A51CFD2AE3004FEFF7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6698ABC71D0910AF00985368;
+			remoteInfo = DownTubeShareExtension;
+		};
 		66BF69C71CFD2AE3004FEFF7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 66BF69A51CFD2AE3004FEFF7 /* Project object */;
@@ -32,7 +44,22 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		6698ABD61D0910B000985368 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				6698ABD21D0910AF00985368 /* DownTubeShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		2A16F11C5EDC16CC8FD72251 /* Pods-DownTubeShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTubeShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DownTubeShareExtension/Pods-DownTubeShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		2DB92BA1E38FAE17091FC36C /* Pods-DownTube.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTube.release.xcconfig"; path = "Pods/Target Support Files/Pods-DownTube/Pods-DownTube.release.xcconfig"; sourceTree = "<group>"; };
 		66424C5D1D05357F004C75B6 /* MasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MasterViewController.swift; path = Controllers/MasterViewController.swift; sourceTree = "<group>"; };
 		66424C5F1D053591004C75B6 /* CoreDataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataController.swift; path = Controllers/CoreDataController.swift; sourceTree = "<group>"; };
@@ -40,6 +67,12 @@
 		66424C631D0535BB004C75B6 /* Video+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Video+CoreDataProperties.swift"; path = "Models/Video+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		66424C651D0535C1004C75B6 /* VideoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoTableViewCell.swift; path = Views/VideoTableViewCell.swift; sourceTree = "<group>"; };
 		66424C671D053684004C75B6 /* Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Download.swift; path = Models/Download.swift; sourceTree = "<group>"; };
+		664C9C831D09170900B4D413 /* DownTube.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = DownTube.entitlements; sourceTree = "<group>"; };
+		6698ABC81D0910AF00985368 /* DownTubeShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DownTubeShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		6698ABCA1D0910AF00985368 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		6698ABCD1D0910AF00985368 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		6698ABCF1D0910AF00985368 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6698ABD71D09168E00985368 /* DownTubeShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = DownTubeShareExtension.entitlements; sourceTree = "<group>"; };
 		66BF69AD1CFD2AE3004FEFF7 /* DownTube.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DownTube.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66BF69B01CFD2AE3004FEFF7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		66BF69B31CFD2AE3004FEFF7 /* DownTube.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DownTube.xcdatamodel; sourceTree = "<group>"; };
@@ -51,11 +84,21 @@
 		66BF69CA1CFD2AE3004FEFF7 /* DownTubeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownTubeUITests.swift; sourceTree = "<group>"; };
 		66BF69CC1CFD2AE3004FEFF7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		66E125561D07C19A008C8D39 /* DownTube-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DownTube-Bridging-Header.h"; sourceTree = "<group>"; };
+		7089BB0158F82871B2AA93DF /* Pods_DownTubeShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DownTubeShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80101283AD4B8ED02D6C6C0E /* Pods-DownTubeShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTubeShareExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-DownTubeShareExtension/Pods-DownTubeShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		8513753E4FDB75045216F0B1 /* Pods-DownTube.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTube.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DownTube/Pods-DownTube.debug.xcconfig"; sourceTree = "<group>"; };
 		8B155E499B6CE46F27A8B338 /* Pods_DownTube.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DownTube.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		6698ABC51D0910AF00985368 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				739720C2C42941DC2135B036 /* Pods_DownTubeShareExtension.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66BF69AA1CFD2AE3004FEFF7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -101,11 +144,23 @@
 			name = Models;
 			sourceTree = "<group>";
 		};
+		6698ABC91D0910AF00985368 /* DownTubeShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				6698ABD71D09168E00985368 /* DownTubeShareExtension.entitlements */,
+				6698ABCA1D0910AF00985368 /* ShareViewController.swift */,
+				6698ABCC1D0910AF00985368 /* MainInterface.storyboard */,
+				6698ABCF1D0910AF00985368 /* Info.plist */,
+			);
+			path = DownTubeShareExtension;
+			sourceTree = "<group>";
+		};
 		66BF69A41CFD2AE3004FEFF7 = {
 			isa = PBXGroup;
 			children = (
 				66BF69AF1CFD2AE3004FEFF7 /* DownTube */,
 				66BF69C91CFD2AE3004FEFF7 /* DownTubeUITests */,
+				6698ABC91D0910AF00985368 /* DownTubeShareExtension */,
 				66BF69AE1CFD2AE3004FEFF7 /* Products */,
 				B2B40F74B06889CE621FE55A /* Pods */,
 				CA28CCD764DF0CA0D1B8BB88 /* Frameworks */,
@@ -117,6 +172,7 @@
 			children = (
 				66BF69AD1CFD2AE3004FEFF7 /* DownTube.app */,
 				66BF69C61CFD2AE3004FEFF7 /* DownTubeUITests.xctest */,
+				6698ABC81D0910AF00985368 /* DownTubeShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -124,6 +180,7 @@
 		66BF69AF1CFD2AE3004FEFF7 /* DownTube */ = {
 			isa = PBXGroup;
 			children = (
+				664C9C831D09170900B4D413 /* DownTube.entitlements */,
 				66BF69B01CFD2AE3004FEFF7 /* AppDelegate.swift */,
 				66E125561D07C19A008C8D39 /* DownTube-Bridging-Header.h */,
 				66424C5A1D053556004C75B6 /* Controllers */,
@@ -152,6 +209,8 @@
 			children = (
 				8513753E4FDB75045216F0B1 /* Pods-DownTube.debug.xcconfig */,
 				2DB92BA1E38FAE17091FC36C /* Pods-DownTube.release.xcconfig */,
+				2A16F11C5EDC16CC8FD72251 /* Pods-DownTubeShareExtension.debug.xcconfig */,
+				80101283AD4B8ED02D6C6C0E /* Pods-DownTubeShareExtension.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -160,6 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				8B155E499B6CE46F27A8B338 /* Pods_DownTube.framework */,
+				7089BB0158F82871B2AA93DF /* Pods_DownTubeShareExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -167,6 +227,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		6698ABC71D0910AF00985368 /* DownTubeShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6698ABD51D0910B000985368 /* Build configuration list for PBXNativeTarget "DownTubeShareExtension" */;
+			buildPhases = (
+				EE1A5E22ECE9148B8F785A26 /* Check Pods Manifest.lock */,
+				6698ABC41D0910AF00985368 /* Sources */,
+				6698ABC51D0910AF00985368 /* Frameworks */,
+				6698ABC61D0910AF00985368 /* Resources */,
+				70853D895CAD71284E0CFA32 /* Embed Pods Frameworks */,
+				FDF3EB6320E0635241083782 /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DownTubeShareExtension;
+			productName = DownTubeShareExtension;
+			productReference = 6698ABC81D0910AF00985368 /* DownTubeShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		66BF69AC1CFD2AE3004FEFF7 /* DownTube */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66BF69CF1CFD2AE3004FEFF7 /* Build configuration list for PBXNativeTarget "DownTube" */;
@@ -179,10 +259,12 @@
 				0B65F3FF512142F1F0D5A791 /* Copy Pods Resources */,
 				660FDD8B1D0663C30015763F /* ShellScript */,
 				660FDD8C1D06648C0015763F /* ShellScript */,
+				6698ABD61D0910B000985368 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				6698ABD11D0910AF00985368 /* PBXTargetDependency */,
 			);
 			name = DownTube;
 			productName = DownTube;
@@ -217,9 +299,26 @@
 				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = Adam;
 				TargetAttributes = {
+					6698ABC71D0910AF00985368 = {
+						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = 6GHQ7P7EHA;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
 					66BF69AC1CFD2AE3004FEFF7 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 6GHQ7P7EHA;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.SafariKeychain = {
+								enabled = 0;
+							};
+						};
 					};
 					66BF69C51CFD2AE3004FEFF7 = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -242,11 +341,21 @@
 			targets = (
 				66BF69AC1CFD2AE3004FEFF7 /* DownTube */,
 				66BF69C51CFD2AE3004FEFF7 /* DownTubeUITests */,
+				6698ABC71D0910AF00985368 /* DownTubeShareExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		6698ABC61D0910AF00985368 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				664C9C841D091F3C00B4D413 /* Assets.xcassets in Resources */,
+				6698ABCE1D0910AF00985368 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66BF69AB1CFD2AE3004FEFF7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -323,6 +432,21 @@
 			shellPath = /bin/sh;
 			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
 		};
+		70853D895CAD71284E0CFA32 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DownTubeShareExtension/Pods-DownTubeShareExtension-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		8B4AA6E3BA885B25C50B8D21 /* Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -338,9 +462,47 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DownTube/Pods-DownTube-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		EE1A5E22ECE9148B8F785A26 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		FDF3EB6320E0635241083782 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DownTubeShareExtension/Pods-DownTubeShareExtension-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		6698ABC41D0910AF00985368 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6698ABCB1D0910AF00985368 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66BF69A91CFD2AE3004FEFF7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -367,6 +529,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		6698ABD11D0910AF00985368 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6698ABC71D0910AF00985368 /* DownTubeShareExtension */;
+			targetProxy = 6698ABD01D0910AF00985368 /* PBXContainerItemProxy */;
+		};
 		66BF69C81CFD2AE3004FEFF7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 66BF69AC1CFD2AE3004FEFF7 /* DownTube */;
@@ -375,6 +542,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		6698ABCC1D0910AF00985368 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6698ABCD1D0910AF00985368 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
 		66BF69B91CFD2AE3004FEFF7 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -394,6 +569,36 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		6698ABD31D0910B000985368 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A16F11C5EDC16CC8FD72251 /* Pods-DownTubeShareExtension.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DownTubeShareExtension/DownTubeShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = DownTubeShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube.DownTubeShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		6698ABD41D0910B000985368 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 80101283AD4B8ED02D6C6C0E /* Pods-DownTubeShareExtension.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DownTubeShareExtension/DownTubeShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = DownTubeShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube.DownTubeShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		66BF69CD1CFD2AE3004FEFF7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -484,8 +689,10 @@
 			baseConfigurationReference = 8513753E4FDB75045216F0B1 /* Pods-DownTube.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DownTube/DownTube.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = DownTube/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube;
@@ -499,7 +706,9 @@
 			baseConfigurationReference = 2DB92BA1E38FAE17091FC36C /* Pods-DownTube.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DownTube/DownTube.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = DownTube/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube;
@@ -534,6 +743,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		6698ABD51D0910B000985368 /* Build configuration list for PBXNativeTarget "DownTubeShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6698ABD31D0910B000985368 /* Debug */,
+				6698ABD41D0910B000985368 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		66BF69A81CFD2AE3004FEFF7 /* Build configuration list for PBXProject "DownTube" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -11,6 +11,7 @@ import CoreData
 import AVKit
 import AVFoundation
 import XCDYouTubeKit
+import MMWormhole
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
@@ -18,6 +19,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
     var dataTask: NSURLSessionDataTask?
     var activeDownloads: [String: Download] = [:]
+    
+    let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
     
     lazy var downloadsSession: NSURLSession = {
         let configuration = NSURLSessionConfiguration.backgroundSessionConfigurationWithIdentifier("bgSessionConfiguration")
@@ -36,6 +39,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         CoreDataController.sharedController.fetchedResultsController.delegate = self
         
         _ = self.downloadsSession //Initializes the background NSURLSession
+        
+        //Wormhole between extension and app
+        self.wormhole.listenForMessageWithIdentifier("youTubeUrl") { messageObject in
+            if let message = messageObject as? String {
+                self.startDownloadOfVideoInfoFor(message)
+            }
+        }
     }
 
     /**

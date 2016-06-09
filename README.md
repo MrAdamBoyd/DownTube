@@ -22,6 +22,7 @@ My website is [adamjboyd.com](http://www.adamjboyd.com).
 
 ## Changelog
 1.0: Initial Release
+1.1: Share extension
 
 ## Contributing
 I'll take all the help I can get! Submit an issue or a pull request and I'll try to get it sorted as soon as I can :)

@@ -24,6 +24,8 @@
 		66BF69BD1CFD2AE3004FEFF7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69BC1CFD2AE3004FEFF7 /* Assets.xcassets */; };
 		66BF69C01CFD2AE3004FEFF7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69BE1CFD2AE3004FEFF7 /* LaunchScreen.storyboard */; };
 		66BF69CB1CFD2AE3004FEFF7 /* DownTubeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69CA1CFD2AE3004FEFF7 /* DownTubeUITests.swift */; };
+		66C47BB41D10F299004108D9 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C47BB31D10F299004108D9 /* Constants.swift */; };
+		66C47BB51D10F299004108D9 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C47BB31D10F299004108D9 /* Constants.swift */; };
 		739720C2C42941DC2135B036 /* Pods_DownTubeShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7089BB0158F82871B2AA93DF /* Pods_DownTubeShareExtension.framework */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +85,7 @@
 		66BF69C61CFD2AE3004FEFF7 /* DownTubeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DownTubeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		66BF69CA1CFD2AE3004FEFF7 /* DownTubeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownTubeUITests.swift; sourceTree = "<group>"; };
 		66BF69CC1CFD2AE3004FEFF7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		66C47BB31D10F299004108D9 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = Shared/Constants.swift; sourceTree = "<group>"; };
 		66E125561D07C19A008C8D39 /* DownTube-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DownTube-Bridging-Header.h"; sourceTree = "<group>"; };
 		7089BB0158F82871B2AA93DF /* Pods_DownTubeShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DownTubeShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		80101283AD4B8ED02D6C6C0E /* Pods-DownTubeShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTubeShareExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-DownTubeShareExtension/Pods-DownTubeShareExtension.release.xcconfig"; sourceTree = "<group>"; };
@@ -158,6 +161,7 @@
 		66BF69A41CFD2AE3004FEFF7 = {
 			isa = PBXGroup;
 			children = (
+				66C47BB61D10F2A6004108D9 /* Shared */,
 				66BF69AF1CFD2AE3004FEFF7 /* DownTube */,
 				66BF69C91CFD2AE3004FEFF7 /* DownTubeUITests */,
 				6698ABC91D0910AF00985368 /* DownTubeShareExtension */,
@@ -202,6 +206,14 @@
 				66BF69CC1CFD2AE3004FEFF7 /* Info.plist */,
 			);
 			path = DownTubeUITests;
+			sourceTree = "<group>";
+		};
+		66C47BB61D10F2A6004108D9 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				66C47BB31D10F299004108D9 /* Constants.swift */,
+			);
+			name = Shared;
 			sourceTree = "<group>";
 		};
 		B2B40F74B06889CE621FE55A /* Pods */ = {
@@ -500,6 +512,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6698ABCB1D0910AF00985368 /* ShareViewController.swift in Sources */,
+				66C47BB51D10F299004108D9 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,6 +528,7 @@
 				66BF69B41CFD2AE3004FEFF7 /* DownTube.xcdatamodeld in Sources */,
 				66424C621D0535B5004C75B6 /* Video.swift in Sources */,
 				66424C641D0535BB004C75B6 /* Video+CoreDataProperties.swift in Sources */,
+				66C47BB41D10F299004108D9 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -577,6 +591,7 @@
 				CODE_SIGN_ENTITLEMENTS = DownTubeShareExtension/DownTubeShareExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = DownTubeShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube.DownTubeShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -592,6 +607,7 @@
 				CODE_SIGN_ENTITLEMENTS = DownTubeShareExtension/DownTubeShareExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = DownTubeShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube.DownTubeShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -694,6 +710,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = DownTube/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -710,6 +727,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = DownTube/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube;
 				PRODUCT_NAME = "$(TARGET_NAME)";

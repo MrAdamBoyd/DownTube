@@ -36,6 +36,12 @@ class ShareViewController: UIViewController {
                                         if url.absoluteString.containsString("youtube.com") || url.absoluteString.containsString("youtu.be") {
                                             self.setTitleOfTextView("Video Added to Download Queue")
                                             
+                                            //Just in case the app isn't running in the background, write the URL to the shared NSUserDefaults
+                                            var existingItems = Constants.sharedDefaults.valueForKey(Constants.videosToAdd) as! [String]
+                                            existingItems.append(url.absoluteString)
+                                            Constants.sharedDefaults.setObject(existingItems, forKey: Constants.videosToAdd)
+                                            Constants.sharedDefaults.synchronize()
+                                            
                                             //Passing YouTube URL
                                             self.wormhole.passMessageObject(url.absoluteString, identifier: "youTubeUrl")
                                             

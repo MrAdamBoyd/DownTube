@@ -40,11 +40,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         _ = self.downloadsSession //Initializes the background NSURLSession
         
+        self.setUpSharedVideoListIfNeeded()
+        
+        self.addVideosFromSharedArray()
+        
         //Wormhole between extension and app
         self.wormhole.listenForMessageWithIdentifier("youTubeUrl") { messageObject in
-            if let message = messageObject as? String {
-                self.startDownloadOfVideoInfoFor(message)
-            }
+            self.messageWasReceivedFromExtension(messageObject)
         }
     }
 
@@ -199,6 +201,58 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
         self.tableView.endUpdates()
+    }
+    
+    //MARK: - Extension helper methods
+    
+    /**
+     Initializes an empty of video URLs to add when the app opens in NSUserDefaults
+     */
+    func setUpSharedVideoListIfNeeded() {
+        
+        //If the array already exists, don't do anything
+        if Constants.sharedDefaults.objectForKey(Constants.videosToAdd) != nil {
+            return
+        }
+        
+        let emptyArray: [String] = []
+        Constants.sharedDefaults.setObject(emptyArray, forKey: Constants.videosToAdd)
+        Constants.sharedDefaults.synchronize()
+    }
+    
+    /**
+     Starts the video info download for all videos stored in the shared array of youtube URLs. Clears the list when done
+     */
+    func addVideosFromSharedArray() {
+        
+        if let array = Constants.sharedDefaults.objectForKey(Constants.videosToAdd) as? [String] {
+            for youTubeUrl in array {
+                self.startDownloadOfVideoInfoFor(youTubeUrl)
+            }
+        }
+        
+        //Deleting all videos
+        let emptyArray: [String] = []
+        Constants.sharedDefaults.setObject(emptyArray, forKey: Constants.videosToAdd)
+        Constants.sharedDefaults.synchronize()
+    }
+    
+    /**
+     Called when a message was received from the app extension. Should contain YouTube URL
+     
+     - parameter message: message sent from the share extension
+     */
+    func messageWasReceivedFromExtension(message: AnyObject?) {
+        if let message = message as? String {
+            
+            //Remove the item at the end of the list from the list of items to add when the app opens
+            var existingItems = Constants.sharedDefaults.objectForKey(Constants.videosToAdd) as! [String]
+            existingItems.removeLast()
+            Constants.sharedDefaults.setObject(existingItems, forKey: Constants.videosToAdd)
+            Constants.sharedDefaults.synchronize()
+            
+            self.startDownloadOfVideoInfoFor(message)
+        }
     }
     
     //MARK: - Downloading methods

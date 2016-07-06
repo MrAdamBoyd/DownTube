@@ -26,6 +26,7 @@
 		66C47BB41D10F299004108D9 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C47BB31D10F299004108D9 /* Constants.swift */; };
 		66C47BB51D10F299004108D9 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C47BB31D10F299004108D9 /* Constants.swift */; };
 		66EAF6871D2C84A1003D4BA8 /* Video+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EAF6861D2C84A1003D4BA8 /* Video+CoreDataProperties.swift */; };
+		66EAF6891D2CAE18003D4BA8 /* AppInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EAF6881D2CAE18003D4BA8 /* AppInfoViewController.swift */; };
 		6CB434BE552F0D838383B25C /* Pods_DownTube.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03C26A75B9C4CEDE05FE3C95 /* Pods_DownTube.framework */; };
 		EC8D68D96EDDA84662915FD5 /* Pods_DownTubeShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3E0C1B3AB6C1DE6D9799AAE /* Pods_DownTubeShareExtension.framework */; };
 /* End PBXBuildFile section */
@@ -93,6 +94,7 @@
 		66E125561D07C19A008C8D39 /* DownTube-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DownTube-Bridging-Header.h"; sourceTree = "<group>"; };
 		66EAF6851D2C841B003D4BA8 /* DownTube 1.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DownTube 1.2.xcdatamodel"; sourceTree = "<group>"; };
 		66EAF6861D2C84A1003D4BA8 /* Video+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Video+CoreDataProperties.swift"; path = "Models/Video+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		66EAF6881D2CAE18003D4BA8 /* AppInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppInfoViewController.swift; path = Controllers/AppInfoViewController.swift; sourceTree = "<group>"; };
 		75D529D50AF50393114AA8CE /* Pods-DownTubeUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTubeUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-DownTubeUITests/Pods-DownTubeUITests.release.xcconfig"; sourceTree = "<group>"; };
 		8003CD17CF70EF7532AF8F95 /* Pods-DownTube.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTube.release.xcconfig"; path = "Pods/Target Support Files/Pods-DownTube/Pods-DownTube.release.xcconfig"; sourceTree = "<group>"; };
 		B3E0C1B3AB6C1DE6D9799AAE /* Pods_DownTubeShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DownTubeShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -140,6 +142,7 @@
 			isa = PBXGroup;
 			children = (
 				66424C5D1D05357F004C75B6 /* MasterViewController.swift */,
+				66EAF6881D2CAE18003D4BA8 /* AppInfoViewController.swift */,
 				66424C5F1D053591004C75B6 /* CoreDataController.swift */,
 			);
 			name = Controllers;
@@ -561,6 +564,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66EAF6891D2CAE18003D4BA8 /* AppInfoViewController.swift in Sources */,
 				66424C5E1D05357F004C75B6 /* MasterViewController.swift in Sources */,
 				66424C681D053684004C75B6 /* Download.swift in Sources */,
 				66424C661D0535C1004C75B6 /* VideoTableViewCell.swift in Sources */,

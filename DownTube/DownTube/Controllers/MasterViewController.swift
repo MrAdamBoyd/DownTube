@@ -33,8 +33,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         // Do any additional setup after loading the view, typically from a nib.
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
 
-        let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(self.askUserForURL(_:)))
-        self.navigationItem.rightBarButtonItem = addButton
+        let infoButton = UIBarButtonItem(title: "About", style: .Plain, target: self, action: #selector(self.showAppInfo(_:)))
+        self.navigationItem.rightBarButtonItem = infoButton
         
         CoreDataController.sharedController.fetchedResultsController.delegate = self
         
@@ -49,13 +49,22 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             self.messageWasReceivedFromExtension(messageObject)
         }
     }
+    
+    /**
+     Shows the "About this App" view controller
+     
+     - parameter sender: button that sent the action
+     */
+    func showAppInfo(sender: AnyObject) {
+        self.performSegueWithIdentifier("ShowAppInfo", sender: self)
+    }
 
     /**
      Presents a UIAlertController that gets youtube video URL from user
      
      - parameter sender: button
      */
-    func askUserForURL(sender: AnyObject) {
+    @IBAction func askUserForURL(sender: AnyObject) {
         
         let alertController = UIAlertController(title: "Download YouTube Video", message: "Video will be downloaded in 720p or the highest available quality", preferredStyle: .Alert)
         

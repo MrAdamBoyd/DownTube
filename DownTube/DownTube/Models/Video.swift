@@ -9,4 +9,23 @@
 import Foundation
 import CoreData
 
-class Video: NSManagedObject { }
+enum WatchState {
+    case Unwatched, PartiallyWatched, Watched
+}
+
+class Video: NSManagedObject {
+    
+    //Returns the watched state for the video
+    var stateForVideoProgress: WatchState {
+        
+        if self.userProgress == nil {
+            return .Watched
+        } else if self.userProgress == 0 {
+            return .Unwatched
+        } else {
+            return .PartiallyWatched
+        }
+        
+    }
+    
+}

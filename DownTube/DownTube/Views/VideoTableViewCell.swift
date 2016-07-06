@@ -25,6 +25,39 @@ class VideoTableViewCell: UITableViewCell {
     @IBOutlet weak var progressLabel: UILabel!
     @IBOutlet weak var pauseButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var watchedIndicator: UIView!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        self.watchedIndicator.layer.cornerRadius = 8
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        self.setWatchIndicatorState(.Unwatched)
+    }
+    
+    /**
+     Sets the watched indicator state
+     
+     - parameter state: state of the video
+     */
+    func setWatchIndicatorState(state: WatchState) {
+        let maskLayer = CALayer()
+        maskLayer.backgroundColor = UIColor.blackColor().CGColor
+        switch state {
+        case .Unwatched:
+            maskLayer.frame = CGRect(x: 0, y: 0, width: 16, height: 16)
+        case .PartiallyWatched:
+            maskLayer.frame = CGRect(x: 0, y: 0, width: 8, height: 16)
+        case .Watched:
+            maskLayer.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+        }
+        
+        self.watchedIndicator.layer.mask = maskLayer
+    }
     
     @IBAction func pauseOrResumeTapped(sender: AnyObject) {
         if self.pauseButton.titleLabel!.text == "Pause" {

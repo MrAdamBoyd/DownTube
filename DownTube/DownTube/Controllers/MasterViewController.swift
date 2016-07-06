@@ -120,6 +120,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         holdGestureRecognizer.minimumPressDuration = 1
         cell.addGestureRecognizer(holdGestureRecognizer)
         
+        cell.setWatchIndicatorState(video.stateForVideoProgress)
+        
         //Only show the download controls if video is currently downloading
         var showDownloadControls = false
         if let streamUrl = video.streamUrl, download = self.activeDownloads[streamUrl] {
@@ -146,7 +148,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
         if self.localFileExistsFor(video) {
-            self.playDownload(video)
+            self.playDownload(video, atIndexPath: indexPath)
         }
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
     }
@@ -588,9 +590,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     /**
      Plays video in fullscreen player
      
-     - parameter video: video that is going to be played
+     - parameter video:     video that is going to be played
+     - parameter indexPath: index path of the video
      */
-    func playDownload(video: Video) {
+    func playDownload(video: Video, atIndexPath indexPath: NSIndexPath) {
         if let urlString = video.streamUrl, url = self.localFilePathForUrl(urlString) {
             let player = AVPlayer(URL: url)
             
@@ -601,7 +604,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             let playerViewController = AVPlayerViewController()
             video.userProgress = 0
-            player.addPeriodicTimeObserverForInterval(CMTime(seconds: 10, preferredTimescale: 1), queue: dispatch_get_main_queue()) { time in
+            player.addPeriodicTimeObserverForInterval(CMTime(seconds: 10, preferredTimescale: 1), queue: dispatch_get_main_queue()) { [weak self] time in
                 
                 //Every 5 seconds, update the progress of the video in core data
                 let intTime = Int(CMTimeGetSeconds(time))
@@ -618,6 +621,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 }
                 
                 CoreDataController.sharedController.saveContext()
+                self?.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
                 
             }
             playerViewController.player = player
@@ -637,24 +641,29 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if gestureRecognizer.state == .Ended {
             
             let point = gestureRecognizer.locationInView(self.tableView)
-            let indexPath = self.tableView.indexPathForRowAtPoint(point)
-            let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath!) as! Video
+            guard let indexPath = self.tableView.indexPathForRowAtPoint(point) else {
+                return
+            }
+            
+            let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
             
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
             
             //If the user progress isn't nil, that means that the video is unwatched or partially watched
             if video.userProgress != nil {
-                alertController.addAction(UIAlertAction(title: "Mark as Watched", style: .Default) { _ in
+                alertController.addAction(UIAlertAction(title: "Mark as Watched", style: .Default) { [weak self] _ in
                     video.userProgress = nil
                     CoreDataController.sharedController.saveContext()
+                    self?.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
                 })
             }
             
             //If the user progress isn't 0, the video is either partially watched or done
             if video.userProgress != 0 {
-                alertController.addAction(UIAlertAction(title: "Mark as Unwatched", style: .Default) { _ in
+                alertController.addAction(UIAlertAction(title: "Mark as Unwatched", style: .Default) { [weak self] _ in
                     video.userProgress = 0
                     CoreDataController.sharedController.saveContext()
+                    self?.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
                 })
             }
             

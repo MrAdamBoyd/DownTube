@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="RMx-3f-FxP">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="16A201w" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="RMx-3f-FxP">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -13,7 +12,7 @@
                     <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" barStyle="black" translucent="NO" id="Pmd-2v-anx">
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="barTintColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <color key="barTintColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="calibratedRGB"/>
                     </navigationBar>
                     <connections>
                         <segue destination="7bK-jq-Zjz" kind="relationship" relationship="rootViewController" id="tsl-Nk-0bq"/>
@@ -30,9 +29,9 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="62" sectionHeaderHeight="22" sectionFooterHeight="22" id="r7i-6Z-zg0">
                         <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
-                        <color key="sectionIndexBackgroundColor" cocoaTouchSystemColor="darkTextColor"/>
-                        <color key="sectionIndexTrackingBackgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="sectionIndexBackgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="sectionIndexTrackingBackgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="gray" indentationWidth="10" reuseIdentifier="VideoTableViewCell" rowHeight="62" id="dDJ-iN-7C4" customClass="VideoTableViewCell" customModule="DownTube" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="22" width="600" height="62"/>
@@ -42,13 +41,13 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Downloaded on" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sz3-i9-8IS">
-                                            <rect key="frame" x="14" y="29" width="476" height="17"/>
+                                            <rect key="frame" x="39" y="29" width="451" height="17"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Video Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nne-aZ-0kL">
-                                            <rect key="frame" x="14" y="8" width="476" height="20"/>
+                                            <rect key="frame" x="39" y="8" width="451" height="20"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
@@ -84,28 +83,38 @@
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mYD-lc-glF">
+                                            <rect key="frame" x="13" y="23" width="16" height="16"/>
+                                            <color key="backgroundColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="calibratedRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="16" id="3uW-IW-6X6"/>
+                                                <constraint firstAttribute="height" constant="16" id="M4v-sE-TaC"/>
+                                            </constraints>
+                                        </view>
                                     </subviews>
                                     <color key="tintColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="l6O-b9-c8r" secondAttribute="trailing" constant="8" id="0Du-6Y-6GL"/>
+                                        <constraint firstItem="Nne-aZ-0kL" firstAttribute="leading" secondItem="mYD-lc-glF" secondAttribute="trailing" constant="10" id="0NZ-EK-DU8"/>
                                         <constraint firstItem="l6O-b9-c8r" firstAttribute="top" secondItem="YKm-zx-e49" secondAttribute="topMargin" constant="1" id="2tE-IM-chO"/>
                                         <constraint firstItem="vXT-wa-cEb" firstAttribute="top" secondItem="sz3-i9-8IS" secondAttribute="bottom" constant="6" id="3Uc-f7-bCw"/>
                                         <constraint firstAttribute="trailing" secondItem="GRk-Kd-C1b" secondAttribute="trailing" constant="9" id="49s-Fj-r4j"/>
                                         <constraint firstItem="Nne-aZ-0kL" firstAttribute="top" secondItem="YKm-zx-e49" secondAttribute="top" constant="8" id="6Sh-bF-Vwh"/>
                                         <constraint firstItem="Wie-aO-Z5T" firstAttribute="top" secondItem="YKm-zx-e49" secondAttribute="topMargin" constant="1" id="9U8-1Y-GHK"/>
+                                        <constraint firstItem="mYD-lc-glF" firstAttribute="leading" secondItem="YKm-zx-e49" secondAttribute="leadingMargin" constant="5" id="BBE-NY-LU5"/>
                                         <constraint firstItem="vXT-wa-cEb" firstAttribute="centerY" secondItem="GRk-Kd-C1b" secondAttribute="centerY" constant="2" id="EgF-or-UJ4"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="sz3-i9-8IS" secondAttribute="trailing" constant="102" id="Fpa-tj-3AG"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="Nne-aZ-0kL" secondAttribute="trailing" constant="102" id="MNr-Oh-wUa"/>
                                         <constraint firstItem="sz3-i9-8IS" firstAttribute="top" secondItem="Nne-aZ-0kL" secondAttribute="bottom" constant="1" id="UAN-lG-LEH"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="vXT-wa-cEb" secondAttribute="trailing" constant="102" id="Xvp-tU-SPJ"/>
                                         <constraint firstItem="vXT-wa-cEb" firstAttribute="leading" secondItem="YKm-zx-e49" secondAttribute="leading" constant="14" id="bnf-bn-CiI"/>
-                                        <constraint firstItem="sz3-i9-8IS" firstAttribute="leading" secondItem="YKm-zx-e49" secondAttribute="leading" constant="14" id="e56-NB-7iO"/>
                                         <constraint firstItem="l6O-b9-c8r" firstAttribute="leading" secondItem="Wie-aO-Z5T" secondAttribute="trailing" constant="8" id="iEC-tX-7XC"/>
+                                        <constraint firstItem="mYD-lc-glF" firstAttribute="centerY" secondItem="YKm-zx-e49" secondAttribute="centerY" id="ldr-7A-bGs"/>
                                         <constraint firstItem="l6O-b9-c8r" firstAttribute="centerY" secondItem="Wie-aO-Z5T" secondAttribute="centerY" id="qVh-bT-hIQ"/>
-                                        <constraint firstItem="Nne-aZ-0kL" firstAttribute="leading" secondItem="YKm-zx-e49" secondAttribute="leading" constant="14" id="t2G-k4-DH3"/>
+                                        <constraint firstItem="sz3-i9-8IS" firstAttribute="leading" secondItem="Nne-aZ-0kL" secondAttribute="leading" id="z9r-2a-Ayq"/>
                                     </constraints>
                                 </tableViewCellContentView>
-                                <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                                <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
                                     <outlet property="cancelButton" destination="l6O-b9-c8r" id="08R-JP-odo"/>
                                     <outlet property="pauseButton" destination="Wie-aO-Z5T" id="tGm-H6-W5q"/>
@@ -113,6 +122,7 @@
                                     <outlet property="progressView" destination="vXT-wa-cEb" id="ptg-HJ-xrT"/>
                                     <outlet property="uploaderLabel" destination="sz3-i9-8IS" id="9ZR-Gh-hNC"/>
                                     <outlet property="videoNameLabel" destination="Nne-aZ-0kL" id="Znl-L8-RSB"/>
+                                    <outlet property="watchedIndicator" destination="mYD-lc-glF" id="ZrD-Ac-NXA"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>

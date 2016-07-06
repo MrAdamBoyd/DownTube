@@ -28,7 +28,7 @@ class CoreDataController {
         fetchRequest.fetchBatchSize = 20
         
         //Order: most recent first
-        let sortDescriptor = NSSortDescriptor(key: "created", ascending: false)
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
         
         fetchRequest.sortDescriptors = [sortDescriptor]
         

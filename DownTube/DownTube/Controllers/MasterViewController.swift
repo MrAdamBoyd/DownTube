@@ -388,6 +388,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      - parameter youTubeUrl: youtube URL for the video (youtube.com/watch?=v...)
      */
     func createObjectInCoreDataAndStartDownloadFor(video: XCDYouTubeVideo?, withStreamUrl streamUrl: String, andYouTubeUrl youTubeUrl: String) {
+        
+        //Make sure the stream URL doesn't exist already
+        guard self.videoIndexForYouTubeUrl(youTubeUrl) == nil else {
+            self.showErrorAlertControllerWithMessage("Video already downloaded")
+            return
+        }
+        
         let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
         let entity = CoreDataController.sharedController.fetchedResultsController.fetchRequest.entity!
         let newVideo = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context) as! Video

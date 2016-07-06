@@ -116,6 +116,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         cell.delegate = self
         
+        let holdGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongTouchWithGestureRecognizer(_:)))
+        holdGestureRecognizer.minimumPressDuration = 1
+        cell.addGestureRecognizer(holdGestureRecognizer)
+        
         //Only show the download controls if video is currently downloading
         var showDownloadControls = false
         if let streamUrl = video.streamUrl, download = self.activeDownloads[streamUrl] {
@@ -601,8 +605,18 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 
                 //Every 5 seconds, update the progress of the video in core data
                 let intTime = Int(CMTimeGetSeconds(time))
+                let totalVideoTime = CMTimeGetSeconds(player.currentItem!.duration)
+                let progressPercent = Double(intTime) / totalVideoTime
+                
                 print("User progress on video in seconds: \(intTime)")
-                video.userProgress = intTime
+                
+                //If user is 95% done with the video, mark it as done
+                if progressPercent > 0.95 {
+                    video.userProgress = nil
+                } else {
+                    video.userProgress = intTime
+                }
+                
                 CoreDataController.sharedController.saveContext()
                 
             }
@@ -611,6 +625,44 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 playerViewController.player!.play()
             }
         }
+    }
+    
+    /**
+     Handles long touching on a cell. Can mark cell as watched or unwatched
+     
+     - parameter gestureRecognizer: gesture recognizer
+     */
+    func handleLongTouchWithGestureRecognizer(gestureRecognizer: UILongPressGestureRecognizer) {
+        
+        if gestureRecognizer.state == .Ended {
+            
+            let point = gestureRecognizer.locationInView(self.tableView)
+            let indexPath = self.tableView.indexPathForRowAtPoint(point)
+            let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath!) as! Video
+            
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
+            
+            //If the user progress isn't nil, that means that the video is unwatched or partially watched
+            if video.userProgress != nil {
+                alertController.addAction(UIAlertAction(title: "Mark as Watched", style: .Default) { _ in
+                    video.userProgress = nil
+                    CoreDataController.sharedController.saveContext()
+                })
+            }
+            
+            //If the user progress isn't 0, the video is either partially watched or done
+            if video.userProgress != 0 {
+                alertController.addAction(UIAlertAction(title: "Mark as Unwatched", style: .Default) { _ in
+                    video.userProgress = 0
+                    CoreDataController.sharedController.saveContext()
+                })
+            }
+            
+            alertController.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+            
+            self.presentViewController(alertController, animated: true, completion: nil)
+        }
+        
     }
 
 }

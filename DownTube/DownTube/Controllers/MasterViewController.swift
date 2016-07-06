@@ -390,6 +390,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         newVideo.youtubeUrl = youTubeUrl
         newVideo.title = video?.title
         newVideo.streamUrl = streamUrl
+        newVideo.userProgress = 0
         
         do {
             try context.save()
@@ -588,7 +589,23 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func playDownload(video: Video) {
         if let urlString = video.streamUrl, url = self.localFilePathForUrl(urlString) {
             let player = AVPlayer(URL: url)
+            
+            //Seek to time if the time is saved
+            if let time = video.userProgress as? Double {
+                player.seekToTime(CMTime(seconds: time, preferredTimescale: 1))
+            }
+            
             let playerViewController = AVPlayerViewController()
+            video.userProgress = 0
+            player.addPeriodicTimeObserverForInterval(CMTime(seconds: 10, preferredTimescale: 1), queue: dispatch_get_main_queue()) { time in
+                
+                //Every 5 seconds, update the progress of the video in core data
+                let intTime = Int(CMTimeGetSeconds(time))
+                print("User progress on video in seconds: \(intTime)")
+                video.userProgress = intTime
+                CoreDataController.sharedController.saveContext()
+                
+            }
             playerViewController.player = player
             self.presentViewController(playerViewController, animated: true) {
                 playerViewController.player!.play()

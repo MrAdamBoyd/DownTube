@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:DownTube/Models/Video+CoreDataProperties.swift">
+   </FileRef>
+   <FileRef
       location = "group:DownTube.xcodeproj">
    </FileRef>
    <FileRef

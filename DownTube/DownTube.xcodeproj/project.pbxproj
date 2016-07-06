@@ -11,7 +11,6 @@
 		66424C5E1D05357F004C75B6 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C5D1D05357F004C75B6 /* MasterViewController.swift */; };
 		66424C601D053591004C75B6 /* CoreDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C5F1D053591004C75B6 /* CoreDataController.swift */; };
 		66424C621D0535B5004C75B6 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C611D0535B5004C75B6 /* Video.swift */; };
-		66424C641D0535BB004C75B6 /* Video+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C631D0535BB004C75B6 /* Video+CoreDataProperties.swift */; };
 		66424C661D0535C1004C75B6 /* VideoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C651D0535C1004C75B6 /* VideoTableViewCell.swift */; };
 		66424C681D053684004C75B6 /* Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C671D053684004C75B6 /* Download.swift */; };
 		664C9C841D091F3C00B4D413 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69BC1CFD2AE3004FEFF7 /* Assets.xcassets */; };
@@ -26,6 +25,7 @@
 		66BF69CB1CFD2AE3004FEFF7 /* DownTubeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF69CA1CFD2AE3004FEFF7 /* DownTubeUITests.swift */; };
 		66C47BB41D10F299004108D9 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C47BB31D10F299004108D9 /* Constants.swift */; };
 		66C47BB51D10F299004108D9 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C47BB31D10F299004108D9 /* Constants.swift */; };
+		66EAF6871D2C84A1003D4BA8 /* Video+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EAF6861D2C84A1003D4BA8 /* Video+CoreDataProperties.swift */; };
 		6CB434BE552F0D838383B25C /* Pods_DownTube.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03C26A75B9C4CEDE05FE3C95 /* Pods_DownTube.framework */; };
 		EC8D68D96EDDA84662915FD5 /* Pods_DownTubeShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3E0C1B3AB6C1DE6D9799AAE /* Pods_DownTubeShareExtension.framework */; };
 /* End PBXBuildFile section */
@@ -71,7 +71,6 @@
 		66424C5D1D05357F004C75B6 /* MasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MasterViewController.swift; path = Controllers/MasterViewController.swift; sourceTree = "<group>"; };
 		66424C5F1D053591004C75B6 /* CoreDataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataController.swift; path = Controllers/CoreDataController.swift; sourceTree = "<group>"; };
 		66424C611D0535B5004C75B6 /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Video.swift; path = Models/Video.swift; sourceTree = "<group>"; };
-		66424C631D0535BB004C75B6 /* Video+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Video+CoreDataProperties.swift"; path = "Models/Video+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		66424C651D0535C1004C75B6 /* VideoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoTableViewCell.swift; path = Views/VideoTableViewCell.swift; sourceTree = "<group>"; };
 		66424C671D053684004C75B6 /* Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Download.swift; path = Models/Download.swift; sourceTree = "<group>"; };
 		664C9C831D09170900B4D413 /* DownTube.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = DownTube.entitlements; sourceTree = "<group>"; };
@@ -92,6 +91,8 @@
 		66BF69CC1CFD2AE3004FEFF7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		66C47BB31D10F299004108D9 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = Shared/Constants.swift; sourceTree = "<group>"; };
 		66E125561D07C19A008C8D39 /* DownTube-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DownTube-Bridging-Header.h"; sourceTree = "<group>"; };
+		66EAF6851D2C841B003D4BA8 /* DownTube 1.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "DownTube 1.2.xcdatamodel"; sourceTree = "<group>"; };
+		66EAF6861D2C84A1003D4BA8 /* Video+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Video+CoreDataProperties.swift"; path = "Models/Video+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		75D529D50AF50393114AA8CE /* Pods-DownTubeUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTubeUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-DownTubeUITests/Pods-DownTubeUITests.release.xcconfig"; sourceTree = "<group>"; };
 		8003CD17CF70EF7532AF8F95 /* Pods-DownTube.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTube.release.xcconfig"; path = "Pods/Target Support Files/Pods-DownTube/Pods-DownTube.release.xcconfig"; sourceTree = "<group>"; };
 		B3E0C1B3AB6C1DE6D9799AAE /* Pods_DownTubeShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DownTubeShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -157,7 +158,7 @@
 			children = (
 				66424C671D053684004C75B6 /* Download.swift */,
 				66424C611D0535B5004C75B6 /* Video.swift */,
-				66424C631D0535BB004C75B6 /* Video+CoreDataProperties.swift */,
+				66EAF6861D2C84A1003D4BA8 /* Video+CoreDataProperties.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -567,8 +568,8 @@
 				66424C601D053591004C75B6 /* CoreDataController.swift in Sources */,
 				66BF69B41CFD2AE3004FEFF7 /* DownTube.xcdatamodeld in Sources */,
 				66424C621D0535B5004C75B6 /* Video.swift in Sources */,
-				66424C641D0535BB004C75B6 /* Video+CoreDataProperties.swift in Sources */,
 				66C47BB41D10F299004108D9 /* Constants.swift in Sources */,
+				66EAF6871D2C84A1003D4BA8 /* Video+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -845,9 +846,10 @@
 		66BF69B21CFD2AE3004FEFF7 /* DownTube.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				66EAF6851D2C841B003D4BA8 /* DownTube 1.2.xcdatamodel */,
 				66BF69B31CFD2AE3004FEFF7 /* DownTube.xcdatamodel */,
 			);
-			currentVersion = 66BF69B31CFD2AE3004FEFF7 /* DownTube.xcdatamodel */;
+			currentVersion = 66EAF6851D2C841B003D4BA8 /* DownTube 1.2.xcdatamodel */;
 			path = DownTube.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

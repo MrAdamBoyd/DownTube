@@ -38,7 +38,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         CoreDataController.sharedController.fetchedResultsController.delegate = self
         
-        _ = self.downloadsSession //Initializes the background NSURLSession
+        //Need to specifically init this because self has to be used in the argument, which isn't formed until here
+        _ = self.downloadsSession
         
         self.setUpSharedVideoListIfNeeded()
         
@@ -730,35 +731,35 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
         if let originalURL = downloadTask.originalRequest?.URL?.absoluteString {
             
             if let destinationURL = self.localFilePathForUrl(originalURL) {
-            print("Destination URL: \(destinationURL)")
-            
-            let fileManager = NSFileManager.defaultManager()
-            
-            //Removing the file at the path, just in case one exists
-            do {
-                try fileManager.removeItemAtURL(destinationURL)
-            } catch {
-                print("No file to remove. Proceeding...")
-            }
-            
-            //Moving the downloaded file to the new location
-            do {
-                try fileManager.copyItemAtURL(location, toURL: destinationURL)
-            } catch let error as NSError {
-                print("Could not copy file: \(error.localizedDescription)")
-            }
-            
-            //Updating the cell
-            if let url = downloadTask.originalRequest?.URL?.absoluteString {
-                self.activeDownloads[url] = nil
+                print("Destination URL: \(destinationURL)")
                 
-                if let videoIndex = self.videoIndexForDownloadTask(downloadTask) {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: videoIndex, inSection: 0)], withRowAnimation: .None)
-                    })
+                let fileManager = NSFileManager.defaultManager()
+                
+                //Removing the file at the path, just in case one exists
+                do {
+                    try fileManager.removeItemAtURL(destinationURL)
+                } catch {
+                    print("No file to remove. Proceeding...")
+                }
+                
+                //Moving the downloaded file to the new location
+                do {
+                    try fileManager.copyItemAtURL(location, toURL: destinationURL)
+                } catch let error as NSError {
+                    print("Could not copy file: \(error.localizedDescription)")
+                }
+                
+                //Updating the cell
+                if let url = downloadTask.originalRequest?.URL?.absoluteString {
+                    self.activeDownloads[url] = nil
+                    
+                    if let videoIndex = self.videoIndexForDownloadTask(downloadTask) {
+                        dispatch_async(dispatch_get_main_queue(), {
+                            self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: videoIndex, inSection: 0)], withRowAnimation: .None)
+                        })
+                    }
                 }
             }
-        }
         }
     }
     

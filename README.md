@@ -38,7 +38,14 @@ My website is [adamjboyd.com](http://www.adamjboyd.com).
 
 ## Changelog
 1.0: Initial Release
+
 1.1: Share extension
+
+1.2:
+* Added watched, unwatched, partially watched indicator to videos
+* Long press on a video to mark it as watched, unwatched
+* Videos now remember where you left off
+* Added about page
 
 ## Contributing
 I'll take all the help I can get! Submit an issue or a pull request and I'll try to get it sorted as soon as I can :)

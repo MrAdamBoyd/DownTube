@@ -20,7 +20,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     var dataTask: NSURLSessionDataTask?
     var activeDownloads: [String: Download] = [:]
     
-    let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
+    //Commented out because of app group
+//    let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
     
     lazy var downloadsSession: NSURLSession = {
         let configuration = NSURLSessionConfiguration.backgroundSessionConfigurationWithIdentifier("bgSessionConfiguration")
@@ -45,10 +46,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         self.addVideosFromSharedArray()
         
-        //Wormhole between extension and app
-        self.wormhole.listenForMessageWithIdentifier("youTubeUrl") { messageObject in
-            self.messageWasReceivedFromExtension(messageObject)
-        }
+//        //Wormhole between extension and app
+//        self.wormhole.listenForMessageWithIdentifier("youTubeUrl") { messageObject in
+//            self.messageWasReceivedFromExtension(messageObject)
+//        }
     }
     
     /**

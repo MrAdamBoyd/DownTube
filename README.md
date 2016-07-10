@@ -17,12 +17,15 @@ You can see a complete guide for how to install DownTube (or any other app with 
 3. Open DownTube.xcworkspace (NOT DownTube.xcodeproj).
 4. If not already selected, click on DownTube in the very top left of the file navigator.
 5. Tap on DownTube in the Targets list.
-6. Tap General and choose your name from the Team pop-up menu.
-7. Do the same for DownTubeShareExtension.
-8. Connect the device to your Mac and choose your device from the Scheme toolbar menu.
-9. Below the Team pop-up menu, click Fix Issue.
-10. Click the Run button.
-11. You should now have DownTube on your device!
+6. Change the Bundle Identifier to com.yourname.DownTube
+7. Tap General and choose your name from the Team pop-up menu.
+8. Repeat step 6 and 7 for DownTubeShareExtension.
+9. Connect the device to your Mac and choose your device from the Scheme toolbar menu.
+10. Below the Team pop-up menu, click Fix Issue.
+11. Click the Run button.
+12. You should now have DownTube on your device!
+
+If you are still having issues installing DownTube on your device, try using the `installing` branch instead of `master`.
 
 ## Screenshots
 ![Screenshot](https://raw.githubusercontent.com/MrAdamBoyd/DownTube/master/Screenshots/screenshot1.png)

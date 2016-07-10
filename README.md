@@ -25,6 +25,8 @@ You can see a complete guide for how to install DownTube (or any other app with 
 11. Click the Run button.
 12. You should now have DownTube on your device!
 
+If you are still having issues installing DownTube on your device, try using the `installing` branch instead of `master`.
+
 ## Screenshots
 ![Screenshot](https://raw.githubusercontent.com/MrAdamBoyd/DownTube/master/Screenshots/screenshot1.png)
 ![Screenshot](https://raw.githubusercontent.com/MrAdamBoyd/DownTube/master/Screenshots/screenshot2.png)

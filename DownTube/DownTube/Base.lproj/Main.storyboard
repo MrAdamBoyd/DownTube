@@ -192,42 +192,6 @@
                                 <rect key="frame" x="0.0" y="72" width="600" height="464"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
                             </webView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rd5-7U-LdY">
-                                <rect key="frame" x="502" y="19" width="35" height="36"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="35" id="4sw-aG-Vn2"/>
-                                    <constraint firstAttribute="width" constant="35" id="nw7-lB-yVW"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="←"/>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="4sw-aG-Vn2"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <action selector="goBack:" destination="0cX-yC-fvH" eventType="touchUpInside" id="LZm-Jm-MEJ"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ARH-I2-frf">
-                                <rect key="frame" x="545" y="19" width="35" height="36"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="35" id="fQq-dk-spL"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="→"/>
-                                <connections>
-                                    <action selector="goForward:" destination="0cX-yC-fvH" eventType="touchUpInside" id="tlU-fE-gSL"/>
-                                </connections>
-                            </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VJD-9e-IBz">
-                                <rect key="frame" x="20" y="8" width="431" height="58"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <action selector="urlChanged:" destination="0cX-yC-fvH" eventType="valueChanged" id="CiR-Yu-faW"/>
-                                </connections>
-                            </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X4E-UP-6mE">
                                 <rect key="frame" x="459" y="19" width="35" height="36"/>
                                 <constraints>
@@ -236,7 +200,9 @@
                                     <constraint firstAttribute="width" constant="35" id="bHo-XK-fkh"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                <state key="normal" title="↵"/>
+                                <state key="normal" title="↵">
+                                    <color key="titleColor" red="0.85882352941176465" green="0.086274509803921567" blue="0.12156862745098039" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <variation key="default">
                                     <mask key="constraints">
                                         <exclude reference="541-dq-7mY"/>
@@ -247,8 +213,50 @@
                                     <action selector="goToURL:" destination="0cX-yC-fvH" eventType="touchUpInside" id="TaE-JH-5mX"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ARH-I2-frf">
+                                <rect key="frame" x="545" y="19" width="35" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="35" id="fQq-dk-spL"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="→">
+                                    <color key="titleColor" red="0.85882352939999995" green="0.086274509799999996" blue="0.1215686275" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="goForward:" destination="0cX-yC-fvH" eventType="touchUpInside" id="tlU-fE-gSL"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="URL" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VJD-9e-IBz">
+                                <rect key="frame" x="20" y="8" width="431" height="58"/>
+                                <color key="backgroundColor" red="0.60392156862745094" green="0.60392156862745094" blue="0.60392156862745094" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.85882352941176465" green="0.086274509803921567" blue="0.12156862745098039" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="urlChanged:" destination="0cX-yC-fvH" eventType="valueChanged" id="CiR-Yu-faW"/>
+                                </connections>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rd5-7U-LdY">
+                                <rect key="frame" x="502" y="19" width="35" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="35" id="4sw-aG-Vn2"/>
+                                    <constraint firstAttribute="width" constant="35" id="nw7-lB-yVW"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="←">
+                                    <color key="titleColor" red="0.85882352939999995" green="0.086274509799999996" blue="0.1215686275" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="4sw-aG-Vn2"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="goBack:" destination="0cX-yC-fvH" eventType="touchUpInside" id="LZm-Jm-MEJ"/>
+                                </connections>
+                            </button>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.090196078431372548" green="0.098039215686274508" blue="0.10588235294117647" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="X4E-UP-6mE" firstAttribute="leading" secondItem="VJD-9e-IBz" secondAttribute="trailing" constant="8" id="2C3-Ci-E64"/>
                             <constraint firstItem="kDC-zA-pUZ" firstAttribute="top" secondItem="X4E-UP-6mE" secondAttribute="bottom" constant="12" id="2ZP-9v-JZ9"/>

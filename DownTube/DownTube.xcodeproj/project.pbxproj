@@ -28,6 +28,7 @@
 		66EAF6891D2CAE18003D4BA8 /* AppInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EAF6881D2CAE18003D4BA8 /* AppInfoViewController.swift */; };
 		6CB434BE552F0D838383B25C /* Pods_DownTube.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03C26A75B9C4CEDE05FE3C95 /* Pods_DownTube.framework */; };
 		EC8D68D96EDDA84662915FD5 /* Pods_DownTubeShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3E0C1B3AB6C1DE6D9799AAE /* Pods_DownTubeShareExtension.framework */; };
+		F3E658371D33BA4400D47D31 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E658361D33BA4400D47D31 /* WebViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		75D529D50AF50393114AA8CE /* Pods-DownTubeUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTubeUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-DownTubeUITests/Pods-DownTubeUITests.release.xcconfig"; sourceTree = "<group>"; };
 		8003CD17CF70EF7532AF8F95 /* Pods-DownTube.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DownTube.release.xcconfig"; path = "Pods/Target Support Files/Pods-DownTube/Pods-DownTube.release.xcconfig"; sourceTree = "<group>"; };
 		B3E0C1B3AB6C1DE6D9799AAE /* Pods_DownTubeShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DownTubeShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3E658361D33BA4400D47D31 /* WebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebViewController.swift; path = Controllers/WebViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +121,7 @@
 		66424C5A1D053556004C75B6 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				F3E658361D33BA4400D47D31 /* WebViewController.swift */,
 				66424C5D1D05357F004C75B6 /* MasterViewController.swift */,
 				66EAF6881D2CAE18003D4BA8 /* AppInfoViewController.swift */,
 				66424C5F1D053591004C75B6 /* CoreDataController.swift */,
@@ -541,6 +544,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66EAF6891D2CAE18003D4BA8 /* AppInfoViewController.swift in Sources */,
+				F3E658371D33BA4400D47D31 /* WebViewController.swift in Sources */,
 				66424C5E1D05357F004C75B6 /* MasterViewController.swift in Sources */,
 				66424C681D053684004C75B6 /* Download.swift in Sources */,
 				66424C661D0535C1004C75B6 /* VideoTableViewCell.swift in Sources */,

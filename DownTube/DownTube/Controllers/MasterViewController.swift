@@ -29,13 +29,25 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         return session
     }()
     
+    override func loadView() {
+        super.loadView()
+        
+        let infoBarButtonItem = UIBarButtonItem(title: "About", style: .Plain, target: self, action: #selector(self.showAppInfo(_:)))
+        self.navigationItem.rightBarButtonItem = infoBarButtonItem
+        
+        let editBarButtonItem = self.editButtonItem()
+        let browseBarButtonItem = UIBarButtonItem(title: "Browse",
+                                                  style: UIBarButtonItemStyle.Plain,
+                                                  target: self,
+                                                  action: #selector(self.showWebView(_:)))
+        
+        self.navigationItem.setLeftBarButtonItems([editBarButtonItem, browseBarButtonItem], animated: false)
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        self.navigationItem.leftBarButtonItem = self.editButtonItem()
-
-        let infoButton = UIBarButtonItem(title: "About", style: .Plain, target: self, action: #selector(self.showAppInfo(_:)))
-        self.navigationItem.rightBarButtonItem = infoButton
         
         CoreDataController.sharedController.fetchedResultsController.delegate = self
         
@@ -59,6 +71,27 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func showAppInfo(sender: AnyObject) {
         self.performSegueWithIdentifier("ShowAppInfo", sender: self)
+    }
+    
+    /**
+     Shows web browser to download a video
+     
+     - parameter sender: button that sent the action
+     */
+    func showWebView(sender: AnyObject) {
+        self.performSegueWithIdentifier("ShowWebView", sender: self)
+    }
+    
+    /**
+     Called when preparing for a segue
+     
+     - parameter segue: segue preparing for
+     - parameter sender: sender
+     */
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "ShowWebView" {
+            (segue.destinationViewController as! WebViewController).masterViewController = self
+        }
     }
 
     /**

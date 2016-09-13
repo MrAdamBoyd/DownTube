@@ -10,9 +10,9 @@ import Foundation
 import UIKit
 
 protocol VideoTableViewCellDelegate {
-    func pauseTapped(_ cell: VideoTableViewCell)
-    func resumeTapped(_ cell: VideoTableViewCell)
-    func cancelTapped(_ cell: VideoTableViewCell)
+    func pauseTapped(cell: VideoTableViewCell)
+    func resumeTapped(cell: VideoTableViewCell)
+    func cancelTapped(cell: VideoTableViewCell)
 }
 
 class VideoTableViewCell: UITableViewCell {
@@ -36,7 +36,7 @@ class VideoTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        self.setWatchIndicatorState(.unwatched)
+        self.setWatchIndicatorState(.Unwatched)
     }
     
     /**
@@ -44,22 +44,22 @@ class VideoTableViewCell: UITableViewCell {
      
      - parameter state: state of the video
      */
-    func setWatchIndicatorState(_ state: WatchState) {
+    func setWatchIndicatorState(state: WatchState) {
         let maskLayer = CALayer()
-        maskLayer.backgroundColor = UIColor.black.cgColor
+        maskLayer.backgroundColor = UIColor.blackColor().CGColor
         switch state {
-        case .unwatched:
+        case .Unwatched:
             maskLayer.frame = CGRect(x: 0, y: 0, width: 16, height: 16)
-        case .partiallyWatched(_):
+        case .PartiallyWatched(_):
             maskLayer.frame = CGRect(x: 0, y: 0, width: 8, height: 16)
-        case .watched:
+        case .Watched:
             maskLayer.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
         }
         
         self.watchedIndicator.layer.mask = maskLayer
     }
     
-    @IBAction func pauseOrResumeTapped(_ sender: AnyObject) {
+    @IBAction func pauseOrResumeTapped(sender: AnyObject) {
         if self.pauseButton.titleLabel!.text == "Pause" {
             self.delegate?.pauseTapped(self)
         } else {
@@ -67,7 +67,7 @@ class VideoTableViewCell: UITableViewCell {
         }
     }
 
-    @IBAction func cancelTapped(_ sender: AnyObject) {
+    @IBAction func cancelTapped(sender: AnyObject) {
         self.delegate?.cancelTapped(self)
     }
 }

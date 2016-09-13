@@ -29,21 +29,21 @@ class ShareViewController: UIViewController {
                     if let itemProvider = itemProvider as? NSItemProvider {
                         if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeURL as String) {
                             //If the item contains a URL
-                            itemProvider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil, completionHandler: { (content, error) -> Void in
+                            itemProvider.loadItemForTypeIdentifier(kUTTypeURL as String, options: nil, completionHandler: { (content, error) -> Void in
                                 
-                                DispatchQueue.main.async {
-                                    if let url = content as? URL {
-                                        if url.absoluteString.contains("youtube.com") || url.absoluteString.contains("youtu.be") {
+                                dispatch_async(dispatch_get_main_queue()) {
+                                    if let url = content as? NSURL {
+                                        if url.absoluteString.containsString("youtube.com") || url.absoluteString.containsString("youtu.be") {
                                             self.setTitleOfTextView("Video Added to Download Queue")
                                             
                                             //Just in case the app isn't running in the background, write the URL to the shared NSUserDefaults
-                                            var existingItems = Constants.sharedDefaults.value(forKey: Constants.videosToAdd) as! [String]
+                                            var existingItems = Constants.sharedDefaults.valueForKey(Constants.videosToAdd) as! [String]
                                             existingItems.append(url.absoluteString)
-                                            Constants.sharedDefaults.set(existingItems, forKey: Constants.videosToAdd)
+                                            Constants.sharedDefaults.setObject(existingItems, forKey: Constants.videosToAdd)
                                             Constants.sharedDefaults.synchronize()
                                             
                                             //Passing YouTube URL
-                                            self.wormhole.passMessageObject(url.absoluteString as NSCoding?, identifier: "youTubeUrl")
+                                            self.wormhole.passMessageObject(url.absoluteString, identifier: "youTubeUrl")
                                             
                                         return
                                         }
@@ -59,37 +59,37 @@ class ShareViewController: UIViewController {
         }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
         self.view.alpha = 0
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        UIView.animate(withDuration: 0.25, animations: {
+        UIView.animateWithDuration(0.25) {
             self.view.alpha = 1
-        }) 
+        }
     }
     
-    func setTitleOfTextView(_ text: String) {
+    func setTitleOfTextView(text: String) {
         self.mainLabel.text = text
         
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(3 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) {
-            UIView.animate(withDuration: 0.25, animations: {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(3 * Double(NSEC_PER_SEC))), dispatch_get_main_queue()) {
+            UIView.animateWithDuration(0.25, animations: {
                 self.view.alpha = 0
             }, completion: { completed in
-                self.extensionContext?.completeRequest(returningItems: nil) { completed in
-                    self.dismiss(animated: true, completion: nil)
+                self.extensionContext?.completeRequestReturningItems(nil) { completed in
+                    self.dismissViewControllerAnimated(true, completion: nil)
                 }
             })
         }
     }
     
     func closeExtension() {
-        self.dismiss(animated: true) { () -> Void in
-            self.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+        self.dismissViewControllerAnimated(true) { () -> Void in
+            self.extensionContext?.completeRequestReturningItems(nil, completionHandler: nil)
         }
     }
 }

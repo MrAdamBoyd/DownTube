@@ -324,6 +324,7 @@
 					6698ABC71D0910AF00985368 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 6GHQ7P7EHA;
+						LastSwiftMigration = 0800;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -333,6 +334,7 @@
 					66BF69AC1CFD2AE3004FEFF7 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 6GHQ7P7EHA;
+						LastSwiftMigration = 0800;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -344,6 +346,7 @@
 					};
 					66BF69C51CFD2AE3004FEFF7 = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 						TestTargetID = 66BF69AC1CFD2AE3004FEFF7;
 					};
 				};
@@ -623,6 +626,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube.DownTubeShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -639,6 +643,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube.DownTubeShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -742,6 +747,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -759,6 +765,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTube;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -771,6 +778,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTubeUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = DownTube;
 			};
 			name = Debug;
@@ -783,6 +791,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.adam.DownTubeUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = DownTube;
 			};
 			name = Release;

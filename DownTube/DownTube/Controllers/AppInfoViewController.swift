@@ -17,9 +17,9 @@ class AppInfoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(self.dismissInfoViewController(_:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(self.dismissInfoViewController(_:)))
         
-        let versionString = NSBundle.mainBundle().infoDictionary!["CFBundleShortVersionString"] as! String
+        let versionString = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
         self.versionLabel.text = "Version \(versionString)"
     }
     
@@ -28,8 +28,8 @@ class AppInfoViewController: UIViewController {
      
      - parameter sender: button that sent action
      */
-    func dismissInfoViewController(sender: AnyObject) {
-        self.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+    func dismissInfoViewController(_ sender: AnyObject) {
+        self.navigationController?.dismiss(animated: true, completion: nil)
     }
     
     /**
@@ -37,8 +37,8 @@ class AppInfoViewController: UIViewController {
      
      - parameter sender: button that sent action
      */
-    @IBAction func goToGitHub(sender: AnyObject) {
-        let vc = SFSafariViewController(URL: NSURL(string: "https://github.com/MrAdamBoyd/DownTube")!, entersReaderIfAvailable: false)
-        self.presentViewController(vc, animated: true, completion: nil)
+    @IBAction func goToGitHub(_ sender: AnyObject) {
+        let vc = SFSafariViewController(url: URL(string: "https://github.com/MrAdamBoyd/DownTube")!, entersReaderIfAvailable: false)
+        self.present(vc, animated: true, completion: nil)
     }
 }

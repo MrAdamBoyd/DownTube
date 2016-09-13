@@ -279,7 +279,6 @@
 				66BF69A91CFD2AE3004FEFF7 /* Sources */,
 				66BF69AA1CFD2AE3004FEFF7 /* Frameworks */,
 				66BF69AB1CFD2AE3004FEFF7 /* Resources */,
-				660FDD8B1D0663C30015763F /* ShellScript */,
 				660FDD8C1D06648C0015763F /* ShellScript */,
 				6698ABD61D0910B000985368 /* Embed App Extensions */,
 				DAFAFC4E5B66632F61E7DB8A /* [CP] Embed Pods Frameworks */,
@@ -461,19 +460,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DownTube/Pods-DownTube-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		660FDD8B1D0663C30015763F /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Fabric/run\" ddc2645d54ae392a8abd36a8dbbccb41fca3541d ec4418504bf66c40bfd19499c14e2f454e4ae3fa366b7699d1092e7ef7815f1b";
 		};
 		660FDD8C1D06648C0015763F /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

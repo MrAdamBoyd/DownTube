@@ -9,6 +9,6 @@
 import Foundation
 
 struct Constants {
-    static let sharedDefaults = NSUserDefaults(suiteName: "group.adam.DownTube")!
+    static let sharedDefaults = UserDefaults(suiteName: "group.adam.DownTube")!
     static let videosToAdd = "videosToAdd"
 }

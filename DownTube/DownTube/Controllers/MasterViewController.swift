@@ -130,7 +130,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         holdGestureRecognizer.minimumPressDuration = 1
         cell.addGestureRecognizer(holdGestureRecognizer)
         
-        cell.setWatchIndicatorState(video.stateForVideoProgress)
+        cell.setWatchIndicatorState(video.watchProgress)
         
         //Only show the download controls if video is currently downloading
         var showDownloadControls = false
@@ -413,7 +413,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         newVideo.youtubeUrl = youTubeUrl
         newVideo.title = video?.title
         newVideo.streamUrl = streamUrl
-        newVideo.userProgress = 0
+        newVideo.watchProgress = .Unwatched
         
         do {
             try context.save()
@@ -615,12 +615,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let player = AVPlayer(URL: url)
             
             //Seek to time if the time is saved
-            if let time = video.userProgress as? Double {
-                player.seekToTime(CMTime(seconds: time, preferredTimescale: 1))
+            switch video.watchProgress {
+            case let .PartiallyWatched(seconds):
+                player.seekToTime(CMTime(seconds: seconds.doubleValue, preferredTimescale: 1))
+            default:    break
             }
             
             let playerViewController = AVPlayerViewController()
-            video.userProgress = 0
             player.addPeriodicTimeObserverForInterval(CMTime(seconds: 10, preferredTimescale: 1), queue: dispatch_get_main_queue()) { [weak self] time in
                 
                 //Every 5 seconds, update the progress of the video in core data
@@ -632,9 +633,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 
                 //If user is 95% done with the video, mark it as done
                 if progressPercent > 0.95 {
-                    video.userProgress = nil
+                    video.watchProgress = .Watched
                 } else {
-                    video.userProgress = intTime
+                    video.watchProgress = .PartiallyWatched(NSNumber(integer: intTime))
                 }
                 
                 CoreDataController.sharedController.saveContext()
@@ -687,19 +688,20 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func buildActionsForLongPressOn(video video: Video, at indexPath: NSIndexPath) -> [UIAlertAction] {
         var actions: [UIAlertAction] = []
+        
         //If the user progress isn't nil, that means that the video is unwatched or partially watched
-        if video.userProgress != nil {
+        if video.watchProgress != .Watched {
             actions.append(UIAlertAction(title: "Mark as Watched", style: .Default) { [weak self] _ in
-                video.userProgress = nil
+                video.watchProgress = .Watched
                 CoreDataController.sharedController.saveContext()
                 self?.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
             })
         }
         
         //If the user progress isn't 0, the video is either partially watched or done
-        if video.userProgress != 0 {
+        if video.watchProgress != .Unwatched {
             actions.append(UIAlertAction(title: "Mark as Unwatched", style: .Default) { [weak self] _ in
-                video.userProgress = 0
+                video.watchProgress = .Unwatched
                 CoreDataController.sharedController.saveContext()
                 self?.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
             })

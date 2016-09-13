@@ -667,28 +667,54 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
             
-            //If the user progress isn't nil, that means that the video is unwatched or partially watched
-            if video.userProgress != nil {
-                alertController.addAction(UIAlertAction(title: "Mark as Watched", style: .Default) { [weak self] _ in
-                    video.userProgress = nil
-                    CoreDataController.sharedController.saveContext()
-                    self?.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
-                })
-            }
-            
-            //If the user progress isn't 0, the video is either partially watched or done
-            if video.userProgress != 0 {
-                alertController.addAction(UIAlertAction(title: "Mark as Unwatched", style: .Default) { [weak self] _ in
-                    video.userProgress = 0
-                    CoreDataController.sharedController.saveContext()
-                    self?.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
-                })
+            for action in self.buildActionsForLongPressOn(video: video, at: indexPath) {
+                alertController.addAction(action)
             }
             
             alertController.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
             
             self.presentViewController(alertController, animated: true, completion: nil)
         }
+        
+    }
+    
+    /**
+     Builds the alert actions for when a user long presses on a cell
+     
+     - parameter video:     video to build the actions for
+     - parameter indexPath: location of the cell
+     
+     - returns: array of actions
+     */
+    func buildActionsForLongPressOn(video video: Video, at indexPath: NSIndexPath) -> [UIAlertAction] {
+        var actions: [UIAlertAction] = []
+        //If the user progress isn't nil, that means that the video is unwatched or partially watched
+        if video.userProgress != nil {
+            actions.append(UIAlertAction(title: "Mark as Watched", style: .Default) { [weak self] _ in
+                video.userProgress = nil
+                CoreDataController.sharedController.saveContext()
+                self?.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
+            })
+        }
+        
+        //If the user progress isn't 0, the video is either partially watched or done
+        if video.userProgress != 0 {
+            actions.append(UIAlertAction(title: "Mark as Unwatched", style: .Default) { [weak self] _ in
+                video.userProgress = 0
+                CoreDataController.sharedController.saveContext()
+                self?.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
+            })
+        }
+        
+        //Sharing the video
+        if let streamUrl = video.streamUrl, localUrl = self.localFilePathForUrl(streamUrl) {
+            actions.append(UIAlertAction(title: "Share", style: .Default) { [weak self] _ in
+                let activityViewController = UIActivityViewController(activityItems: [localUrl], applicationActivities: nil)
+                self?.presentViewController(activityViewController, animated: true, completion: nil)
+            })
+        }
+        
+        return actions
         
     }
 

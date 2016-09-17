@@ -33,12 +33,12 @@ class ShareViewController: UIViewController {
                                 
                                 dispatch_async(dispatch_get_main_queue()) {
                                     if let url = content as? NSURL {
-                                        if url.absoluteString.containsString("youtube.com") || url.absoluteString.containsString("youtu.be") {
+                                        if url.absoluteString!.containsString("youtube.com") || url.absoluteString!.containsString("youtu.be") {
                                             self.setTitleOfTextView("Video Added to Download Queue")
                                             
                                             //Just in case the app isn't running in the background, write the URL to the shared NSUserDefaults
                                             var existingItems = Constants.sharedDefaults.valueForKey(Constants.videosToAdd) as! [String]
-                                            existingItems.append(url.absoluteString)
+                                            existingItems.append(url.absoluteString!)
                                             Constants.sharedDefaults.setObject(existingItems, forKey: Constants.videosToAdd)
                                             Constants.sharedDefaults.synchronize()
                                             

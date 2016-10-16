@@ -47,9 +47,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         self.addVideosFromSharedArray()
         
         //Wormhole between extension and app
-        self.wormhole.listenForMessageWithIdentifier("youTubeUrl") { messageObject in
-            self.messageWasReceivedFromExtension(messageObject)
-        }
+//        self.wormhole.listenForMessageWithIdentifier("youTubeUrl") { messageObject in
+//            self.messageWasReceivedFromExtension(messageObject)
+//        }
     }
     
     /**

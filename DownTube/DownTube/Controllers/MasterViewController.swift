@@ -15,18 +15,9 @@ import MMWormhole
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
-    //For the downloads
-    let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
-    var dataTask: NSURLSessionDataTask?
-    var activeDownloads: [String: Download] = [:]
-    
     let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
     
-    lazy var downloadsSession: NSURLSession = {
-        let configuration = NSURLSessionConfiguration.backgroundSessionConfigurationWithIdentifier("bgSessionConfiguration")
-        let session = NSURLSession(configuration: configuration, delegate: self, delegateQueue: nil)
-        return session
-    }()
+    var downloadManager: VideoDownloadManager!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,8 +29,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         CoreDataController.sharedController.fetchedResultsController.delegate = self
         
-        //Need to specifically init this because self has to be used in the argument, which isn't formed until here
-        _ = self.downloadsSession
+        self.downloadManager = VideoDownloadManager(delegate: self)
         
         self.setUpSharedVideoListIfNeeded()
         
@@ -205,7 +195,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         //Only show the download controls if video is currently downloading
         var showDownloadControls = false
-        if let streamUrl = video.streamUrl, download = self.activeDownloads[streamUrl] {
+        if let streamUrl = video.streamUrl, download = self.downloadManager.activeDownloads[streamUrl] {
             showDownloadControls = true
             cell.progressView.progress = download.progress
             cell.progressLabel.text = (download.isDownloading) ? "Downloading..." : "Paused"
@@ -295,7 +285,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func isCellAtIndexPathDownloading(indexPath: NSIndexPath) -> Bool {
         let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
         if let streamUrl = video.streamUrl {
-            return self.activeDownloads[streamUrl] != nil
+            return self.downloadManager.activeDownloads[streamUrl] != nil
         }
         
         return false
@@ -348,80 +338,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             Constants.sharedDefaults.synchronize()
             
             self.startDownloadOfVideoInfoFor(message)
-        }
-    }
-    
-    //MARK: - Downloading methods
-    
-    /**
-     Starts download for video, called when track is added
-     
-     - parameter video: Video object
-     */
-    func startDownload(video: Video) {
-        print("Starting download of video \(video.title) by \(video.uploader)")
-        if let urlString = video.streamUrl, url = NSURL(string: urlString), index = self.videoIndexForStreamUrl(urlString) {
-            let download = Download(url: urlString)
-            download.downloadTask = self.downloadsSession.downloadTaskWithURL(url)
-            download.downloadTask?.resume()
-            download.isDownloading = true
-            self.activeDownloads[download.url] = download
-            
-            self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: index, inSection: 0)], withRowAnimation: .None)
-        }
-    }
-    
-    /**
-     Called when pause button for video is tapped
-     
-     - parameter video: Video object
-     */
-    func pauseDownload(video: Video) {
-        print("Startind download")
-        if let urlString = video.streamUrl, download = self.activeDownloads[urlString] {
-            if download.isDownloading {
-                download.downloadTask?.cancelByProducingResumeData() { data in
-                    if data != nil {
-                        download.resumeData = data
-                    }
-                }
-                download.isDownloading = false
-            }
-        }
-    }
-    
-    /**
-     Called when the cancel button for a video is tapped
-     
-     - parameter video: Video object
-     */
-    func cancelDownload(video: Video) {
-        print("Canceling download of video \(video.title) by \(video.uploader)")
-        if let urlString = video.streamUrl, download = self.activeDownloads[urlString] {
-            download.downloadTask?.cancel()
-            self.activeDownloads[urlString] = nil
-        }
-        
-        
-    }
-    
-    /**
-     Called when the resume button for a video is tapped
-     
-     - parameter video: Video object
-     */
-    func resumeDownload(video: Video) {
-        print("Resuming download of video \(video.title) by \(video.uploader)")
-        if let urlString = video.streamUrl, download = self.activeDownloads[urlString] {
-            if let resumeData = download.resumeData {
-                download.downloadTask = self.downloadsSession.downloadTaskWithResumeData(resumeData)
-                download.downloadTask?.resume()
-                download.isDownloading = true
-            } else if let url = NSURL(string: download.url) {
-                download.downloadTask = self.downloadsSession.downloadTaskWithURL(url)
-                download.downloadTask?.resume()
-                download.isDownloading = true
-            }
         }
     }
     
@@ -490,7 +406,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func createObjectInCoreDataAndStartDownloadFor(video: XCDYouTubeVideo?, withStreamUrl streamUrl: String, andYouTubeUrl youTubeUrl: String) {
         
         //Make sure the stream URL doesn't exist already
-        guard self.videoIndexForYouTubeUrl(youTubeUrl) == nil else {
+        guard self.downloadManager.videoIndexForYouTubeUrl(youTubeUrl) == nil else {
             self.showErrorAlertControllerWithMessage("Video already downloaded")
             return
         }
@@ -512,7 +428,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         
         //Starts the download of the video
-        self.startDownload(newVideo)
+        self.downloadManager.startDownload(newVideo) { index in
+            self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: index, inSection: 0)], withRowAnimation: .None)
+        }
     }
     
     
@@ -559,59 +477,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         alertController.addAction(cancelAction)
         
         self.presentViewController(alertController, animated: true, completion: nil)
-    }
-    
-    /**
-     Gets the index of the video for the current download in the fetched results controller
-     
-     - parameter url: youtube url for the video
-     
-     - returns: optional index
-     */
-    func videoIndexForYouTubeUrl(url: String) -> Int? {
-        for (index, object) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerate() {
-            if let video = object as? Video {
-                if url == video.youtubeUrl {
-                    return index
-                }
-            }
-        }
-        
-        return nil
-    }
-    
-    /**
-     Gets the index of the video for the current download in the fetched results controller
-     
-     - parameter url: streaming URL for the video
-     
-     - returns: optional index
-     */
-    func videoIndexForStreamUrl(url: String) -> Int? {
-        for (index, object) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerate() {
-            if let video = object as? Video {
-                if url == video.streamUrl {
-                    return index
-                }
-            }
-        }
-        
-        return nil
-    }
-    
-    /**
-     Gets the index of the video for the current download in the fetched results controller
-     
-     - parameter downloadTask: video that is currently downloading
-     
-     - returns: optional index
-     */
-    func videoIndexForDownloadTask(downloadTask: NSURLSessionDownloadTask) -> Int? {
-        if let url = downloadTask.originalRequest?.URL?.absoluteString {
-            return self.videoIndexForStreamUrl(url)
-        }
-        
-        return nil
     }
     
     /**
@@ -662,7 +527,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func deleteDownloadedVideoAt(indexPath: NSIndexPath) {
         let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
-        self.cancelDownload(video)
+        self.downloadManager.cancelDownload(video)
         
         if let urlString = video.streamUrl, fileUrl = self.localFilePathForUrl(urlString) {
             //Removing the file at the path if one exists
@@ -817,7 +682,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     func pauseTapped(cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPathForCell(cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
-            self.pauseDownload(video)
+            self.downloadManager.pauseDownload(video)
             self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: indexPath.row, inSection: 0)], withRowAnimation: .None)
         }
     }
@@ -825,7 +690,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     func resumeTapped(cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPathForCell(cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
-            self.resumeDownload(video)
+            self.downloadManager.resumeDownload(video)
             self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: indexPath.row, inSection: 0)], withRowAnimation: .None)
         }
     }
@@ -833,7 +698,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     func cancelTapped(cell: VideoTableViewCell) {
         if let indexPath = tableView.indexPathForCell(cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
-            self.cancelDownload(video)
+            self.downloadManager.cancelDownload(video)
             tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: indexPath.row, inSection: 0)], withRowAnimation: .None)
             self.deleteVideoObjectAt(indexPath)
         }
@@ -869,9 +734,9 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
                 
                 //Updating the cell
                 if let url = downloadTask.originalRequest?.URL?.absoluteString {
-                    self.activeDownloads[url] = nil
+                    self.downloadManager.activeDownloads[url] = nil
                     
-                    if let videoIndex = self.videoIndexForDownloadTask(downloadTask) {
+                    if let videoIndex = self.downloadManager.videoIndexForDownloadTask(downloadTask) {
                         dispatch_async(dispatch_get_main_queue(), {
                             self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: videoIndex, inSection: 0)], withRowAnimation: .None)
                         })
@@ -884,10 +749,10 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
     //Updating download status
     func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         
-        if let downloadUrl = downloadTask.originalRequest?.URL?.absoluteString, download = self.activeDownloads[downloadUrl] {
+        if let downloadUrl = downloadTask.originalRequest?.URL?.absoluteString, download = self.downloadManager.activeDownloads[downloadUrl] {
             download.progress = Float(totalBytesWritten)/Float(totalBytesExpectedToWrite)
             let totalSize = NSByteCountFormatter.stringFromByteCount(totalBytesExpectedToWrite, countStyle: NSByteCountFormatterCountStyle.Binary)
-            if let trackIndex = self.videoIndexForDownloadTask(downloadTask), let videoTableViewCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: trackIndex, inSection: 0)) as? VideoTableViewCell {
+            if let trackIndex = self.downloadManager.videoIndexForDownloadTask(downloadTask), let videoTableViewCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: trackIndex, inSection: 0)) as? VideoTableViewCell {
                 dispatch_async(dispatch_get_main_queue(), {
                     
                     let done = (download.progress == 1)

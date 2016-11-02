@@ -52,6 +52,7 @@ My website is [adamjboyd.com](http://www.adamjboyd.com).
 
 1.3:
 * Redesigned cells when downloading videos, making it so more of the title can be seen
+* New button for streaming videos. You can stream these videos in the background just like the downloaded videos.
 
 ## Contributing
 I'll take all the help I can get! Submit an issue or a pull request and I'll try to get it sorted as soon as I can :)

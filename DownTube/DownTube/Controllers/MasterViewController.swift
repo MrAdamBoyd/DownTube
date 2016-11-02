@@ -61,20 +61,42 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     /**
-     Presents a UIAlertController that gets youtube video URL from user
+     Presents a UIAlertController that gets youtube video URL from user then downloads the video
      
      - parameter sender: button
      */
-    @IBAction func askUserForURL(sender: AnyObject) {
-        
-        let alertController = UIAlertController(title: "Download YouTube Video", message: "Video will be downloaded in 720p or the highest available quality", preferredStyle: .Alert)
+    @IBAction func downloadVideoAction(sender: AnyObject) {
+        self.buildAndShowUrlGettingAlertController("Download") { [weak self] text in
+            self?.startDownloadOfVideoInfoFor(text)
+        }
+    }
+    
+    /**
+     Presents a UIAlertController that gets youtube video URL from user then streams the video
+     
+     - parameter sender: button
+     */
+    @IBAction func streamVideoAction(sender: AnyObject) {
+        self.buildAndShowUrlGettingAlertController("Stream") { [weak self] text in
+            self?.startStreamOfVideoInfoFor(text)
+        }
+    }
+    
+    /**
+     Presents a UIAlertController that gets youtube video URL from user, calls completion if successful. Shows error otherwise.
+     
+     - parameter actionName: title of the AlertController. "<actionName> YouTube Video". Either "Download" or "Stream"
+     - parameter completion: code that is called once the user hits "OK." Closure parameter is the text gotten from user
+     */
+    func buildAndShowUrlGettingAlertController(actionName: String, completion: String -> Void) {
+        let alertController = UIAlertController(title: "\(actionName) YouTube Video", message: "Video will be shown in 720p or the highest available quality", preferredStyle: .Alert)
         
         let saveAction = UIAlertAction(title: "Ok", style: .Default) { action in
             let textField = alertController.textFields![0]
             
             if let text = textField.text {
                 if text.characters.count > 10 {
-                    self.startDownloadOfVideoInfoFor(text)
+                    completion(text)
                 } else {
                     self.showErrorAlertControllerWithMessage("URL too short to be valid")
                 }
@@ -97,11 +119,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     /**
      Builds the button that is the input accessory view that is above the keyboard
+     
+     - returns:  button for accessory keyboard view
     */
     func buildAccessoryButton() -> UIView {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: UIScreen.mainScreen().bounds.width, height: 40))
         button.setTitle("Paste from clipboard", forState: .Normal)
         button.backgroundColor = UIColor(colorLiteralRed: 150/256, green: 150/256, blue: 150/256, alpha: 1)
+        button.setTitleColor(UIColor(colorLiteralRed: 75/256, green: 75/256, blue: 75/256, alpha: 1), forState: .Highlighted)
         button.addTarget(self, action: #selector(self.pasteFromClipboard), forControlEvents: .TouchUpInside)
         
         return button
@@ -126,6 +151,29 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         //Gets the video id, which is the last 11 characters of the string
         XCDYouTubeClient.defaultClient().getVideoWithIdentifier(String(url.characters.suffix(11))) { video, error in
             self.videoObject(video, downloadedForVideoAt: url, error: error)
+            UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+            
+        }
+    }
+    
+    func startStreamOfVideoInfoFor(url: String) {
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+        //Gets the video id, which is the last 11 characters of the string
+        XCDYouTubeClient.defaultClient().getVideoWithIdentifier(String(url.characters.suffix(11))) { video, error in
+            
+            if let error = error {
+                self.showErrorAlertControllerWithMessage(error.localizedDescription)
+                return
+            }
+            
+            if let streamUrl = self.highestQualityStreamUrlFor(video) {
+                let player = AVPlayer(URL: NSURL(string: streamUrl)!)
+                let playerViewController = AVPlayerViewController()
+                playerViewController.player = player
+                self.presentViewController(playerViewController, animated: true) {
+                    playerViewController.player!.play()
+                }
+            }
             UIApplication.sharedApplication().networkActivityIndicatorVisible = false
             
         }
@@ -380,6 +428,35 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     //MARK: - Helper methods
     
     /**
+     Gets the highest quality video stream Url
+     
+     - parameter video:      optional video object that was downloaded, contains stream info, title, etc.
+
+     - returns:              optional string containing the highest quality video stream
+     */
+    func highestQualityStreamUrlFor(video: XCDYouTubeVideo?) -> String? {
+        var streamUrl: String?
+        
+        if let highQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.HD720.rawValue]?.absoluteString {
+            
+            //If 720p video exists
+            streamUrl = highQualityStream
+            
+        } else if let mediumQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.Medium360.rawValue]?.absoluteString {
+            
+            //If 360p video exists
+            streamUrl = mediumQualityStream
+            
+        } else if let lowQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.Small240.rawValue]?.absoluteString {
+            
+            //If 240p video exists
+            streamUrl = lowQualityStream
+        }
+        
+        return streamUrl
+    }
+    
+    /**
      Called when the video info for a video is downloaded
      
      - parameter video:      optional video object that was downloaded, contains stream info, title, etc.
@@ -390,26 +467,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if let videoTitle = video?.title {
             print("\(videoTitle)")
             
-            var streamUrl: String?
-            
-            if let highQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.HD720.rawValue]?.absoluteString {
-                
-                //If 720p video exists
-                streamUrl = highQualityStream
-            
-            } else if let mediumQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.Medium360.rawValue]?.absoluteString {
-            
-                //If 360p video exists
-                streamUrl = mediumQualityStream
-            
-            } else if let lowQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.Small240.rawValue]?.absoluteString {
-                
-                //If 240p video exists
-                streamUrl = lowQualityStream
-            }
-            
-            
-            if let video = video, streamUrl = streamUrl {
+            if let video = video, streamUrl = self.highestQualityStreamUrlFor(video) {
                 self.createObjectInCoreDataAndStartDownloadFor(video, withStreamUrl: streamUrl, andYouTubeUrl: youTubeUrl)
                 
                 return
@@ -468,7 +526,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         dispatch_async(dispatch_get_main_queue()) {
             print("Couldn't get video: \(error)")
             
-            let message = error?.userInfo["error"] as? String
+            let message = error?.localizedDescription
             self.showErrorAlertControllerWithMessage(message)
         }
         

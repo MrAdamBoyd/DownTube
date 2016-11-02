@@ -50,6 +50,9 @@ My website is [adamjboyd.com](http://www.adamjboyd.com).
 * Videos now remember where you left off
 * Added about page
 
+1.3:
+* Redesigned cells when downloading videos, making it so more of the title can be seen
+
 ## Contributing
 I'll take all the help I can get! Submit an issue or a pull request and I'll try to get it sorted as soon as I can :)
 

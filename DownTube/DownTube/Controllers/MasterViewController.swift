@@ -366,11 +366,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         print("Resuming download of video \(video.title) by \(video.uploader)")
         if let urlString = video.streamUrl, download = self.activeDownloads[urlString] {
             if let resumeData = download.resumeData {
-                download.downloadTask = downloadsSession.downloadTaskWithResumeData(resumeData)
+                download.downloadTask = self.downloadsSession.downloadTaskWithResumeData(resumeData)
                 download.downloadTask?.resume()
                 download.isDownloading = true
             } else if let url = NSURL(string: download.url) {
-                download.downloadTask = downloadsSession.downloadTaskWithURL(url)
+                download.downloadTask = self.downloadsSession.downloadTaskWithURL(url)
                 download.downloadTask?.resume()
                 download.isDownloading = true
             }

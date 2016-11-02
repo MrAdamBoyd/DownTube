@@ -2,7 +2,7 @@ PODS:
   - MMWormhole (2.0.0):
     - MMWormhole/Core (= 2.0.0)
   - MMWormhole/Core (2.0.0)
-  - XCDYouTubeKit (2.5.2)
+  - XCDYouTubeKit (2.5.3)
 
 DEPENDENCIES:
   - MMWormhole
@@ -10,7 +10,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   MMWormhole: 0cd3fd35a9118b2e2d762b499f54eeaace0be791
-  XCDYouTubeKit: bb81db52d5539f8f34c4081f344980ef38f4644d
+  XCDYouTubeKit: 90690f9e3523735dc93b8024269d991b0cfffe78
 
 PODFILE CHECKSUM: 07b87e2cd774d383698b8873bd9a3da701e9874c
 

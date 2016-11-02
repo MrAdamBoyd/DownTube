@@ -86,12 +86,35 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         alertController.addTextFieldWithConfigurationHandler() { textField in
             textField.placeholder = "Enter YouTube video URL"
             textField.keyboardType = .URL
+            textField.becomeFirstResponder()
+            textField.inputAccessoryView = self.buildAccessoryButton()
         }
         
         alertController.addAction(saveAction)
         alertController.addAction(cancelAction)
         
         self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    
+    /**
+     Builds the button that is the input accessory view that is above the keyboard
+    */
+    func buildAccessoryButton() -> UIView {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: UIScreen.mainScreen().bounds.width, height: 40))
+        button.setTitle("Paste from clipboard", forState: .Normal)
+        button.backgroundColor = UIColor(colorLiteralRed: 150/256, green: 150/256, blue: 150/256, alpha: 1)
+        button.addTarget(self, action: #selector(self.pasteFromClipboard), forControlEvents: .TouchUpInside)
+        
+        return button
+    }
+    
+    /**
+     Pastes the text from the clipboard in the showing alert vc, if it exists
+    */
+    func pasteFromClipboard() {
+        if let alertVC = self.presentedViewController as? UIAlertController {
+            alertVC.textFields![0].text = UIPasteboard.generalPasteboard().string
+        }
     }
     
     /**
@@ -170,7 +193,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 62
+        return self.isCellAtIndexPathDownloading(indexPath) ? 92 : 57
     }
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -221,6 +244,15 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     //MARK: - Extension helper methods
+    
+    func isCellAtIndexPathDownloading(indexPath: NSIndexPath) -> Bool {
+        let video = CoreDataController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as! Video
+        if let streamUrl = video.streamUrl {
+            return self.activeDownloads[streamUrl] != nil
+        }
+        
+        return false
+    }
     
     /**
      Initializes an empty of video URLs to add when the app opens in NSUserDefaults
@@ -798,15 +830,18 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
         if let downloadUrl = downloadTask.originalRequest?.URL?.absoluteString, download = self.activeDownloads[downloadUrl] {
             download.progress = Float(totalBytesWritten)/Float(totalBytesExpectedToWrite)
             let totalSize = NSByteCountFormatter.stringFromByteCount(totalBytesExpectedToWrite, countStyle: NSByteCountFormatterCountStyle.Binary)
-            if let trackIndex = self.videoIndexForDownloadTask(downloadTask), let VideoTableViewCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: trackIndex, inSection: 0)) as? VideoTableViewCell {
+            if let trackIndex = self.videoIndexForDownloadTask(downloadTask), let videoTableViewCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: trackIndex, inSection: 0)) as? VideoTableViewCell {
                 dispatch_async(dispatch_get_main_queue(), {
                     
                     let done = (download.progress == 1)
                     
-                    VideoTableViewCell.progressView.hidden = done
-                    VideoTableViewCell.progressLabel.hidden = done
-                    VideoTableViewCell.progressView.progress = download.progress
-                    VideoTableViewCell.progressLabel.text =  String(format: "%.1f%% of %@",  download.progress * 100, totalSize)
+                    videoTableViewCell.progressView.hidden = done
+                    videoTableViewCell.progressLabel.hidden = done
+                    videoTableViewCell.progressView.progress = download.progress
+                    videoTableViewCell.progressLabel.text =  String(format: "%.1f%% of %@",  download.progress * 100, totalSize)
+                    if done {
+                        self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: trackIndex, inSection: 0)], withRowAnimation: .Automatic)
+                    }
                 })
             }
         }

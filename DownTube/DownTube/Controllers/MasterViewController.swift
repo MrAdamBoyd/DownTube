@@ -85,12 +85,35 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         alertController.addTextFieldWithConfigurationHandler() { textField in
             textField.placeholder = "Enter YouTube video URL"
             textField.keyboardType = .URL
+            textField.becomeFirstResponder()
+            textField.inputAccessoryView = self.buildAccessoryButton()
         }
         
         alertController.addAction(saveAction)
         alertController.addAction(cancelAction)
         
         self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    
+    /**
+     Builds the button that is the input accessory view that is above the keyboard
+    */
+    func buildAccessoryButton() -> UIView {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: UIScreen.mainScreen().bounds.width, height: 40))
+        button.setTitle("Paste from clipboard", forState: .Normal)
+        button.backgroundColor = UIColor(colorLiteralRed: 150/256, green: 150/256, blue: 150/256, alpha: 1)
+        button.addTarget(self, action: #selector(self.pasteFromClipboard), forControlEvents: .TouchUpInside)
+        
+        return button
+    }
+    
+    /**
+     Pastes the text from the clipboard in the showing alert vc, if it exists
+    */
+    func pasteFromClipboard() {
+        if let alertVC = self.presentedViewController as? UIAlertController {
+            alertVC.textFields![0].text = UIPasteboard.generalPasteboard().string
+        }
     }
     
     /**
@@ -816,8 +839,7 @@ extension MasterViewController: NSURLSessionDownloadDelegate {
                     videoTableViewCell.progressView.progress = download.progress
                     videoTableViewCell.progressLabel.text =  String(format: "%.1f%% of %@",  download.progress * 100, totalSize)
                     if done {
-                        self.tableView.beginUpdates()
-                        self.tableView.endUpdates()
+                        self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: trackIndex, inSection: 0)], withRowAnimation: .Automatic)
                     }
                 })
             }

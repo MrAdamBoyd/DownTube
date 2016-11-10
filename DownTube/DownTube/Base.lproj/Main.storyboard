@@ -102,10 +102,10 @@
                                 <rect key="frame" x="0.0" y="172" width="375" height="92"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dDJ-iN-7C4" id="YKm-zx-e49">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="91.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="92"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Uploader" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sz3-i9-8IS">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sz3-i9-8IS">
                                             <rect key="frame" x="39" y="29" width="318" height="17"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -184,10 +184,10 @@
                                 <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <outlet property="cancelButton" destination="l6O-b9-c8r" id="08R-JP-odo"/>
+                                    <outlet property="dateLabel" destination="sz3-i9-8IS" id="F04-gQ-qMC"/>
                                     <outlet property="pauseButton" destination="Wie-aO-Z5T" id="tGm-H6-W5q"/>
                                     <outlet property="progressLabel" destination="GRk-Kd-C1b" id="wNx-X8-gT1"/>
                                     <outlet property="progressView" destination="vXT-wa-cEb" id="ptg-HJ-xrT"/>
-                                    <outlet property="uploaderLabel" destination="sz3-i9-8IS" id="9ZR-Gh-hNC"/>
                                     <outlet property="videoNameLabel" destination="Nne-aZ-0kL" id="Znl-L8-RSB"/>
                                     <outlet property="watchedIndicator" destination="mYD-lc-glF" id="ZrD-Ac-NXA"/>
                                 </connections>

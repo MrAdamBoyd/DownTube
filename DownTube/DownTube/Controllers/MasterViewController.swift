@@ -245,7 +245,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let components = (Calendar.current as NSCalendar).components([.day, .month, .year], from: video.created! as Date)
         
         cell.videoNameLabel.text = video.title
-        cell.uploaderLabel.text = "Downloaded on \(components.year)/\(components.month)/\(components.day)"
+        
+        var labelText = "Downloaded"
+        if let year = components.year, let month = components.month, let day = components.day {
+            labelText += " on \(year)/\(month)/\(day)"
+        }
+        cell.dateLabel.text = labelText
     }
 
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
@@ -352,21 +357,23 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func highestQualityStreamUrlFor(_ video: XCDYouTubeVideo?) -> String? {
         var streamUrl: String?
+        guard let video = video else { return nil }
+        let streamURLs = NSDictionary(dictionary: video.streamURLs)
         
-        if let highQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.HD720.rawValue]?.absoluteString {
+        if let highQualityStream = streamURLs[XCDYouTubeVideoQuality.HD720.rawValue] as? URL {
             
             //If 720p video exists
-            streamUrl = highQualityStream
+            streamUrl = highQualityStream.absoluteString
             
-        } else if let mediumQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.medium360.rawValue]?.absoluteString {
+        } else if let mediumQualityStream = streamURLs[XCDYouTubeVideoQuality.medium360.rawValue] as? URL {
             
             //If 360p video exists
-            streamUrl = mediumQualityStream
+            streamUrl = mediumQualityStream.absoluteString
             
-        } else if let lowQualityStream = video?.streamURLs[XCDYouTubeVideoQuality.small240.rawValue]?.absoluteString {
+        } else if let lowQualityStream = streamURLs[XCDYouTubeVideoQuality.small240.rawValue] as? URL {
             
             //If 240p video exists
-            streamUrl = lowQualityStream
+            streamUrl = lowQualityStream.absoluteString
         }
         
         return streamUrl
@@ -491,7 +498,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             if let match = query.range(of: "&id=.*", options: .regularExpression) {
                 //Trimming the values
                 let low = query.index(match.lowerBound, offsetBy: 4)
-                let high = query.index(match.lowerBound, offsetBy: 20)
+                let high = query.index(match.lowerBound, offsetBy: 21)
                 let videoID = query.substring(with: low..<high)
                 let fullPath = documentsPath.appendingPathComponent(videoID)
                 return URL(fileURLWithPath: fullPath + ".mp4")

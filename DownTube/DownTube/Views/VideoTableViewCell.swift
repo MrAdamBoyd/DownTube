@@ -20,7 +20,7 @@ class VideoTableViewCell: UITableViewCell {
     var delegate: VideoTableViewCellDelegate?
     
     @IBOutlet weak var videoNameLabel: UILabel!
-    @IBOutlet weak var uploaderLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var progressLabel: UILabel!
     @IBOutlet weak var pauseButton: UIButton!

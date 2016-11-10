@@ -10,26 +10,26 @@ import Foundation
 import CoreData
 
 enum WatchState: Equatable {
-    case Unwatched, PartiallyWatched(NSNumber), Watched
+    case unwatched, partiallyWatched(NSNumber), watched
 }
 
 func == (lhs: WatchState, rhs: WatchState) -> Bool {
     switch lhs {
-    case .Watched:
+    case .watched:
         switch rhs {
-        case .Watched:                          return true
+        case .watched:                          return true
         default:                                return false
         }
         
-    case.Unwatched:
+    case.unwatched:
         switch rhs {
-        case .Unwatched:                        return true
+        case .unwatched:                        return true
         default:                                return false
         }
         
-    case .PartiallyWatched(let lhsNumber):
+    case .partiallyWatched(let lhsNumber):
         switch rhs {
-        case .PartiallyWatched(let rhsNumber):  return lhsNumber == rhsNumber
+        case .partiallyWatched(let rhsNumber):  return lhsNumber == rhsNumber
         default:                                return false
         }
     }
@@ -42,35 +42,34 @@ class Video: NSManagedObject {
         
         get {
             if self.userProgress == nil {
-                return .Watched
+                return .watched
             } else if self.userProgress == 0 {
-                return .Unwatched
+                return .unwatched
             } else {
-                return .PartiallyWatched(self.userProgress!)
+                return .partiallyWatched(self.userProgress!)
             }
         }
         
         set {
             switch newValue {
-            case .Unwatched:                        self.userProgress = 0
-            case .Watched:                          self.userProgress = nil
-            case .PartiallyWatched(let number):     self.userProgress = number
+            case .unwatched:                        self.userProgress = 0
+            case .watched:                          self.userProgress = nil
+            case .partiallyWatched(let number):     self.userProgress = number
             }
         }
         
     }
 }
 
-
 extension Video {
 
-    @NSManaged var created: NSDate?
+    @NSManaged var created: Date?
     @NSManaged var quality: NSNumber?
     @NSManaged var streamUrl: String?
     @NSManaged var title: String?
     @NSManaged var uploader: String?
     @NSManaged var youtubeUrl: String?
     @NSManaged var displayOrder: NSNumber?
-    @NSManaged private var userProgress: NSNumber? //nil for done, 0 for unplayed, other for progress
+    @NSManaged fileprivate var userProgress: NSNumber? //nil for done, 0 for unplayed, other for progress
 
 }

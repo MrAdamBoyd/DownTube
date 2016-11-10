@@ -9,19 +9,19 @@
 import Foundation
 
 class VideoDownloadManager {
-    let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
-    var dataTask: NSURLSessionDataTask?
+    let defaultSession = URLSession(configuration: URLSessionConfiguration.default)
+    var dataTask: URLSessionDataTask?
     var activeDownloads: [String: Download] = [:]
     
-    lazy var downloadsSession: NSURLSession = {
-        let configuration = NSURLSessionConfiguration.backgroundSessionConfigurationWithIdentifier("bgSessionConfiguration")
-        let session = NSURLSession(configuration: configuration, delegate: self.delegate, delegateQueue: nil)
+    lazy var downloadsSession: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: "bgSessionConfiguration")
+        let session = URLSession(configuration: configuration, delegate: self.delegate, delegateQueue: nil)
         return session
     }()
     
-    var delegate: NSURLSessionDelegate?
+    var delegate: URLSessionDelegate?
     
-    init(delegate: NSURLSessionDelegate?) {
+    init(delegate: URLSessionDelegate?) {
         self.delegate = delegate
         
         //Need to specifically init this because self has to be used in the argument, which isn't formed until here
@@ -34,11 +34,11 @@ class VideoDownloadManager {
      - parameter video:     Video object
      - parameter onSuccess: closure that is called immediately if the video is valid
      */
-    func startDownload(video: Video, @noescape onSuccess completion: (Int) -> Void) {
+    func startDownload(_ video: Video, onSuccess completion: (Int) -> Void) {
         print("Starting download of video \(video.title) by \(video.uploader)")
-        if let urlString = video.streamUrl, url = NSURL(string: urlString), index = self.videoIndexForStreamUrl(urlString) {
+        if let urlString = video.streamUrl, let url = URL(string: urlString), let index = self.videoIndexForStreamUrl(urlString) {
             let download = Download(url: urlString)
-            download.downloadTask = self.downloadsSession.downloadTaskWithURL(url)
+            download.downloadTask = self.downloadsSession.downloadTask(with: url)
             download.downloadTask?.resume()
             download.isDownloading = true
             self.activeDownloads[download.url] = download
@@ -52,11 +52,11 @@ class VideoDownloadManager {
      
      - parameter video: Video object
      */
-    func pauseDownload(video: Video) {
+    func pauseDownload(_ video: Video) {
         print("Startind download")
-        if let urlString = video.streamUrl, download = self.activeDownloads[urlString] {
+        if let urlString = video.streamUrl, let download = self.activeDownloads[urlString] {
             if download.isDownloading {
-                download.downloadTask?.cancelByProducingResumeData() { data in
+                download.downloadTask?.cancel() { data in
                     if data != nil {
                         download.resumeData = data
                     }
@@ -71,13 +71,12 @@ class VideoDownloadManager {
      
      - parameter video: Video object
      */
-    func cancelDownload(video: Video) {
+    func cancelDownload(_ video: Video) {
         print("Canceling download of video \(video.title) by \(video.uploader)")
-        if let urlString = video.streamUrl, download = self.activeDownloads[urlString] {
+        if let urlString = video.streamUrl, let download = self.activeDownloads[urlString] {
             download.downloadTask?.cancel()
             self.activeDownloads[urlString] = nil
         }
-        
         
     }
     
@@ -86,15 +85,15 @@ class VideoDownloadManager {
      
      - parameter video: Video object
      */
-    func resumeDownload(video: Video) {
+    func resumeDownload(_ video: Video) {
         print("Resuming download of video \(video.title) by \(video.uploader)")
-        if let urlString = video.streamUrl, download = self.activeDownloads[urlString] {
+        if let urlString = video.streamUrl, let download = self.activeDownloads[urlString] {
             if let resumeData = download.resumeData {
-                download.downloadTask = self.downloadsSession.downloadTaskWithResumeData(resumeData)
+                download.downloadTask = self.downloadsSession.downloadTask(withResumeData: resumeData)
                 download.downloadTask?.resume()
                 download.isDownloading = true
-            } else if let url = NSURL(string: download.url) {
-                download.downloadTask = self.downloadsSession.downloadTaskWithURL(url)
+            } else if let url = URL(string: download.url) {
+                download.downloadTask = self.downloadsSession.downloadTask(with: url)
                 download.downloadTask?.resume()
                 download.isDownloading = true
             }
@@ -108,12 +107,10 @@ class VideoDownloadManager {
      
      - returns: optional index
      */
-    func videoIndexForYouTubeUrl(url: String) -> Int? {
-        for (index, object) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerate() {
-            if let video = object as? Video {
-                if url == video.youtubeUrl {
-                    return index
-                }
+    func videoIndexForYouTubeUrl(_ url: String) -> Int? {
+        for (index, video) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerated() {
+            if url == video.youtubeUrl {
+                return index
             }
         }
         
@@ -127,12 +124,10 @@ class VideoDownloadManager {
      
      - returns: optional index
      */
-    func videoIndexForStreamUrl(url: String) -> Int? {
-        for (index, object) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerate() {
-            if let video = object as? Video {
-                if url == video.streamUrl {
-                    return index
-                }
+    func videoIndexForStreamUrl(_ url: String) -> Int? {
+        for (index, video) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerated() {
+            if url == video.streamUrl {
+                return index
             }
         }
         
@@ -146,8 +141,8 @@ class VideoDownloadManager {
      
      - returns: optional index
      */
-    func videoIndexForDownloadTask(downloadTask: NSURLSessionDownloadTask) -> Int? {
-        if let url = downloadTask.originalRequest?.URL?.absoluteString {
+    func videoIndexForDownloadTask(_ downloadTask: URLSessionDownloadTask) -> Int? {
+        if let url = downloadTask.originalRequest?.url?.absoluteString {
             return self.videoIndexForStreamUrl(url)
         }
         

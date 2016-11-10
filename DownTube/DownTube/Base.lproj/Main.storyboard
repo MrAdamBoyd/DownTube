@@ -15,6 +15,7 @@
             <objects>
                 <navigationController title="DownTube" id="RMx-3f-FxP" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" barStyle="black" translucent="NO" id="Pmd-2v-anx">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="barTintColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -38,48 +39,73 @@
                         <color key="sectionIndexBackgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="sectionIndexTrackingBackgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <view key="tableHeaderView" contentMode="scaleToFill" id="6KL-7Q-z5i">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="80"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LaV-Ud-90s">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="80"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="75"/>
                                     <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                     <state key="normal" title="Download New Video">
                                         <color key="titleColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
-                                        <action selector="askUserForURL:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="9aP-dn-OFG"/>
+                                        <action selector="downloadVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="ESe-Gu-sVf"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GEq-Ew-5Sy">
+                                    <rect key="frame" x="0.0" y="75" width="375" height="75"/>
+                                    <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                                    <state key="normal" title="Stream Video">
+                                        <color key="titleColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="streamVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="heX-bU-pKN"/>
                                     </connections>
                                 </button>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sRt-fy-xfj">
-                                    <rect key="frame" x="0.0" y="79" width="375" height="1"/>
+                                    <rect key="frame" x="0.0" y="75" width="375" height="1"/>
                                     <color key="backgroundColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="1" id="ohv-Ul-fuC"/>
                                     </constraints>
                                 </view>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xn1-Wh-ykM">
+                                    <rect key="frame" x="0.0" y="149" width="375" height="1"/>
+                                    <color key="backgroundColor" red="0.66666666669999997" green="0.66666666669999997" blue="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="1" id="5s9-GD-Wtz"/>
+                                    </constraints>
+                                </view>
                             </subviews>
                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
+                                <constraint firstAttribute="trailing" secondItem="Xn1-Wh-ykM" secondAttribute="trailing" id="AXP-zw-yFp"/>
+                                <constraint firstItem="sRt-fy-xfj" firstAttribute="top" secondItem="LaV-Ud-90s" secondAttribute="bottom" id="HeV-hQ-77m"/>
                                 <constraint firstItem="sRt-fy-xfj" firstAttribute="leading" secondItem="6KL-7Q-z5i" secondAttribute="leading" id="Ji0-1w-MkR"/>
-                                <constraint firstAttribute="bottom" secondItem="sRt-fy-xfj" secondAttribute="bottom" id="Ljh-3L-KZV"/>
+                                <constraint firstAttribute="bottom" secondItem="GEq-Ew-5Sy" secondAttribute="bottom" id="Jtm-6u-5En"/>
+                                <constraint firstItem="Xn1-Wh-ykM" firstAttribute="leading" secondItem="6KL-7Q-z5i" secondAttribute="leading" id="UBA-vr-B6B"/>
+                                <constraint firstAttribute="trailing" secondItem="GEq-Ew-5Sy" secondAttribute="trailing" id="UEg-Kg-eUR"/>
+                                <constraint firstItem="GEq-Ew-5Sy" firstAttribute="leading" secondItem="6KL-7Q-z5i" secondAttribute="leading" id="Xv4-NB-YCh"/>
                                 <constraint firstAttribute="trailing" secondItem="LaV-Ud-90s" secondAttribute="trailing" id="YUP-ik-pkV"/>
+                                <constraint firstItem="LaV-Ud-90s" firstAttribute="height" secondItem="6KL-7Q-z5i" secondAttribute="height" multiplier="1:2" id="brO-aA-VhE"/>
                                 <constraint firstItem="LaV-Ud-90s" firstAttribute="top" secondItem="6KL-7Q-z5i" secondAttribute="top" id="cow-3X-QzO"/>
+                                <constraint firstItem="GEq-Ew-5Sy" firstAttribute="height" secondItem="6KL-7Q-z5i" secondAttribute="height" multiplier="1:2" id="ecc-6X-otf"/>
                                 <constraint firstAttribute="trailing" secondItem="sRt-fy-xfj" secondAttribute="trailing" id="hcF-Hd-vf0"/>
+                                <constraint firstAttribute="bottom" secondItem="Xn1-Wh-ykM" secondAttribute="bottom" id="rh6-XE-h2F"/>
                                 <constraint firstItem="LaV-Ud-90s" firstAttribute="leading" secondItem="6KL-7Q-z5i" secondAttribute="leading" id="sdV-TV-khz"/>
-                                <constraint firstAttribute="bottom" secondItem="LaV-Ud-90s" secondAttribute="bottom" id="zHx-ru-DKf"/>
                             </constraints>
                         </view>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="gray" indentationWidth="10" reuseIdentifier="VideoTableViewCell" rowHeight="92" id="dDJ-iN-7C4" customClass="VideoTableViewCell" customModule="DownTube" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="102" width="375" height="92"/>
+                                <rect key="frame" x="0.0" y="172" width="375" height="92"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dDJ-iN-7C4" id="YKm-zx-e49">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="91.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="92"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Uploader" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sz3-i9-8IS">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sz3-i9-8IS">
                                             <rect key="frame" x="39" y="29" width="318" height="17"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -158,10 +184,10 @@
                                 <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <outlet property="cancelButton" destination="l6O-b9-c8r" id="08R-JP-odo"/>
+                                    <outlet property="dateLabel" destination="sz3-i9-8IS" id="F04-gQ-qMC"/>
                                     <outlet property="pauseButton" destination="Wie-aO-Z5T" id="tGm-H6-W5q"/>
                                     <outlet property="progressLabel" destination="GRk-Kd-C1b" id="wNx-X8-gT1"/>
                                     <outlet property="progressView" destination="vXT-wa-cEb" id="ptg-HJ-xrT"/>
-                                    <outlet property="uploaderLabel" destination="sz3-i9-8IS" id="9ZR-Gh-hNC"/>
                                     <outlet property="videoNameLabel" destination="Nne-aZ-0kL" id="Znl-L8-RSB"/>
                                     <outlet property="watchedIndicator" destination="mYD-lc-glF" id="ZrD-Ac-NXA"/>
                                 </connections>

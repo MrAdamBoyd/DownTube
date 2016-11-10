@@ -10,9 +10,9 @@ import Foundation
 import UIKit
 
 protocol VideoTableViewCellDelegate {
-    func pauseTapped(cell: VideoTableViewCell)
-    func resumeTapped(cell: VideoTableViewCell)
-    func cancelTapped(cell: VideoTableViewCell)
+    func pauseTapped(_ cell: VideoTableViewCell)
+    func resumeTapped(_ cell: VideoTableViewCell)
+    func cancelTapped(_ cell: VideoTableViewCell)
 }
 
 class VideoTableViewCell: UITableViewCell {
@@ -20,7 +20,7 @@ class VideoTableViewCell: UITableViewCell {
     var delegate: VideoTableViewCellDelegate?
     
     @IBOutlet weak var videoNameLabel: UILabel!
-    @IBOutlet weak var uploaderLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var progressLabel: UILabel!
     @IBOutlet weak var pauseButton: UIButton!
@@ -36,7 +36,7 @@ class VideoTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        self.setWatchIndicatorState(.Unwatched)
+        self.setWatchIndicatorState(.unwatched)
     }
     
     /**
@@ -44,22 +44,22 @@ class VideoTableViewCell: UITableViewCell {
      
      - parameter state: state of the video
      */
-    func setWatchIndicatorState(state: WatchState) {
+    func setWatchIndicatorState(_ state: WatchState) {
         let maskLayer = CALayer()
-        maskLayer.backgroundColor = UIColor.blackColor().CGColor
+        maskLayer.backgroundColor = UIColor.black.cgColor
         switch state {
-        case .Unwatched:
+        case .unwatched:
             maskLayer.frame = CGRect(x: 0, y: 0, width: 16, height: 16)
-        case .PartiallyWatched(_):
+        case .partiallyWatched(_):
             maskLayer.frame = CGRect(x: 0, y: 0, width: 8, height: 16)
-        case .Watched:
+        case .watched:
             maskLayer.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
         }
         
         self.watchedIndicator.layer.mask = maskLayer
     }
     
-    @IBAction func pauseOrResumeTapped(sender: AnyObject) {
+    @IBAction func pauseOrResumeTapped(_ sender: AnyObject) {
         if self.pauseButton.titleLabel!.text == "Pause" {
             self.delegate?.pauseTapped(self)
         } else {
@@ -67,7 +67,7 @@ class VideoTableViewCell: UITableViewCell {
         }
     }
 
-    @IBAction func cancelTapped(sender: AnyObject) {
+    @IBAction func cancelTapped(_ sender: AnyObject) {
         self.delegate?.cancelTapped(self)
     }
 }

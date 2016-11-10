@@ -15,11 +15,6 @@ import MMWormhole
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
-    //For the downloads
-    let defaultSession = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
-    var dataTask: NSURLSessionDataTask?
-    var activeDownloads: [String: Download] = [:]
-    
     //Commented out because of app group
 //    let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
     
@@ -42,7 +37,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         self.addVideosFromSharedArray()
         
         //Wormhole between extension and app
-<<<<<<< HEAD
 //        self.wormhole.listenForMessageWithIdentifier("youTubeUrl") { messageObject in
 //            self.messageWasReceivedFromExtension(messageObject)
 //        }

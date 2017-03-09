@@ -46,33 +46,32 @@
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="75"/>
                                     <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                    <state key="normal" title="Enter Link for New Video">
+                                    <state key="normal" title="Browse for New Video">
                                         <color key="titleColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
-                                        <action selector="enterLinkForVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="4Yn-DI-FPZ"/>
+                                        <action selector="browseForVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="wZq-h8-FZF"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GEq-Ew-5Sy">
                                     <rect key="frame" x="0.0" y="76" width="375" height="75"/>
                                     <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                    <state key="normal" title="Browse for New Video">
+                                    <state key="normal" title="Enter Link for New Video">
                                         <color key="titleColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
-                                        <action selector="browseForVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="OgL-TQ-jfP"/>
+                                        <action selector="enterLinkForVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="OWJ-JT-pWF"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Dz-n9-Wjt">
                                     <rect key="frame" x="0.0" y="149" width="375" height="75"/>
                                     <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                    <state key="normal" title="Stream Video">
+                                    <state key="normal" title="Stream Video Link">
                                         <color key="titleColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
-                                        <action selector="downloadVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="wvZ-5M-iAZ"/>
                                         <action selector="streamVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="9f5-WE-C69"/>
                                     </connections>
                                 </button>

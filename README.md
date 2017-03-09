@@ -54,6 +54,9 @@ My website is [adamjboyd.com](http://www.adamjboyd.com).
 * Redesigned cells when downloading videos, making it so more of the title can be seen
 * New button for streaming videos. You can stream these videos in the background just like the downloaded videos.
 
+1.3.2:
+* New button for browsing for videos. Opens SFSafariViewController so users don't have to leave app.
+
 ## Contributing
 I'll take all the help I can get! Submit an issue or a pull request and I'll try to get it sorted as soon as I can :)
 

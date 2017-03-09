@@ -11,4 +11,5 @@ import Foundation
 struct Constants {
     static let sharedDefaults = UserDefaults(suiteName: "group.adam.DownTube")!
     static let videosToAdd = "videosToAdd"
+    static let shownSafariDialog = "shownSafariDialogKey"
 }

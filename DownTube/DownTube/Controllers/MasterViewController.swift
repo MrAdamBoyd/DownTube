@@ -12,6 +12,7 @@ import AVKit
 import AVFoundation
 import XCDYouTubeKit
 import MMWormhole
+import SafariServices
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
@@ -55,10 +56,35 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      
      - parameter sender: button
      */
-    @IBAction func downloadVideoAction(_ sender: AnyObject) {
+    @IBAction func enterLinkForVideoAction(_ sender: AnyObject) {
         self.buildAndShowUrlGettingAlertController("Download") { [weak self] text in
             self?.startDownloadOfVideoInfoFor(text)
         }
+    }
+    
+    @IBAction func browseForVideoAction(_ sender: AnyObject) {
+        if UserDefaults.standard.bool(forKey: Constants.shownSafariDialog) {
+            
+            //User has been shown dialog, just show it
+            self.showSafariVC()
+            
+        } else {
+            
+            //Tell user how to use the safari view controller and then proceed
+            UserDefaults.standard.set(true, forKey: Constants.shownSafariDialog)
+            let alertVC = UIAlertController(title: "How to Use", message: "Once you've found a video you want to add, hit the share button and select the \"Add to DownTube\" action on the top row.", preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "Got it", style: .default) { [unowned self] _ in
+                self.showSafariVC()
+            })
+            self.present(alertVC, animated: true, completion: nil)
+            
+        }
+    }
+    
+    /// Shows an SFSafariViewController with youtube loaded
+    func showSafariVC() {
+        let vc = SFSafariViewController(url: URL(string: "https://youtube.com")!)
+        self.present(vc, animated: true, completion: nil)
     }
     
     /**
@@ -480,7 +506,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         
-        self.present(alertController, animated: true, completion: nil)
+        if let safariVC = self.presentedViewController as? SFSafariViewController {
+            //Safari VC is presented, show it there
+            safariVC.present(alertController, animated: true, completion: nil)
+        } else {
+            //Show on this VC
+            self.present(alertController, animated: true, completion: nil)
+        }
+        
     }
     
     /**

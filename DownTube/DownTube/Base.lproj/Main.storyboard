@@ -68,7 +68,7 @@
                                     <rect key="frame" x="0.0" y="149" width="375" height="75"/>
                                     <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                    <state key="normal" title="Stream Video Link">
+                                    <state key="normal" title="Enter Link for Video Stream">
                                         <color key="titleColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>

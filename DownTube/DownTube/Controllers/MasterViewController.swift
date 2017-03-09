@@ -12,13 +12,14 @@ import AVKit
 import AVFoundation
 import XCDYouTubeKit
 import MMWormhole
+import SafariServices
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
     //Commented out because of app group
 //    let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
     
-    var downloadManager: VideoDownloadManager!
+    var videoManager: VideoManager!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +31,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         CoreDataController.sharedController.fetchedResultsController.delegate = self
         
-        self.downloadManager = VideoDownloadManager(delegate: self)
+        self.videoManager = VideoManager(delegate: self)
         
         self.setUpSharedVideoListIfNeeded()
         
@@ -56,10 +57,35 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      
      - parameter sender: button
      */
-    @IBAction func downloadVideoAction(_ sender: AnyObject) {
+    @IBAction func enterLinkForVideoAction(_ sender: AnyObject) {
         self.buildAndShowUrlGettingAlertController("Download") { [weak self] text in
             self?.startDownloadOfVideoInfoFor(text)
         }
+    }
+    
+    @IBAction func browseForVideoAction(_ sender: AnyObject) {
+        if UserDefaults.standard.bool(forKey: Constants.shownSafariDialog) {
+            
+            //User has been shown dialog, just show it
+            self.showSafariVC()
+            
+        } else {
+            
+            //Tell user how to use the safari view controller and then proceed
+            UserDefaults.standard.set(true, forKey: Constants.shownSafariDialog)
+            let alertVC = UIAlertController(title: "How to Use", message: "Once you've found a video you want to add, hit the share button and select the \"Add to DownTube\" action on the top row.", preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "Got it", style: .default) { [unowned self] _ in
+                self.showSafariVC()
+            })
+            self.present(alertVC, animated: true, completion: nil)
+            
+        }
+    }
+    
+    /// Shows an SFSafariViewController with youtube loaded
+    func showSafariVC() {
+        let vc = SFSafariViewController(url: URL(string: "https://youtube.com")!)
+        self.present(vc, animated: true, completion: nil)
     }
     
     /**
@@ -196,7 +222,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         //Only show the download controls if video is currently downloading
         var showDownloadControls = false
-        if let streamUrl = video.streamUrl, let download = self.downloadManager.activeDownloads[streamUrl] {
+        if let streamUrl = video.streamUrl, let download = self.videoManager.activeDownloads[streamUrl] {
             showDownloadControls = true
             cell.progressView.progress = download.progress
             cell.progressLabel.text = (download.isDownloading) ? "Downloading..." : "Paused"
@@ -207,7 +233,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         cell.progressLabel.isHidden = !showDownloadControls
         
         //Hiding or showing the download button
-        let downloaded = self.localFileExistsFor(video)
+        let downloaded = self.videoManager.localFileExistsFor(video)
         cell.selectionStyle = downloaded ? .gray : .none
         
         //Hiding or showing the cancel and pause buttons
@@ -219,7 +245,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
-        if self.localFileExistsFor(video) {
+        if self.videoManager.localFileExistsFor(video) {
             self.playDownload(video, atIndexPath: indexPath)
         }
         tableView.deselectRow(at: indexPath, animated: true)
@@ -291,7 +317,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func isCellAtIndexPathDownloading(_ indexPath: IndexPath) -> Bool {
         let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
         if let streamUrl = video.streamUrl {
-            return self.downloadManager.activeDownloads[streamUrl] != nil
+            return self.videoManager.activeDownloads[streamUrl] != nil
         }
         
         return false
@@ -413,7 +439,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func createObjectInCoreDataAndStartDownloadFor(_ video: XCDYouTubeVideo?, withStreamUrl streamUrl: String, andYouTubeUrl youTubeUrl: String) {
         
         //Make sure the stream URL doesn't exist already
-        guard self.downloadManager.videoIndexForYouTubeUrl(youTubeUrl) == nil else {
+        guard self.videoManager.videoIndexForYouTubeUrl(youTubeUrl) == nil else {
             self.showErrorAlertControllerWithMessage("Video already downloaded")
             return
         }
@@ -435,7 +461,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         
         //Starts the download of the video
-        self.downloadManager.startDownload(newVideo) { index in
+        self.videoManager.startDownload(newVideo) { index in
             self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
         }
     }
@@ -481,47 +507,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let cancelAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    /**
-     Generates a permanent local file path to save a track to by appending the lastPathComponent of the URL to the path of the app's documents directory
-     
-     - parameter previewUrl: URL of the video
-     
-     - returns: URL to the file
-     */
-    func localFilePathForUrl(_ previewUrl: String) -> URL? {
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-        if let url = URL(string: previewUrl), let query = url.query {
-            //Getting the video ID using regex
-            
-            if let match = query.range(of: "&id=.*", options: .regularExpression) {
-                //Trimming the values
-                let low = query.index(match.lowerBound, offsetBy: 4)
-                let high = query.index(match.lowerBound, offsetBy: 21)
-                let videoID = query.substring(with: low..<high)
-                let fullPath = documentsPath.appendingPathComponent(videoID)
-                return URL(fileURLWithPath: fullPath + ".mp4")
-            }
-        }
-        return nil
-    }
-    
-    /**
-     Determines whether or not a file exists for the video
-     
-     - parameter video: Video object
-     
-     - returns: true if object exists at path, false otherwise
-     */
-    func localFileExistsFor(_ video: Video) -> Bool {
-        if let urlString = video.streamUrl, let localUrl = self.localFilePathForUrl(urlString) {
-            var isDir: ObjCBool = false
-            return FileManager.default.fileExists(atPath: localUrl.path, isDirectory: &isDir)
+        if let safariVC = self.presentedViewController as? SFSafariViewController {
+            //Safari VC is presented, show it there
+            safariVC.present(alertController, animated: true, completion: nil)
+        } else {
+            //Show on this VC
+            self.present(alertController, animated: true, completion: nil)
         }
         
-        return false
     }
     
     /**
@@ -531,9 +524,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func deleteDownloadedVideoAt(_ indexPath: IndexPath) {
         let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
-        self.downloadManager.cancelDownload(video)
+        self.videoManager.cancelDownload(video)
         
-        if let urlString = video.streamUrl, let fileUrl = self.localFilePathForUrl(urlString) {
+        if let urlString = video.streamUrl, let fileUrl = self.videoManager.localFilePathForUrl(urlString) {
             //Removing the file at the path if one exists
             do {
                 try FileManager.default.removeItem(at: fileUrl)
@@ -569,7 +562,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      - parameter indexPath: index path of the video
      */
     func playDownload(_ video: Video, atIndexPath indexPath: IndexPath) {
-        if let urlString = video.streamUrl, let url = self.localFilePathForUrl(urlString) {
+        if let urlString = video.streamUrl, let url = self.videoManager.localFilePathForUrl(urlString) {
             let player = AVPlayer(url: url)
             
             //Seek to time if the time is saved
@@ -666,7 +659,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         
         //Sharing the video
-        if let streamUrl = video.streamUrl, let localUrl = self.localFilePathForUrl(streamUrl) {
+        if let streamUrl = video.streamUrl, let localUrl = self.videoManager.localFilePathForUrl(streamUrl) {
             actions.append(UIAlertAction(title: "Share", style: .default) { [weak self] _ in
                 let activityViewController = UIActivityViewController(activityItems: [localUrl], applicationActivities: nil)
                 self?.present(activityViewController, animated: true, completion: nil)
@@ -685,7 +678,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     func pauseTapped(_ cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPath(for: cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
-            self.downloadManager.pauseDownload(video)
+            self.videoManager.pauseDownload(video)
             self.tableView.reloadRows(at: [IndexPath(row: indexPath.row, section: 0)], with: .none)
         }
     }
@@ -693,7 +686,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     func resumeTapped(_ cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPath(for: cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
-            self.downloadManager.resumeDownload(video)
+            self.videoManager.resumeDownload(video)
             self.tableView.reloadRows(at: [IndexPath(row: indexPath.row, section: 0)], with: .none)
         }
     }
@@ -701,89 +694,35 @@ extension MasterViewController: VideoTableViewCellDelegate {
     func cancelTapped(_ cell: VideoTableViewCell) {
         if let indexPath = tableView.indexPath(for: cell) {
             let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
-            self.downloadManager.cancelDownload(video)
+            self.videoManager.cancelDownload(video)
             tableView.reloadRows(at: [IndexPath(row: indexPath.row, section: 0)], with: .none)
             self.deleteVideoObjectAt(indexPath)
         }
     }
 }
 
-//MARK: - NSURLSessionDownloadDelegate
+// MARK: - VideoManagerDelegate
 
-extension MasterViewController: URLSessionDownloadDelegate {
+extension MasterViewController: VideoManagerDelegate {
+    func reloadRows(_ rows: [IndexPath]) {
+        DispatchQueue.main.async() {
+            self.tableView.reloadRows(at: rows, with: .none)
+        }
+    }
     
-    //Download finished
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        if let originalURL = downloadTask.originalRequest?.url?.absoluteString {
+    func updateDownloadProgress(_ download: Download, at index: Int, with totalSize: String) {
+        DispatchQueue.main.async() {
+            if let videoTableViewCell = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VideoTableViewCell {
             
-            if let destinationURL = self.localFilePathForUrl(originalURL) {
-                print("Destination URL: \(destinationURL)")
+                let done = (download.progress == 1)
                 
-                let fileManager = FileManager.default
-                
-                //Removing the file at the path, just in case one exists
-                do {
-                    try fileManager.removeItem(at: destinationURL)
-                } catch {
-                    print("No file to remove. Proceeding...")
+                videoTableViewCell.progressView.isHidden = done
+                videoTableViewCell.progressLabel.isHidden = done
+                videoTableViewCell.progressView.progress = download.progress
+                videoTableViewCell.progressLabel.text = String(format: "%.1f%% of %@", download.progress * 100, totalSize)
+                if done {
+                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
                 }
-                
-                //Moving the downloaded file to the new location
-                do {
-                    try fileManager.copyItem(at: location, to: destinationURL)
-                } catch let error as NSError {
-                    print("Could not copy file: \(error.localizedDescription)")
-                }
-                
-                //Updating the cell
-                if let url = downloadTask.originalRequest?.url?.absoluteString {
-                    self.downloadManager.activeDownloads[url] = nil
-                    
-                    if let videoIndex = self.downloadManager.videoIndexForDownloadTask(downloadTask) {
-                        DispatchQueue.main.async(execute: {
-                            self.tableView.reloadRows(at: [IndexPath(row: videoIndex, section: 0)], with: .none)
-                        })
-                    }
-                }
-            }
-        }
-    }
-    
-    //Updating download status
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        
-        if let downloadUrl = downloadTask.originalRequest?.url?.absoluteString, let download = self.downloadManager.activeDownloads[downloadUrl] {
-            download.progress = Float(totalBytesWritten)/Float(totalBytesExpectedToWrite)
-            let totalSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: ByteCountFormatter.CountStyle.binary)
-            if let trackIndex = self.downloadManager.videoIndexForDownloadTask(downloadTask), let videoTableViewCell = tableView.cellForRow(at: IndexPath(row: trackIndex, section: 0)) as? VideoTableViewCell {
-                DispatchQueue.main.async(execute: {
-                    
-                    let done = (download.progress == 1)
-                    
-                    videoTableViewCell.progressView.isHidden = done
-                    videoTableViewCell.progressLabel.isHidden = done
-                    videoTableViewCell.progressView.progress = download.progress
-                    videoTableViewCell.progressLabel.text = String(format: "%.1f%% of %@", download.progress * 100, totalSize)
-                    if done {
-                        self.tableView.reloadRows(at: [IndexPath(row: trackIndex, section: 0)], with: .automatic)
-                    }
-                })
-            }
-        }
-    }
-}
-
-//MARK: - NSURLSessionDelegate
-
-extension MasterViewController: URLSessionDelegate {
-    
-    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
-        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-            if let completionHandler = appDelegate.backgroundSessionCompletionHandler {
-                appDelegate.backgroundSessionCompletionHandler = nil
-                DispatchQueue.main.async(execute: {
-                    completionHandler()
-                })
             }
         }
     }

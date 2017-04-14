@@ -474,7 +474,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func showErrorAndRemoveErroredVideos(_ error: NSError?) {
         //Show error to user, remove all unused cells from list
         DispatchQueue.main.async {
-            print("Couldn't get video: \(error)")
+            if let error = error {
+                print("Couldn't get video: \(error.localizedDescription)")
+            } else {
+                print("Couldn't get video: unknown error")
+            }
             
             let message = error?.localizedDescription
             self.showErrorAlertControllerWithMessage(message)

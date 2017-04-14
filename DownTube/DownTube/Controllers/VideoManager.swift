@@ -44,7 +44,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
      - parameter onSuccess: closure that is called immediately if the video is valid
      */
     func startDownload(_ video: Video, onSuccess completion: (Int) -> Void) {
-        print("Starting download of video \(video.title) by \(video.uploader)")
+        print("Starting download of video \(video.title ?? "unknown video")")
         if let urlString = video.streamUrl, let url = URL(string: urlString), let index = self.videoIndexForStreamUrl(urlString) {
             let download = Download(url: urlString)
             download.downloadTask = self.downloadsSession.downloadTask(with: url)
@@ -81,7 +81,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
      - parameter video: Video object
      */
     func cancelDownload(_ video: Video) {
-        print("Canceling download of video \(video.title) by \(video.uploader)")
+        print("Canceling download of video \(video.title ?? "unknown video")")
         if let urlString = video.streamUrl, let download = self.activeDownloads[urlString] {
             download.downloadTask?.cancel()
             self.activeDownloads[urlString] = nil
@@ -95,7 +95,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
      - parameter video: Video object
      */
     func resumeDownload(_ video: Video) {
-        print("Resuming download of video \(video.title) by \(video.uploader)")
+        print("Resuming download of video \(video.title ?? "unknown video")")
         if let urlString = video.streamUrl, let download = self.activeDownloads[urlString] {
             if let resumeData = download.resumeData {
                 download.downloadTask = self.downloadsSession.downloadTask(withResumeData: resumeData)

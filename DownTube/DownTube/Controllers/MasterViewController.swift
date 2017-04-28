@@ -609,8 +609,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      - parameter gestureRecognizer: gesture recognizer
      */
     func handleLongTouchWithGestureRecognizer(_ gestureRecognizer: UILongPressGestureRecognizer) {
-        
-        if gestureRecognizer.state == .ended {
+        if gestureRecognizer.state == .changed || gestureRecognizer.state == .ended {
             
             let point = gestureRecognizer.location(in: self.tableView)
             guard let indexPath = self.tableView.indexPathForRow(at: point) else {
@@ -645,27 +644,42 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         //If the user progress isn't nil, that means that the video is unwatched or partially watched
         if video.watchProgress != .watched {
-            actions.append(UIAlertAction(title: "Mark as Watched", style: .default) { [weak self] _ in
+            actions.append(UIAlertAction(title: "Mark as Watched", style: .default) { [unowned self] _ in
                 video.watchProgress = .watched
                 CoreDataController.sharedController.saveContext()
-                self?.tableView.reloadRows(at: [indexPath], with: .none)
+                self.tableView.reloadRows(at: [indexPath], with: .none)
             })
         }
         
         //If the user progress isn't 0, the video is either partially watched or done
         if video.watchProgress != .unwatched {
-            actions.append(UIAlertAction(title: "Mark as Unwatched", style: .default) { [weak self] _ in
+            actions.append(UIAlertAction(title: "Mark as Unwatched", style: .default) { [unowned self] _ in
                 video.watchProgress = .unwatched
                 CoreDataController.sharedController.saveContext()
-                self?.tableView.reloadRows(at: [indexPath], with: .none)
+                self.tableView.reloadRows(at: [indexPath], with: .none)
             })
         }
         
         //Sharing the video
         if let streamUrl = video.streamUrl, let localUrl = self.videoManager.localFilePathForUrl(streamUrl) {
-            actions.append(UIAlertAction(title: "Share", style: .default) { [weak self] _ in
+            
+            if let localPath = self.videoManager.localFileLocationForUrl(streamUrl) {
+                actions.append(UIAlertAction(title: "Edit Video", style: .default) { [unowned self] _ in
+                    let editor = UIVideoEditorController()
+                    editor.delegate = self
+                    editor.videoPath = localPath
+                    editor.videoMaximumDuration = 0
+                    editor.videoQuality = .typeIFrame1280x720
+                    
+                    self.videoManager.currentlyEditingVideo = video
+                    
+                    self.present(editor, animated: true, completion: nil)
+                })
+            }
+            
+            actions.append(UIAlertAction(title: "Share", style: .default) { [unowned self] _ in
                 let activityViewController = UIActivityViewController(activityItems: [localUrl], applicationActivities: nil)
-                self?.present(activityViewController, animated: true, completion: nil)
+                self.present(activityViewController, animated: true, completion: nil)
             })
         }
         
@@ -728,5 +742,26 @@ extension MasterViewController: VideoManagerDelegate {
                 }
             }
         }
+    }
+}
+
+extension MasterViewController: UINavigationControllerDelegate, UIVideoEditorControllerDelegate {
+    func videoEditorController(_ editor: UIVideoEditorController, didSaveEditedVideoToPath editedVideoPath: String) {
+        self.videoManager.saveCurrentlyEditedVideo(editedVideoPath)
+        
+        self.tableView.reloadData()
+        editor.dismiss(animated: true, completion: nil)
+    }
+    
+    func videoEditorController(_ editor: UIVideoEditorController, didFailWithError error: Error) {
+        print("Error: " + error.localizedDescription)
+        self.videoManager.currentlyEditingVideo = nil
+        editor.dismiss(animated: true, completion: nil)
+    }
+    
+    func videoEditorControllerDidCancel(_ editor: UIVideoEditorController) {
+        print("User cancelled edit of video")
+        self.videoManager.currentlyEditingVideo = nil
+        editor.dismiss(animated: true, completion: nil)
     }
 }

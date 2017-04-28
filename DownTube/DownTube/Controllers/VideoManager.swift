@@ -19,6 +19,8 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
     var dataTask: URLSessionDataTask?
     var activeDownloads: [String: Download] = [:]
     
+    var currentlyEditingVideo: Video?
+    
     lazy var downloadsSession: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: "bgSessionConfiguration")
         let session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
@@ -184,6 +186,18 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
         return nil
     }
     
+    /// Gets the string path location for the video. Without the file:// prefix
+    ///
+    /// - Parameter previewUrl: URL of the video
+    /// - Returns: string path to the file
+    func localFileLocationForUrl(_ previewUrl: String) -> String? {
+        guard let stringPath = self.localFilePathForUrl(previewUrl)?.absoluteString else {
+            return nil
+        }
+        
+        return stringPath.substring(from: stringPath.index(stringPath.startIndex, offsetBy: 7))
+    }
+    
     /**
      Determines whether or not a file exists for the video
      
@@ -198,6 +212,40 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
         }
         
         return false
+    }
+    
+    // MARK: - Editing videos
+    
+    /// Saves the trimmed video at the specified location to the location where the video's video file should be
+    ///
+    /// - Parameter trimmedLocation: string path of the trimmed video
+    func saveCurrentlyEditedVideo(_ trimmedLocation: String) {
+        guard let video = self.currentlyEditingVideo, let streamUrl = video.streamUrl else {
+            print("Couldn't access current video")
+            return
+        }
+        
+        self.currentlyEditingVideo = nil
+        
+        let fromUrl = URL(fileURLWithPath: trimmedLocation)
+        let toUrl = self.localFilePathForUrl(streamUrl)
+        
+        switch video.watchProgress {
+        case .partiallyWatched(_):      video.watchProgress = .unwatched
+        default:                        break
+        }
+        
+        CoreDataController.sharedController.saveContext()
+        
+        if let toUrl = toUrl {
+            do {
+                try FileManager.default.removeItem(at: toUrl)
+                try FileManager.default.copyItem(at: fromUrl, to: toUrl)
+                print("File moved successfully")
+            } catch let error as NSError {
+                print("Could not copy file: \(error.localizedDescription)")
+            }
+        }
     }
     
     // MARK: - URLSessionDownloadDelegate

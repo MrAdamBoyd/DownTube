@@ -20,6 +20,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 //    let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
     
     var videoManager: VideoManager!
+    var fileManager: FileManager = .default
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +32,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         CoreDataController.sharedController.fetchedResultsController.delegate = self
         
-        self.videoManager = VideoManager(delegate: self)
+        self.videoManager = VideoManager(delegate: self, fileManager: self.fileManager)
         
         self.setUpSharedVideoListIfNeeded()
         
@@ -41,6 +42,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 //        self.wormhole.listenForMessageWithIdentifier("youTubeUrl") { messageObject in
 //            self.messageWasReceivedFromExtension(messageObject)
 //        }
+        
+        // Deletes any files that shouldn't be there
+        DispatchQueue.global(qos: .background).async {
+            self.videoManager.cleanUpDownloadedFiles(from: CoreDataController.sharedController)
+        }
     }
     
     /**
@@ -262,9 +268,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            self.deleteDownloadedVideoAt(indexPath)
+            _ = self.deleteDownloadedVideo(at: indexPath)
             
-            self.deleteVideoObjectAt(indexPath)
+            self.deleteVideoObject(at: indexPath)
         }
     }
 
@@ -495,8 +501,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         //Deleting them
         for indexPath in objectsToRemove {
-            self.deleteDownloadedVideoAt(indexPath)
-            self.deleteVideoObjectAt(indexPath)
+            _ = self.deleteDownloadedVideo(at: indexPath)
+            self.deleteVideoObject(at: indexPath)
         }
 
     }
@@ -521,24 +527,17 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
     }
     
-    /**
-     Deletes the file for the video at the index path
-     
-     - parameter indexPath: index path of the cell that represents the video
-     */
-    func deleteDownloadedVideoAt(_ indexPath: IndexPath) {
+    /// Deletes the downloaded video at the specified index path
+    ///
+    /// - Parameter indexPath: indexpath of the video to delete
+    /// - Returns: video that was deleted
+    func deleteDownloadedVideo(at indexPath: IndexPath) -> Video {
         let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
-        self.videoManager.cancelDownload(video)
         
-        if let urlString = video.streamUrl, let fileUrl = self.videoManager.localFilePathForUrl(urlString) {
-            //Removing the file at the path if one exists
-            do {
-                try FileManager.default.removeItem(at: fileUrl)
-                print("Successfully removed file")
-            } catch {
-                print("No file to remove. Proceeding...")
-            }
-        }
+        self.videoManager.cancelDownload(video)
+        _ = self.videoManager.deleteDownloadedVideo(for: video)
+        
+        return video
     }
     
     /**
@@ -546,7 +545,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      
      - parameter indexPath: location of the video
      */
-    func deleteVideoObjectAt(_ indexPath: IndexPath) {
+    func deleteVideoObject(at indexPath: IndexPath) {
         let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
         
         let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
@@ -714,7 +713,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
             let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
             self.videoManager.cancelDownload(video)
             tableView.reloadRows(at: [IndexPath(row: indexPath.row, section: 0)], with: .none)
-            self.deleteVideoObjectAt(indexPath)
+            self.deleteVideoObject(at: indexPath)
         }
     }
 }

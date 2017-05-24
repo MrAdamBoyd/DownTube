@@ -28,12 +28,19 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
     }()
     
     var delegate: VideoManagerDelegate?
+    var fileManager: FileManager = .default
     
-    init(delegate: VideoManagerDelegate?) {
+    // Path where the video files are stored
+    var documentsPath: String {
+        return NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+    }
+    
+    init(delegate: VideoManagerDelegate?, fileManager: FileManager) {
         
         super.init()
         
         self.delegate = delegate
+        self.fileManager = fileManager
         
         //Need to specifically init this because self has to be used in the argument, which isn't formed until here
         _ = self.downloadsSession
@@ -162,36 +169,44 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
     
     // MARK: - Locations of downloads
     
+    /// Gets the file name of the video with the stream URL. Doesn't include path
+    ///
+    /// - Parameter streamUrl: youtube stream url
+    /// - Returns: file's name
+    fileprivate func fileNameForVideo(withStreamUrl streamUrl: String) -> String? {
+        guard let url = URL(string: streamUrl), let query = url.query else { return nil }
+        
+        //Getting the video ID using regex
+        guard let match = query.range(of: "&id=.*", options: .regularExpression) else { return nil }
+        
+        //Trimming the values
+        let low = query.index(match.lowerBound, offsetBy: 4)
+        let high = query.index(match.lowerBound, offsetBy: 21)
+        
+        //Only use part of the Url for the file name
+        return query.substring(with: low..<high) + ".mp4"
+    }
+    
     /**
      Generates a permanent local file path to save a track to by appending the lastPathComponent of the URL to the path of the app's documents directory
      
-     - parameter previewUrl: URL of the video
+     - parameter streamUrl: URL of the video
      
      - returns: URL to the file
      */
-    func localFilePathForUrl(_ previewUrl: String) -> URL? {
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-        if let url = URL(string: previewUrl), let query = url.query {
-            //Getting the video ID using regex
-            
-            if let match = query.range(of: "&id=.*", options: .regularExpression) {
-                //Trimming the values
-                let low = query.index(match.lowerBound, offsetBy: 4)
-                let high = query.index(match.lowerBound, offsetBy: 21)
-                let videoID = query.substring(with: low..<high)
-                let fullPath = documentsPath.appendingPathComponent(videoID)
-                return URL(fileURLWithPath: fullPath + ".mp4")
-            }
-        }
-        return nil
+    func localFilePathForUrl(_ streamUrl: String) -> URL? {
+        guard let fileName = self.fileNameForVideo(withStreamUrl: streamUrl) else { return nil }
+        
+        let fullPath = (self.documentsPath as NSString).appendingPathComponent(fileName)
+        return URL(fileURLWithPath: fullPath)
     }
     
     /// Gets the string path location for the video. Without the file:// prefix
     ///
-    /// - Parameter previewUrl: URL of the video
+    /// - Parameter streamUrl: URL of the video
     /// - Returns: string path to the file
-    func localFileLocationForUrl(_ previewUrl: String) -> String? {
-        guard let stringPath = self.localFilePathForUrl(previewUrl)?.absoluteString else {
+    func localFileLocationForUrl(_ streamUrl: String) -> String? {
+        guard let stringPath = self.localFilePathForUrl(streamUrl)?.absoluteString else {
             return nil
         }
         
@@ -208,10 +223,59 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
     func localFileExistsFor(_ video: Video) -> Bool {
         if let urlString = video.streamUrl, let localUrl = self.localFilePathForUrl(urlString) {
             var isDir: ObjCBool = false
-            return FileManager.default.fileExists(atPath: localUrl.path, isDirectory: &isDir)
+            return self.fileManager.fileExists(atPath: localUrl.path, isDirectory: &isDir)
         }
         
         return false
+    }
+    
+    // MARK: - Cleaning up downloads
+    
+    /// This makes sure that all videos located in the documents folder for DownTube actually have a Video object that they're attached to. This will delete all files not attached to a video.
+    func cleanUpDownloadedFiles(from coreDataController: CoreDataController) {
+        let streamUrls = coreDataController.fetchedResultsController.fetchedObjects?.flatMap({ $0.streamUrl }) ?? []
+        let filesThatShouldExist = Set(streamUrls.flatMap({ self.fileNameForVideo(withStreamUrl: $0) }))
+        
+        let contents = try? self.fileManager.contentsOfDirectory(atPath: self.documentsPath as String)
+        let videosInFolder = Set(contents?.filter({ $0.hasSuffix("mp4") }) ?? [])
+        
+        let videoFilesToDelete = videosInFolder.subtracting(filesThatShouldExist)
+        
+        print("Number of files that shouldn't be there: \(videoFilesToDelete.count)")
+        
+        for videoFile in videoFilesToDelete {
+            self.deleteDownloadedVideo(withFileName: videoFile)
+        }
+    }
+    
+    /// Deletes the video file associated with the provided video
+    ///
+    /// - Parameter video: video to delete the file for
+    /// - Returns: true if success, false otherwise
+    func deleteDownloadedVideo(for video: Video) -> Bool {
+        guard let streamUrl = video.streamUrl else { return false }
+        
+        guard let fileName = self.fileNameForVideo(withStreamUrl: streamUrl) else { return false }
+        
+        return self.deleteDownloadedVideo(withFileName: fileName)
+    }
+    
+    /// Uses the filemanager to delete any downloaded video with the stream
+    ///
+    /// - Parameter fileName: local file name of the file. Shouldn't include any path
+    @discardableResult fileprivate func deleteDownloadedVideo(withFileName fileName: String) -> Bool {
+        let fullPath = (self.documentsPath as NSString).appendingPathComponent(fileName)
+        let urlOfFile = URL(fileURLWithPath: fullPath)
+        
+        do {
+            print("Successfully deleted file: \(fileName)")
+            try self.fileManager.removeItem(at: urlOfFile)
+            return true
+        } catch let error {
+            print("Couldn't delete file \(fileName): \(error.localizedDescription)")
+            return false
+        }
+        
     }
     
     // MARK: - Editing videos
@@ -239,8 +303,8 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
         
         if let toUrl = toUrl {
             do {
-                try FileManager.default.removeItem(at: toUrl)
-                try FileManager.default.copyItem(at: fromUrl, to: toUrl)
+                try self.fileManager.removeItem(at: toUrl)
+                try self.fileManager.copyItem(at: fromUrl, to: toUrl)
                 print("File moved successfully")
             } catch let error as NSError {
                 print("Could not copy file: \(error.localizedDescription)")
@@ -257,7 +321,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
             if let destinationURL = self.localFilePathForUrl(originalURL) {
                 print("Destination URL: \(destinationURL)")
                 
-                let fileManager = FileManager.default
+                let fileManager = self.fileManager
                 
                 //Removing the file at the path, just in case one exists
                 do {

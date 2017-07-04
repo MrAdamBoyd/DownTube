@@ -452,7 +452,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
         let entity = CoreDataController.sharedController.fetchedResultsController.fetchRequest.entity!
-        let newVideo = NSEntityDescription.insertNewObject(forEntityName: entity.name!, into: context) as! Video
+        var newVideo = NSEntityDescription.insertNewObject(forEntityName: entity.name!, into: context) as! Video
         
         newVideo.created = Date()
         newVideo.youtubeUrl = youTubeUrl
@@ -565,6 +565,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      - parameter indexPath: index path of the video
      */
     func playDownload(_ video: Video, atIndexPath indexPath: IndexPath) {
+        var video = video
         if let urlString = video.streamUrl, let url = self.videoManager.localFilePathForUrl(urlString) {
             self.playVideo(with: url, nowPlayingInfo: [MPMediaItemPropertyTitle: video.title ?? "Unknown Title"], watchProgress: video.watchProgress) { [weak self] newProgress in
                 video.watchProgress = newProgress
@@ -662,6 +663,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func buildActionsForLongPressOn(video: Video, at indexPath: IndexPath) -> [UIAlertAction] {
         var actions: [UIAlertAction] = []
+        var video = video
         
         //If the user progress isn't nil, that means that the video is unwatched or partially watched
         if video.watchProgress != .watched {

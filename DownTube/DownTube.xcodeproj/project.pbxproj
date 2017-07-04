@@ -13,6 +13,8 @@
 		66424C661D0535C1004C75B6 /* VideoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C651D0535C1004C75B6 /* VideoTableViewCell.swift */; };
 		66424C681D053684004C75B6 /* Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66424C671D053684004C75B6 /* Download.swift */; };
 		664C9C841D091F3C00B4D413 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66BF69BC1CFD2AE3004FEFF7 /* Assets.xcassets */; };
+		66573B5F1F0BFA0300D45DAC /* StreamingVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66573B5E1F0BFA0300D45DAC /* StreamingVideo.swift */; };
+		66573B631F0BFA7F00D45DAC /* Watchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66573B621F0BFA7F00D45DAC /* Watchable.swift */; };
 		665C0A221DCA2C1E00C68C1D /* VideoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0A211DCA2C1E00C68C1D /* VideoManager.swift */; };
 		6698ABCB1D0910AF00985368 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698ABCA1D0910AF00985368 /* ShareViewController.swift */; };
 		6698ABCE1D0910AF00985368 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6698ABCC1D0910AF00985368 /* MainInterface.storyboard */; };
@@ -74,6 +76,9 @@
 		66424C651D0535C1004C75B6 /* VideoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoTableViewCell.swift; path = Views/VideoTableViewCell.swift; sourceTree = "<group>"; };
 		66424C671D053684004C75B6 /* Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Download.swift; path = Models/Download.swift; sourceTree = "<group>"; };
 		664C9C831D09170900B4D413 /* DownTube.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = DownTube.entitlements; sourceTree = "<group>"; };
+		66573B5D1F0BF9A400D45DAC /* Downtube 1.3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Downtube 1.3.xcdatamodel"; sourceTree = "<group>"; };
+		66573B5E1F0BFA0300D45DAC /* StreamingVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StreamingVideo.swift; path = ../StreamingVideo.swift; sourceTree = "<group>"; };
+		66573B621F0BFA7F00D45DAC /* Watchable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Watchable.swift; sourceTree = "<group>"; };
 		665C0A211DCA2C1E00C68C1D /* VideoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoManager.swift; path = Controllers/VideoManager.swift; sourceTree = "<group>"; };
 		6698ABC81D0910AF00985368 /* DownTubeShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DownTubeShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		6698ABCA1D0910AF00985368 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
@@ -162,8 +167,17 @@
 			children = (
 				66424C671D053684004C75B6 /* Download.swift */,
 				66EAF6861D2C84A1003D4BA8 /* Video.swift */,
+				66573B5E1F0BFA0300D45DAC /* StreamingVideo.swift */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		66573B611F0BFA7100D45DAC /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				66573B621F0BFA7F00D45DAC /* Watchable.swift */,
+			);
+			name = Protocols;
 			sourceTree = "<group>";
 		};
 		6698ABC91D0910AF00985368 /* DownTubeShareExtension */ = {
@@ -208,6 +222,7 @@
 				66E125561D07C19A008C8D39 /* DownTube-Bridging-Header.h */,
 				66424C5A1D053556004C75B6 /* Controllers */,
 				66424C5B1D053562004C75B6 /* Views */,
+				66573B611F0BFA7100D45DAC /* Protocols */,
 				66424C5C1D053567004C75B6 /* Models */,
 				66BF69B91CFD2AE3004FEFF7 /* Main.storyboard */,
 				66BF69BC1CFD2AE3004FEFF7 /* Assets.xcassets */,
@@ -562,7 +577,9 @@
 				66424C601D053591004C75B6 /* CoreDataController.swift in Sources */,
 				66BF69B41CFD2AE3004FEFF7 /* DownTube.xcdatamodeld in Sources */,
 				66C47BB41D10F299004108D9 /* Constants.swift in Sources */,
+				66573B631F0BFA7F00D45DAC /* Watchable.swift in Sources */,
 				66EAF6871D2C84A1003D4BA8 /* Video.swift in Sources */,
+				66573B5F1F0BFA0300D45DAC /* StreamingVideo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -850,10 +867,11 @@
 		66BF69B21CFD2AE3004FEFF7 /* DownTube.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				66573B5D1F0BF9A400D45DAC /* Downtube 1.3.xcdatamodel */,
 				66EAF6851D2C841B003D4BA8 /* DownTube 1.2.xcdatamodel */,
 				66BF69B31CFD2AE3004FEFF7 /* DownTube.xcdatamodel */,
 			);
-			currentVersion = 66EAF6851D2C841B003D4BA8 /* DownTube 1.2.xcdatamodel */;
+			currentVersion = 66573B5D1F0BF9A400D45DAC /* Downtube 1.3.xcdatamodel */;
 			path = DownTube.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

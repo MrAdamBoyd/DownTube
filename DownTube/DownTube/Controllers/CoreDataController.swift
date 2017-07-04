@@ -48,7 +48,7 @@ class CoreDataController {
     var _fetchedResultsController: NSFetchedResultsController<Video>? = nil
     
     lazy var applicationDocumentsDirectory: URL = {
-        // The directory the application uses to store the Core Data store file. This code uses a directory named "com.adam.SlackTeam" in the application's documents Application Support directory.
+        // The directory the application uses to store the Core Data store file. This code uses a directory named "com.adam.Downtube" in the application's documents Application Support directory.
         let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return urls[urls.count-1]
     }()

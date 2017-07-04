@@ -284,7 +284,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
     ///
     /// - Parameter trimmedLocation: string path of the trimmed video
     func saveCurrentlyEditedVideo(_ trimmedLocation: String) {
-        guard let video = self.currentlyEditingVideo, let streamUrl = video.streamUrl else {
+        guard var video = self.currentlyEditingVideo, let streamUrl = video.streamUrl else {
             print("Couldn't access current video")
             return
         }

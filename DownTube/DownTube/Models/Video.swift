@@ -39,14 +39,12 @@ class Video: NSManagedObject {
     
     //Returns the watched state for the video
     var watchProgress: WatchState {
-        
         get {
-            if self.userProgress == nil {
-                return .watched
-            } else if self.userProgress == 0 {
-                return .unwatched
-            } else {
-                return .partiallyWatched(self.userProgress!)
+            guard let progress = self.userProgress else { return .watched }
+            
+            switch progress {
+            case 0:     return .unwatched
+            default:    return .partiallyWatched(progress)
             }
         }
         

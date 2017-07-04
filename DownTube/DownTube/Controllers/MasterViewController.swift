@@ -188,15 +188,15 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 return
             }
             
-            if let streamUrl = self.highestQualityStreamUrlFor(video) {
-                //TODO: Move to same method as playing a downloaded video
-                let player = AVPlayer(url: URL(string: streamUrl)!)
-                let playerViewController = AVPlayerViewController()
-                playerViewController.player = player
-                self.present(playerViewController, animated: true) {
-                    playerViewController.player?.play()
+            if let streamUrl = self.highestQualityStreamUrlFor(video), let url = URL(string: streamUrl) {
+                
+                self.playVideo(with: url, nowPlayingInfo: [MPMediaItemPropertyTitle: video?.title ?? "Unknown Title"], watchProgress: .unwatched) { newProgress in
+                    //TODO: Need to update streaming video progress
+                    print(newProgress)
                 }
+                
             }
+            
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
             
         }
@@ -566,61 +566,61 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func playDownload(_ video: Video, atIndexPath indexPath: IndexPath) {
         if let urlString = video.streamUrl, let url = self.videoManager.localFilePathForUrl(urlString) {
-            self.play(video: video, inPlayerWithUrl: url, at: indexPath)
+            self.playVideo(with: url, nowPlayingInfo: [MPMediaItemPropertyTitle: video.title ?? "Unknown Title"], watchProgress: video.watchProgress) { [weak self] newProgress in
+                video.watchProgress = newProgress
+                CoreDataController.sharedController.saveContext()
+                
+                //TODO: Only reload when the avplayerviewcontroller disappears?
+                self?.tableView.reloadRows(at: [indexPath], with: .none)
+            }
         }
     }
     
     /// Plays a video in an AVPlayer and handles all callbacks
     ///
     /// - Parameters:
-    ///   - video: Video file
-    ///   - url: remote or local video file to play
-    ///   - indexPath: indexpath if the video isn't streaming
-    private func play(video: Video, inPlayerWithUrl url: URL, at indexPath: IndexPath?) {
+    ///   - url: url of the video, local or remote
+    ///   - nowPlayingInfo: now playing info for the video, shows in control center and home screen
+    ///   - watchProgress: current watch progress of video
+    ///   - progressCallback: called to update the video watch state, called multiple time
+    private func playVideo(with url: URL, nowPlayingInfo: [String: Any]?, watchProgress: WatchState, progressCallback: @escaping (WatchState) -> Void) {
         let player = AVPlayer(url: url)
         
         let playerViewController = AVPlayerViewController()
+            
+        //Seek to time if the time is saved
+        switch watchProgress {
+        case let .partiallyWatched(seconds):
+            player.seek(to: CMTime(seconds: seconds.doubleValue, preferredTimescale: 1))
+        default:    break
+        }
         
-        if let indexPath = indexPath { //If the video isn't streaming, update cell
+        player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 10, preferredTimescale: 1), queue: DispatchQueue.main) { time in
             
-            //Seek to time if the time is saved
-            switch video.watchProgress {
-            case let .partiallyWatched(seconds):
-                player.seek(to: CMTime(seconds: seconds.doubleValue, preferredTimescale: 1))
-            default:    break
+            //Every 10 seconds, update the progress of the video in core data
+            let intTime = Int(CMTimeGetSeconds(time))
+            let totalVideoTime = CMTimeGetSeconds(player.currentItem!.duration)
+            let progressPercent = Double(intTime) / totalVideoTime
+            
+            print("User progress on video in seconds: \(intTime)")
+            
+            let newWatchProgress: WatchState
+            
+            //If user is 95% done with the video, mark it as done
+            if progressPercent > 0.95 {
+                newWatchProgress = .watched
+            } else {
+                newWatchProgress = .partiallyWatched(NSNumber(value: intTime as Int))
             }
             
-            //TODO: Handle when video is streaming, should update core data file for that
-            player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 10, preferredTimescale: 1), queue: DispatchQueue.main) { [weak self] time in
-                
-                //Every 5 seconds, update the progress of the video in core data
-                let intTime = Int(CMTimeGetSeconds(time))
-                let totalVideoTime = CMTimeGetSeconds(player.currentItem!.duration)
-                let progressPercent = Double(intTime) / totalVideoTime
-                
-                print("User progress on video in seconds: \(intTime)")
-                
-                //If user is 95% done with the video, mark it as done
-                if progressPercent > 0.95 {
-                    video.watchProgress = .watched
-                } else {
-                    video.watchProgress = .partiallyWatched(NSNumber(value: intTime as Int))
-                }
-                
-                CoreDataController.sharedController.saveContext()
-                //TODO: Only reload when the avplayerviewcontroller disappears?
-                self?.tableView.reloadRows(at: [indexPath], with: .none)
-            }
+            progressCallback(newWatchProgress)
         }
         
         playerViewController.player = player
         self.present(playerViewController, animated: true) {
             playerViewController.player?.play()
-            if let videoTitle = video.title {
-                //This sets the name in control center and on the home screen
-                let infoCenter = MPNowPlayingInfoCenter.default()
-                infoCenter.nowPlayingInfo = [MPMediaItemPropertyTitle: videoTitle]
-            }
+            //This sets the name in control center and on the home screen
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
         }
     }
     

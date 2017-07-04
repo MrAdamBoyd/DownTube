@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import XCDYouTubeKit
 
 class CoreDataController {
     static let sharedController = CoreDataController()
@@ -22,7 +23,7 @@ class CoreDataController {
         _fetchedVideosController = self.createControllerWithFetchRequest(Video.fetchRequest())
         return _fetchedVideosController!
     }
-    var _fetchedVideosController: NSFetchedResultsController<Video>? = nil
+    private var _fetchedVideosController: NSFetchedResultsController<Video>? = nil
     
     //Fetched streamed videos
     var fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo> {
@@ -32,7 +33,7 @@ class CoreDataController {
         _fetchedStreamingVideosController = self.createControllerWithFetchRequest(StreamingVideo.fetchRequest())
         return _fetchedStreamingVideosController!
     }
-    var _fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo>? = nil
+    private var _fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo>? = nil
     
     /// Creates a fetched results controller for the entity type
     ///
@@ -49,10 +50,10 @@ class CoreDataController {
         
         // Edit the section name key path and cache name if appropriate.
         // nil for section name key path means "no sections".
-        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: "Master")
+        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
         
         do {
-            try _fetchedVideosController!.performFetch()
+            try aFetchedResultsController.performFetch()
         } catch {
             print("Could not save to Core Data")
         }
@@ -109,15 +110,43 @@ class CoreDataController {
         return managedObjectContext
     }()
     
+    // MARK: - Creating items
+    
+    func createNewVideo(youTubeUrl: String, streamUrl: String, videoObject: XCDYouTubeVideo?) -> Video {
+        var newVideo = NSEntityDescription.insertNewObject(forEntityName: Video.entityName, into: self.managedObjectContext) as! Video
+        
+        newVideo.created = Date()
+        newVideo.youtubeUrl = youTubeUrl
+        newVideo.title = videoObject?.title
+        newVideo.streamUrl = streamUrl
+        newVideo.watchProgress = .unwatched
+        
+        self.saveContext()
+        
+        return newVideo
+    }
+    
+    func createNewStreamingVideo(youTubeUrl: String, streamUrl: String, videoObject: XCDYouTubeVideo?) -> StreamingVideo {
+        var newVideo = NSEntityDescription.insertNewObject(forEntityName: StreamingVideo.entityName, into: self.managedObjectContext) as! StreamingVideo
+        
+        newVideo.youtubeUrl = youTubeUrl
+        newVideo.title = videoObject?.title
+        newVideo.streamUrl = streamUrl
+        newVideo.watchProgress = .unwatched
+        
+        self.saveContext()
+        
+        return newVideo
+    }
+    
     // MARK: - Core Data Saving support
     
     func saveContext () {
         if managedObjectContext.hasChanges {
             do {
                 try managedObjectContext.save()
-            } catch {
-                let nserror = error as NSError
-                NSLog("Unresolved error \(nserror), \(nserror.userInfo)")
+            } catch let error as NSError {
+                print("Unresolved error \(error), \(error.userInfo)")
             }
         }
     }

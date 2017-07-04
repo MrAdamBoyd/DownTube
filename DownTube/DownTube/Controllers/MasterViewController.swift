@@ -189,11 +189,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
             
             if let streamUrl = self.highestQualityStreamUrlFor(video) {
+                //TODO: Move to same method as playing a downloaded video
                 let player = AVPlayer(url: URL(string: streamUrl)!)
                 let playerViewController = AVPlayerViewController()
                 playerViewController.player = player
                 self.present(playerViewController, animated: true) {
-                    playerViewController.player!.play()
+                    playerViewController.player?.play()
                 }
             }
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
@@ -565,7 +566,22 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     func playDownload(_ video: Video, atIndexPath indexPath: IndexPath) {
         if let urlString = video.streamUrl, let url = self.videoManager.localFilePathForUrl(urlString) {
-            let player = AVPlayer(url: url)
+            self.play(video: video, inPlayerWithUrl: url, at: indexPath)
+        }
+    }
+    
+    /// Plays a video in an AVPlayer and handles all callbacks
+    ///
+    /// - Parameters:
+    ///   - video: Video file
+    ///   - url: remote or local video file to play
+    ///   - indexPath: indexpath if the video isn't streaming
+    private func play(video: Video, inPlayerWithUrl url: URL, at indexPath: IndexPath?) {
+        let player = AVPlayer(url: url)
+        
+        let playerViewController = AVPlayerViewController()
+        
+        if let indexPath = indexPath { //If the video isn't streaming, update cell
             
             //Seek to time if the time is saved
             switch video.watchProgress {
@@ -574,7 +590,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             default:    break
             }
             
-            let playerViewController = AVPlayerViewController()
+            //TODO: Handle when video is streaming, should update core data file for that
             player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 10, preferredTimescale: 1), queue: DispatchQueue.main) { [weak self] time in
                 
                 //Every 5 seconds, update the progress of the video in core data
@@ -592,12 +608,18 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 }
                 
                 CoreDataController.sharedController.saveContext()
+                //TODO: Only reload when the avplayerviewcontroller disappears?
                 self?.tableView.reloadRows(at: [indexPath], with: .none)
-                
             }
-            playerViewController.player = player
-            self.present(playerViewController, animated: true) {
-                playerViewController.player!.play()
+        }
+        
+        playerViewController.player = player
+        self.present(playerViewController, animated: true) {
+            playerViewController.player?.play()
+            if let videoTitle = video.title {
+                //This sets the name in control center and on the home screen
+                let infoCenter = MPNowPlayingInfoCenter.default()
+                infoCenter.nowPlayingInfo = [MPMediaItemPropertyTitle: videoTitle]
             }
         }
     }

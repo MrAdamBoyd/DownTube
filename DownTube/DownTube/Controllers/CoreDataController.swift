@@ -8,22 +8,38 @@
 
 import Foundation
 import CoreData
+import XCDYouTubeKit
 
 class CoreDataController {
     static let sharedController = CoreDataController()
 
     //MARK: - Core Data Stack
     
-    var fetchedResultsController: NSFetchedResultsController<Video> {
-        if _fetchedResultsController != nil {
-            return _fetchedResultsController!
+    //Fetched videos
+    var fetchedVideosController: NSFetchedResultsController<Video> {
+        if let controller = _fetchedVideosController {
+            return controller
         }
-        
-        let fetchRequest = NSFetchRequest<Video>()
-        // Edit the entity name as appropriate.
-        let entity = NSEntityDescription.entity(forEntityName: "Video", in: self.managedObjectContext)
-        fetchRequest.entity = entity
-        
+        _fetchedVideosController = self.createControllerWithFetchRequest(Video.fetchRequest())
+        return _fetchedVideosController!
+    }
+    private var _fetchedVideosController: NSFetchedResultsController<Video>? = nil
+    
+    //Fetched streamed videos
+    var fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo> {
+        if let controller = _fetchedStreamingVideosController {
+            return controller
+        }
+        _fetchedStreamingVideosController = self.createControllerWithFetchRequest(StreamingVideo.fetchRequest())
+        return _fetchedStreamingVideosController!
+    }
+    private var _fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo>? = nil
+    
+    /// Creates a fetched results controller for the entity type
+    ///
+    /// - Parameter fetchRequest: request type that contains the entity
+    /// - Returns: fetched results controller
+    private func createControllerWithFetchRequest<T: NSFetchRequestResult>(_ fetchRequest: NSFetchRequest<T>) -> NSFetchedResultsController<T> {
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
         
@@ -34,21 +50,21 @@ class CoreDataController {
         
         // Edit the section name key path and cache name if appropriate.
         // nil for section name key path means "no sections".
-        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: "Master")
-        _fetchedResultsController = aFetchedResultsController
+        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
         
         do {
-            try _fetchedResultsController!.performFetch()
+            try aFetchedResultsController.performFetch()
         } catch {
             print("Could not save to Core Data")
         }
         
-        return _fetchedResultsController!
+        return aFetchedResultsController
     }
-    var _fetchedResultsController: NSFetchedResultsController<Video>? = nil
+    
+    //Rest of the core data stack
     
     lazy var applicationDocumentsDirectory: URL = {
-        // The directory the application uses to store the Core Data store file. This code uses a directory named "com.adam.SlackTeam" in the application's documents Application Support directory.
+        // The directory the application uses to store the Core Data store file. This code uses a directory named "com.adam.Downtube" in the application's documents Application Support directory.
         let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return urls[urls.count-1]
     }()
@@ -94,15 +110,43 @@ class CoreDataController {
         return managedObjectContext
     }()
     
+    // MARK: - Creating items
+    
+    func createNewVideo(youTubeUrl: String, streamUrl: String, videoObject: XCDYouTubeVideo?) -> Video {
+        var newVideo = NSEntityDescription.insertNewObject(forEntityName: Video.entityName, into: self.managedObjectContext) as! Video
+        
+        newVideo.created = Date()
+        newVideo.youtubeUrl = youTubeUrl
+        newVideo.title = videoObject?.title
+        newVideo.streamUrl = streamUrl
+        newVideo.watchProgress = .unwatched
+        
+        self.saveContext()
+        
+        return newVideo
+    }
+    
+    func createNewStreamingVideo(youTubeUrl: String, streamUrl: String, videoObject: XCDYouTubeVideo?) -> StreamingVideo {
+        var newVideo = NSEntityDescription.insertNewObject(forEntityName: StreamingVideo.entityName, into: self.managedObjectContext) as! StreamingVideo
+        
+        newVideo.youtubeUrl = youTubeUrl
+        newVideo.title = videoObject?.title
+        newVideo.streamUrl = streamUrl
+        newVideo.watchProgress = .unwatched
+        
+        self.saveContext()
+        
+        return newVideo
+    }
+    
     // MARK: - Core Data Saving support
     
     func saveContext () {
         if managedObjectContext.hasChanges {
             do {
                 try managedObjectContext.save()
-            } catch {
-                let nserror = error as NSError
-                NSLog("Unresolved error \(nserror), \(nserror.userInfo)")
+            } catch let error as NSError {
+                print("Unresolved error \(error), \(error.userInfo)")
             }
         }
     }

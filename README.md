@@ -5,7 +5,7 @@ DownTube is a very lightweight app that allows you to download any YouTube video
 * [Installation](#installation)
 * [Screenshots](#screenshots)
 * [Author](#author)
-* [Changelog](#changelog)
+* [Updates](#updates)
 * [Contributing](#contributing)
 * [License](#license)
 
@@ -39,7 +39,7 @@ Your best bet to contact me is on Twitter. [@MrAdamBoyd](https://twitter.com/MrA
 
 My website is [adamjboyd.com](http://www.adamjboyd.com).
 
-## Changelog
+## Updates
 1.0: Initial Release
 
 1.1: Share extension
@@ -56,6 +56,9 @@ My website is [adamjboyd.com](http://www.adamjboyd.com).
 
 1.3.2:
 * New button for browsing for videos. Opens SFSafariViewController so users don't have to leave app.
+
+1.3.5:
+* Streamed videos will now remember where they left off.
 
 ## Contributing
 I'll take all the help I can get! Submit an issue or a pull request and I'll try to get it sorted as soon as I can :)

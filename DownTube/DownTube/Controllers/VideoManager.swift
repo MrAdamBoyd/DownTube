@@ -8,10 +8,12 @@
 
 import Foundation
 import UIKit
+import XCDYouTubeKit
 
 protocol VideoManagerDelegate: class {
     func reloadRows(_ rows: [IndexPath])
     func updateDownloadProgress(_ download: Download, at index: Int, with totalSize: String)
+    func startDownloadOfVideoInfoFor(_ url: String)
 }
 
 class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
@@ -41,6 +43,8 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
         
         self.delegate = delegate
         self.fileManager = fileManager
+        
+        self.setUpSharedVideoListIfNeeded()
         
         //Need to specifically init this because self has to be used in the argument, which isn't formed until here
         _ = self.downloadsSession
@@ -126,7 +130,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
      - returns: optional index
      */
     func videoIndexForYouTubeUrl(_ url: String) -> Int? {
-        for (index, video) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerated() {
+        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() {
             if url == video.youtubeUrl {
                 return index
             }
@@ -143,7 +147,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
      - returns: optional index
      */
     func videoIndexForStreamUrl(_ url: String) -> Int? {
-        for (index, video) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerated() {
+        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() {
             if url == video.streamUrl {
                 return index
             }
@@ -233,7 +237,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
     
     /// This makes sure that all videos located in the documents folder for DownTube actually have a Video object that they're attached to. This will delete all files not attached to a video.
     func cleanUpDownloadedFiles(from coreDataController: CoreDataController) {
-        let streamUrls = coreDataController.fetchedResultsController.fetchedObjects?.flatMap({ $0.streamUrl }) ?? []
+        let streamUrls = coreDataController.fetchedVideosController.fetchedObjects?.flatMap({ $0.streamUrl }) ?? []
         let filesThatShouldExist = Set(streamUrls.flatMap({ self.fileNameForVideo(withStreamUrl: $0) }))
         
         let contents = try? self.fileManager.contentsOfDirectory(atPath: self.documentsPath as String)
@@ -284,7 +288,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
     ///
     /// - Parameter trimmedLocation: string path of the trimmed video
     func saveCurrentlyEditedVideo(_ trimmedLocation: String) {
-        guard let video = self.currentlyEditingVideo, let streamUrl = video.streamUrl else {
+        guard var video = self.currentlyEditingVideo, let streamUrl = video.streamUrl else {
             print("Couldn't access current video")
             return
         }
@@ -310,6 +314,91 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
                 print("Could not copy file: \(error.localizedDescription)")
             }
         }
+    }
+    
+    // MARK: - Videos from extension
+    
+    /**
+     Initializes an empty of video URLs to add when the app opens in NSUserDefaults
+     */
+    func setUpSharedVideoListIfNeeded() {
+        
+        //If the array already exists, don't do anything
+        if Constants.sharedDefaults.object(forKey: Constants.videosToAdd) != nil {
+            return
+        }
+        
+        let emptyArray: [String] = []
+        Constants.sharedDefaults.set(emptyArray, forKey: Constants.videosToAdd)
+        Constants.sharedDefaults.synchronize()
+    }
+    
+    /**
+     Starts the video info download for all videos stored in the shared array of youtube URLs. Clears the list when done
+     */
+    func addVideosFromSharedArray() {
+        
+        if let array = Constants.sharedDefaults.object(forKey: Constants.videosToAdd) as? [String] {
+            for youTubeUrl in array {
+                self.delegate?.startDownloadOfVideoInfoFor(youTubeUrl)
+            }
+        }
+        
+        //Deleting all videos
+        let emptyArray: [String] = []
+        Constants.sharedDefaults.set(emptyArray, forKey: Constants.videosToAdd)
+        Constants.sharedDefaults.synchronize()
+    }
+    
+    /**
+     Called when a message was received from the app extension. Should contain YouTube URL
+     
+     - parameter message: message sent from the share extension
+     */
+    func messageWasReceivedFromExtension(_ message: Any?) {
+        if let message = message as? String {
+            
+            //Remove the item at the end of the list from the list of items to add when the app opens
+            var existingItems = Constants.sharedDefaults.object(forKey: Constants.videosToAdd) as! [String]
+            existingItems.removeLast()
+            Constants.sharedDefaults.set(existingItems, forKey: Constants.videosToAdd)
+            Constants.sharedDefaults.synchronize()
+            
+            self.delegate?.startDownloadOfVideoInfoFor(message)
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    /**
+     Gets the highest quality video stream Url
+     
+     - parameter video:      optional video object that was downloaded, contains stream info, title, etc.
+     
+     - returns:              optional string containing the highest quality video stream
+     */
+    func highestQualityStreamUrlFor(_ video: XCDYouTubeVideo?) -> String? {
+        var streamUrl: String?
+        guard let video = video else { return nil }
+        let streamURLs = NSDictionary(dictionary: video.streamURLs)
+        
+        if let highQualityStream = streamURLs[XCDYouTubeVideoQuality.HD720.rawValue] as? URL {
+            
+            //If 720p video exists
+            streamUrl = highQualityStream.absoluteString
+            
+        } else if let mediumQualityStream = streamURLs[XCDYouTubeVideoQuality.medium360.rawValue] as? URL {
+            
+            //If 360p video exists
+            streamUrl = mediumQualityStream.absoluteString
+            
+        } else if let lowQualityStream = streamURLs[XCDYouTubeVideoQuality.small240.rawValue] as? URL {
+            
+            //If 240p video exists
+            streamUrl = lowQualityStream.absoluteString
+        }
+        
+        return streamUrl
     }
     
     // MARK: - URLSessionDownloadDelegate

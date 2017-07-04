@@ -14,6 +14,7 @@ import XCDYouTubeKit
 import MMWormhole
 import SafariServices
 
+//TODO: Test the number of results with batch size, need to iterate? Need fetchedObjects!.enumerated?
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
     let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
@@ -29,7 +30,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let infoButton = UIBarButtonItem(title: "About", style: .plain, target: self, action: #selector(self.showAppInfo(_:)))
         self.navigationItem.rightBarButtonItem = infoButton
         
-        CoreDataController.sharedController.fetchedResultsController.delegate = self
+        CoreDataController.sharedController.fetchedVideosController.delegate = self
         
         self.videoManager = VideoManager(delegate: self, fileManager: self.fileManager)
         
@@ -205,17 +206,17 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Table View
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return CoreDataController.sharedController.fetchedResultsController.sections?.count ?? 0
+        return CoreDataController.sharedController.fetchedVideosController.sections?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionInfo = CoreDataController.sharedController.fetchedResultsController.sections![section]
+        let sectionInfo = CoreDataController.sharedController.fetchedVideosController.sections![section]
         return sectionInfo.numberOfObjects
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "VideoTableViewCell", for: indexPath) as! VideoTableViewCell
-        let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
+        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
         self.configureCell(cell, withVideo: video)
         
         cell.delegate = self
@@ -250,7 +251,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
+        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
         if self.videoManager.localFileExistsFor(video) {
             self.playDownload(video, atIndexPath: indexPath)
         }
@@ -321,7 +322,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     //MARK: - Extension helper methods
     
     func isCellAtIndexPathDownloading(_ indexPath: IndexPath) -> Bool {
-        let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
+        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
         if let streamUrl = video.streamUrl {
             return self.videoManager.activeDownloads[streamUrl] != nil
         }
@@ -450,8 +451,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             return
         }
         
-        let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
-        let entity = CoreDataController.sharedController.fetchedResultsController.fetchRequest.entity!
+        let context = CoreDataController.sharedController.fetchedVideosController.managedObjectContext
+        let entity = CoreDataController.sharedController.fetchedVideosController.fetchRequest.entity!
         var newVideo = NSEntityDescription.insertNewObject(forEntityName: entity.name!, into: context) as! Video
         
         newVideo.created = Date()
@@ -492,7 +493,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         //Getting all blank videos with no downloaded data
         var objectsToRemove: [IndexPath] = []
-        for (index, video) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerated() {
+        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() {
             
             if video.streamUrl == nil {
                 objectsToRemove.append(IndexPath(row: index, section: 0))
@@ -532,7 +533,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     /// - Parameter indexPath: indexpath of the video to delete
     /// - Returns: video that was deleted
     func deleteDownloadedVideo(at indexPath: IndexPath) -> Video {
-        let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
+        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
         
         self.videoManager.cancelDownload(video)
         _ = self.videoManager.deleteDownloadedVideo(for: video)
@@ -546,9 +547,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      - parameter indexPath: location of the video
      */
     func deleteVideoObject(at indexPath: IndexPath) {
-        let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
+        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
         
-        let context = CoreDataController.sharedController.fetchedResultsController.managedObjectContext
+        let context = CoreDataController.sharedController.fetchedVideosController.managedObjectContext
         context.delete(video)
         
         do {
@@ -568,6 +569,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         var video = video
         if let urlString = video.streamUrl, let url = self.videoManager.localFilePathForUrl(urlString) {
             self.playVideo(with: url, nowPlayingInfo: [MPMediaItemPropertyTitle: video.title ?? "Unknown Title"], watchProgress: video.watchProgress) { [weak self] newProgress in
+                
                 video.watchProgress = newProgress
                 CoreDataController.sharedController.saveContext()
                 
@@ -638,7 +640,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 return
             }
             
-            let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
+            let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
             
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             
@@ -717,7 +719,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 extension MasterViewController: VideoTableViewCellDelegate {
     func pauseTapped(_ cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPath(for: cell) {
-            let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
+            let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
             self.videoManager.pauseDownload(video)
             self.tableView.reloadRows(at: [IndexPath(row: indexPath.row, section: 0)], with: .none)
         }
@@ -725,7 +727,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     
     func resumeTapped(_ cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPath(for: cell) {
-            let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
+            let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
             self.videoManager.resumeDownload(video)
             self.tableView.reloadRows(at: [IndexPath(row: indexPath.row, section: 0)], with: .none)
         }
@@ -733,7 +735,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     
     func cancelTapped(_ cell: VideoTableViewCell) {
         if let indexPath = tableView.indexPath(for: cell) {
-            let video = CoreDataController.sharedController.fetchedResultsController.object(at: indexPath)
+            let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
             self.videoManager.cancelDownload(video)
             tableView.reloadRows(at: [IndexPath(row: indexPath.row, section: 0)], with: .none)
             self.deleteVideoObject(at: indexPath)

@@ -126,7 +126,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
      - returns: optional index
      */
     func videoIndexForYouTubeUrl(_ url: String) -> Int? {
-        for (index, video) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerated() {
+        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() {
             if url == video.youtubeUrl {
                 return index
             }
@@ -143,7 +143,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
      - returns: optional index
      */
     func videoIndexForStreamUrl(_ url: String) -> Int? {
-        for (index, video) in CoreDataController.sharedController.fetchedResultsController.fetchedObjects!.enumerated() {
+        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() {
             if url == video.streamUrl {
                 return index
             }
@@ -233,7 +233,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
     
     /// This makes sure that all videos located in the documents folder for DownTube actually have a Video object that they're attached to. This will delete all files not attached to a video.
     func cleanUpDownloadedFiles(from coreDataController: CoreDataController) {
-        let streamUrls = coreDataController.fetchedResultsController.fetchedObjects?.flatMap({ $0.streamUrl }) ?? []
+        let streamUrls = coreDataController.fetchedVideosController.fetchedObjects?.flatMap({ $0.streamUrl }) ?? []
         let filesThatShouldExist = Set(streamUrls.flatMap({ self.fileNameForVideo(withStreamUrl: $0) }))
         
         let contents = try? self.fileManager.contentsOfDirectory(atPath: self.documentsPath as String)

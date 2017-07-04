@@ -14,16 +14,31 @@ class CoreDataController {
 
     //MARK: - Core Data Stack
     
-    var fetchedResultsController: NSFetchedResultsController<Video> {
-        if _fetchedResultsController != nil {
-            return _fetchedResultsController!
+    //Fetched videos
+    var fetchedVideosController: NSFetchedResultsController<Video> {
+        if let controller = _fetchedVideosController {
+            return controller
         }
-        
-        let fetchRequest = NSFetchRequest<Video>()
-        // Edit the entity name as appropriate.
-        let entity = NSEntityDescription.entity(forEntityName: "Video", in: self.managedObjectContext)
-        fetchRequest.entity = entity
-        
+        _fetchedVideosController = self.createControllerWithFetchRequest(Video.fetchRequest())
+        return _fetchedVideosController!
+    }
+    var _fetchedVideosController: NSFetchedResultsController<Video>? = nil
+    
+    //Fetched streamed videos
+    var fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo> {
+        if let controller = _fetchedStreamingVideosController {
+            return controller
+        }
+        _fetchedStreamingVideosController = self.createControllerWithFetchRequest(StreamingVideo.fetchRequest())
+        return _fetchedStreamingVideosController!
+    }
+    var _fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo>? = nil
+    
+    /// Creates a fetched results controller for the entity type
+    ///
+    /// - Parameter fetchRequest: request type that contains the entity
+    /// - Returns: fetched results controller
+    private func createControllerWithFetchRequest<T: NSFetchRequestResult>(_ fetchRequest: NSFetchRequest<T>) -> NSFetchedResultsController<T> {
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
         
@@ -35,17 +50,17 @@ class CoreDataController {
         // Edit the section name key path and cache name if appropriate.
         // nil for section name key path means "no sections".
         let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: "Master")
-        _fetchedResultsController = aFetchedResultsController
         
         do {
-            try _fetchedResultsController!.performFetch()
+            try _fetchedVideosController!.performFetch()
         } catch {
             print("Could not save to Core Data")
         }
         
-        return _fetchedResultsController!
+        return aFetchedResultsController
     }
-    var _fetchedResultsController: NSFetchedResultsController<Video>? = nil
+    
+    //Rest of the core data stack
     
     lazy var applicationDocumentsDirectory: URL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named "com.adam.Downtube" in the application's documents Application Support directory.

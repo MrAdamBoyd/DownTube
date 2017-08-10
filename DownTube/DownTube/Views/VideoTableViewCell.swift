@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-protocol VideoTableViewCellDelegate {
+protocol VideoTableViewCellDelegate: class {
     func pauseTapped(_ cell: VideoTableViewCell)
     func resumeTapped(_ cell: VideoTableViewCell)
     func cancelTapped(_ cell: VideoTableViewCell)
@@ -17,7 +17,7 @@ protocol VideoTableViewCellDelegate {
 
 class VideoTableViewCell: UITableViewCell {
     
-    var delegate: VideoTableViewCellDelegate?
+    weak var delegate: VideoTableViewCellDelegate?
     
     @IBOutlet weak var videoNameLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
@@ -50,7 +50,7 @@ class VideoTableViewCell: UITableViewCell {
         switch state {
         case .unwatched:
             maskLayer.frame = CGRect(x: 0, y: 0, width: 16, height: 16)
-        case .partiallyWatched(_):
+        case .partiallyWatched:
             maskLayer.frame = CGRect(x: 0, y: 0, width: 8, height: 16)
         case .watched:
             maskLayer.frame = CGRect(x: 0, y: 0, width: 0, height: 0)

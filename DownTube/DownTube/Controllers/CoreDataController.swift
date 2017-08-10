@@ -13,7 +13,7 @@ import XCDYouTubeKit
 class CoreDataController {
     static let sharedController = CoreDataController()
 
-    //MARK: - Core Data Stack
+    // MARK: - Core Data Stack
     
     //Fetched videos
     var fetchedVideosController: NSFetchedResultsController<Video> {
@@ -23,7 +23,7 @@ class CoreDataController {
         _fetchedVideosController = self.createControllerWithFetchRequest(Video.fetchRequest())
         return _fetchedVideosController!
     }
-    private var _fetchedVideosController: NSFetchedResultsController<Video>? = nil
+    private var _fetchedVideosController: NSFetchedResultsController<Video>?
     
     //Fetched streamed videos
     var fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo> {
@@ -33,7 +33,7 @@ class CoreDataController {
         _fetchedStreamingVideosController = self.createControllerWithFetchRequest(StreamingVideo.fetchRequest())
         return _fetchedStreamingVideosController!
     }
-    private var _fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo>? = nil
+    private var _fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo>?
     
     /// Creates a fetched results controller for the entity type
     ///
@@ -93,7 +93,7 @@ class CoreDataController {
             dict[NSLocalizedFailureReasonErrorKey] = failureReason
             
             dict[NSUnderlyingErrorKey] = error as NSError
-            let wrappedError = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
+            let wrappedError = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9_999, userInfo: dict)
             
             NSLog("Unresolved error \(wrappedError), \(wrappedError.userInfo)")
             abort() //Abort here if something goes really wrong

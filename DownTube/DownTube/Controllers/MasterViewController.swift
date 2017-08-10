@@ -124,7 +124,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func buildAndShowUrlGettingAlertController(_ actionName: String, completion: @escaping (String) -> Void) {
         let alertController = UIAlertController(title: "\(actionName) YouTube Video", message: "Video will be shown in 720p or the highest available quality", preferredStyle: .alert)
         
-        let saveAction = UIAlertAction(title: "Ok", style: .default) { action in
+        let saveAction = UIAlertAction(title: "Ok", style: .default) { _ in
             let textField = alertController.textFields![0]
             
             if let text = textField.text {
@@ -347,7 +347,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         self.tableView.endUpdates()
     }
     
-    //MARK: - Extension helper methods
+    // MARK: - Extension helper methods
     
     func isCellAtIndexPathDownloading(_ indexPath: IndexPath) -> Bool {
         let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
@@ -358,7 +358,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         return false
     }
     
-    //MARK: - Helper methods
+    // MARK: - Helper methods
     
     /**
      Called when the video info for a video is downloaded
@@ -426,11 +426,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         //Getting all blank videos with no downloaded data
         var objectsToRemove: [IndexPath] = []
-        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() {
-            
-            if video.streamUrl == nil {
-                objectsToRemove.append(IndexPath(row: index, section: 0))
-            }
+        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() where video.streamUrl == nil {
+            objectsToRemove.append(IndexPath(row: index, section: 0))
         }
         
         //Deleting them

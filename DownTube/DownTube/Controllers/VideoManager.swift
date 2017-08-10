@@ -29,7 +29,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
         return session
     }()
     
-    var delegate: VideoManagerDelegate?
+    weak var delegate: VideoManagerDelegate?
     var fileManager: FileManager = .default
     
     // Path where the video files are stored
@@ -130,10 +130,8 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
      - returns: optional index
      */
     func videoIndexForYouTubeUrl(_ url: String) -> Int? {
-        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() {
-            if url == video.youtubeUrl {
-                return index
-            }
+        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() where url == video.youtubeUrl {
+            return index
         }
         
         return nil
@@ -147,10 +145,8 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
      - returns: optional index
      */
     func videoIndexForStreamUrl(_ url: String) -> Int? {
-        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() {
-            if url == video.streamUrl {
-                return index
-            }
+        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() where url == video.streamUrl {
+            return index
         }
         
         return nil
@@ -299,7 +295,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
         let toUrl = self.localFilePathForUrl(streamUrl)
         
         switch video.watchProgress {
-        case .partiallyWatched(_):      video.watchProgress = .unwatched
+        case .partiallyWatched:         video.watchProgress = .unwatched
         default:                        break
         }
         

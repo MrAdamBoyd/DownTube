@@ -29,27 +29,12 @@ class ShareViewController: UIViewController {
                     if let itemProvider = itemProvider as? NSItemProvider {
                         if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeURL as String) {
                             //If the item contains a URL
-                            itemProvider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil, completionHandler: { (content, error) -> Void in
+                            itemProvider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil, completionHandler: { content, _ in
                                 
                                 DispatchQueue.main.async {
-                                    if let url = content as? URL {
-                                        if url.absoluteString.contains("youtube.com") || url.absoluteString.contains("youtu.be") {
-                                            self.setTitleOfTextView("Video Added to Download Queue")
-                                            
-                                            //Just in case the app isn't running in the background, write the URL to the shared NSUserDefaults
-                                            var existingItems = Constants.sharedDefaults.value(forKey: Constants.videosToAdd) as! [String]
-                                            existingItems.append(url.absoluteString)
-                                            Constants.sharedDefaults.set(existingItems, forKey: Constants.videosToAdd)
-                                            Constants.sharedDefaults.synchronize()
-                                            
-                                            //Passing YouTube URL
-                                            self.wormhole.passMessageObject(url.absoluteString as NSCoding?, identifier: "youTubeUrl")
-                                            
-                                        return
-                                        }
+                                    if !self.addVideoUrlToDownloadQueue(content) {
+                                        self.setTitleOfTextView("Invalid URL. DownTube only works with YouTube.")
                                     }
-                                    
-                                    self.setTitleOfTextView("Invalid URL. DownTube only works with YouTube.")
                                 }
                             })
                         }
@@ -73,14 +58,32 @@ class ShareViewController: UIViewController {
         }) 
     }
     
+    func addVideoUrlToDownloadQueue(_ video: NSSecureCoding?) -> Bool {
+        guard let url = video as? URL, url.absoluteString.contains("youtube.com") || url.absoluteString.contains("youtu.be") else {
+            return false
+        }
+        self.setTitleOfTextView("Video Added to Download Queue")
+        
+        //Just in case the app isn't running in the background, write the URL to the shared NSUserDefaults
+        var existingItems = Constants.sharedDefaults.value(forKey: Constants.videosToAdd) as! [String]
+        existingItems.append(url.absoluteString)
+        Constants.sharedDefaults.set(existingItems, forKey: Constants.videosToAdd)
+        Constants.sharedDefaults.synchronize()
+        
+        //Passing YouTube URL
+        self.wormhole.passMessageObject(url.absoluteString as NSCoding?, identifier: "youTubeUrl")
+        
+        return true
+    }
+    
     func setTitleOfTextView(_ text: String) {
         self.mainLabel.text = text
         
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(3 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             UIView.animate(withDuration: 0.25, animations: {
                 self.view.alpha = 0
-            }, completion: { completed in
-                self.extensionContext?.completeRequest(returningItems: nil) { completed in
+            }, completion: { _ in
+                self.extensionContext?.completeRequest(returningItems: nil) { _ in
                     self.dismiss(animated: true, completion: nil)
                 }
             })

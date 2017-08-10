@@ -14,13 +14,16 @@ import XCDYouTubeKit
 import MMWormhole
 import SafariServices
 
-class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, NSFetchedResultsControllerDelegate {
     
     let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
     
     var videoManager: VideoManager!
     var fileManager: FileManager = .default
     var indexPathToReload: IndexPath? //Update the watch status
+    let videoEditingHandler = VideoEditingHandler()
+    var streamFromSafariVC = false
+    weak var presentedSafariVC: SFSafariViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,13 +35,23 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         CoreDataController.sharedController.fetchedVideosController.delegate = self
         
+        self.videoEditingHandler.delegate = self
         self.videoManager = VideoManager(delegate: self, fileManager: self.fileManager)
         
         self.videoManager.addVideosFromSharedArray()
         
         //Wormhole between extension and app
         self.wormhole.listenForMessage(withIdentifier: "youTubeUrl") { messageObject in
-            self.videoManager.messageWasReceivedFromExtension(messageObject)
+            if let vc = self.presentedSafariVC, let url = messageObject as? String, self.streamFromSafariVC {
+                //If the user wants to stream the video, dismiss the safari vc and stream
+                vc.dismiss(animated: true) {
+                    self.startStreamOfVideoInfoFor(url)
+                }
+                self.presentedSafariVC = nil
+            } else {
+                //Else, add the video to the download queue
+                self.videoManager.messageWasReceivedFromExtension(messageObject)
+            }
         }
         
         // Deletes any files that shouldn't be there
@@ -67,23 +80,65 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func showAppInfo(_ sender: AnyObject) {
         self.performSegue(withIdentifier: "ShowAppInfo", sender: self)
     }
+    
+    /// Builds and shows a UIAlertController for the user to decide if they want to enter link or browse for a video
+    ///
+    /// - Parameters:
+    ///   - enterLinkAction: action that takes place if user wants to enter link
+    ///   - browseAction: action that takes place if user wants to browse
+    private func buildAndShowAlertControllerForNewVideo(enterLinkAction: @escaping (UIAlertAction) -> Void, browseAction: @escaping (UIAlertAction) -> Void) {
+        let alertVC = UIAlertController(title: "How do you want to find the video?", message: nil, preferredStyle: .actionSheet)
+        
+        alertVC.addAction(UIAlertAction(title: "Enter Link", style: .default, handler: enterLinkAction))
+        
+        alertVC.addAction(UIAlertAction(title: "Browse", style: .default, handler: browseAction))
+        
+        alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(alertVC, animated: true, completion: nil)
+        
+    }
 
     /**
      Presents a UIAlertController that gets youtube video URL from user then downloads the video
      
      - parameter sender: button
      */
-    @IBAction func enterLinkForVideoAction(_ sender: AnyObject) {
-        self.buildAndShowUrlGettingAlertController("Download") { [weak self] text in
-            self?.startDownloadOfVideoInfoFor(text)
-        }
+    @IBAction func downloadVideoAction(_ sender: AnyObject) {
+        self.buildAndShowAlertControllerForNewVideo(enterLinkAction: { [unowned self] _ in
+            self.buildAndShowUrlGettingAlertController("Download") { text in
+                self.startDownloadOfVideoInfoFor(text)
+            }
+        }, browseAction: { [unowned self] _ in
+            self.browseForVideoAction(keepReference: false)
+        })
+    }
+
+    /**
+     Presents a UIAlertController that gets youtube video URL from user then streams the video
+     
+     - parameter sender: button
+     */
+    @IBAction func streamVideoAction(_ sender: AnyObject) {
+        self.buildAndShowAlertControllerForNewVideo(enterLinkAction: { [unowned self] _ in
+            self.buildAndShowUrlGettingAlertController("Stream") { text in
+                self.startStreamOfVideoInfoFor(text)
+            }
+        }, browseAction: { [unowned self] _ in
+            self.streamFromSafariVC = true
+            self.browseForVideoAction(keepReference: true)
+        })
     }
     
-    @IBAction func browseForVideoAction(_ sender: AnyObject) {
+    /// Opens up a safari VC and lets the user browse for the video. Shows them how to do so if they haven't before
+    ///
+    /// - Parameter keepReference: keep a reference to the safari vc in self.presentedSafariVC
+    private func browseForVideoAction(keepReference: Bool) {
         if UserDefaults.standard.bool(forKey: Constants.shownSafariDialog) {
             
             //User has been shown dialog, just show it
-            self.showSafariVC()
+            let vc = self.showSafariVC()
+            if keepReference { self.presentedSafariVC = vc }
             
         } else {
             
@@ -91,7 +146,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             UserDefaults.standard.set(true, forKey: Constants.shownSafariDialog)
             let alertVC = UIAlertController(title: "How to Use", message: "Once you've found a video you want to add, hit the share button and select the \"Add to DownTube\" action on the top row.", preferredStyle: .alert)
             alertVC.addAction(UIAlertAction(title: "Got it", style: .default) { [unowned self] _ in
-                self.showSafariVC()
+                let vc = self.showSafariVC()
+                if keepReference { self.presentedSafariVC = vc }
             })
             self.present(alertVC, animated: true, completion: nil)
             
@@ -99,20 +155,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     /// Shows an SFSafariViewController with youtube loaded
-    func showSafariVC() {
+    func showSafariVC() -> SFSafariViewController {
         let vc = SFSafariViewController(url: URL(string: "https://youtube.com")!)
         self.present(vc, animated: true, completion: nil)
-    }
-    
-    /**
-     Presents a UIAlertController that gets youtube video URL from user then streams the video
-     
-     - parameter sender: button
-     */
-    @IBAction func streamVideoAction(_ sender: AnyObject) {
-        self.buildAndShowUrlGettingAlertController("Stream") { [weak self] text in
-            self?.startStreamOfVideoInfoFor(text)
-        }
+        return vc
     }
     
     /**
@@ -620,7 +666,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             if let localPath = self.videoManager.localFileLocationForUrl(streamUrl) {
                 actions.append(UIAlertAction(title: "Edit Video", style: .default) { [unowned self] _ in
                     let editor = UIVideoEditorController()
-                    editor.delegate = self
+                    editor.delegate = self.videoEditingHandler
                     editor.videoPath = localPath
                     editor.videoMaximumDuration = 0
                     editor.videoQuality = .typeIFrame1280x720
@@ -696,26 +742,5 @@ extension MasterViewController: VideoManagerDelegate {
                 }
             }
         }
-    }
-}
-
-extension MasterViewController: UINavigationControllerDelegate, UIVideoEditorControllerDelegate {
-    func videoEditorController(_ editor: UIVideoEditorController, didSaveEditedVideoToPath editedVideoPath: String) {
-        self.videoManager.saveCurrentlyEditedVideo(editedVideoPath)
-        
-        self.tableView.reloadData()
-        editor.dismiss(animated: true, completion: nil)
-    }
-    
-    func videoEditorController(_ editor: UIVideoEditorController, didFailWithError error: Error) {
-        print("Error: " + error.localizedDescription)
-        self.videoManager.currentlyEditingVideo = nil
-        editor.dismiss(animated: true, completion: nil)
-    }
-    
-    func videoEditorControllerDidCancel(_ editor: UIVideoEditorController) {
-        print("User cancelled edit of video")
-        self.videoManager.currentlyEditingVideo = nil
-        editor.dismiss(animated: true, completion: nil)
     }
 }

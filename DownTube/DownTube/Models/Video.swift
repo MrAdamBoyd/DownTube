@@ -19,8 +19,6 @@ class Video: NSManagedObject, Watchable {
     @NSManaged var quality: NSNumber?
     @NSManaged var streamUrl: String?
     @NSManaged var title: String?
-    @NSManaged var uploader: String?
     @NSManaged var youtubeUrl: String?
-    @NSManaged var displayOrder: NSNumber?
     @NSManaged internal var userProgress: NSNumber? //nil for done, 0 for unplayed, other for progress
 }

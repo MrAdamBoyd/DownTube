@@ -83,6 +83,7 @@
 		66573B621F0BFA7F00D45DAC /* Watchable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Watchable.swift; sourceTree = "<group>"; };
 		665C0A211DCA2C1E00C68C1D /* VideoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoManager.swift; path = Controllers/VideoManager.swift; sourceTree = "<group>"; };
 		668AE00D1F3FCB5E00CB7867 /* NowPlayingHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NowPlayingHandler.swift; sourceTree = "<group>"; };
+		668AE00F1F3FD60A00CB7867 /* Downtube 1.3.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Downtube 1.3.1.xcdatamodel"; sourceTree = "<group>"; };
 		6698ABC81D0910AF00985368 /* DownTubeShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DownTubeShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		6698ABCA1D0910AF00985368 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		6698ABCD1D0910AF00985368 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -875,11 +876,12 @@
 		66BF69B21CFD2AE3004FEFF7 /* DownTube.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				668AE00F1F3FD60A00CB7867 /* Downtube 1.3.1.xcdatamodel */,
 				66573B5D1F0BF9A400D45DAC /* Downtube 1.3.xcdatamodel */,
 				66EAF6851D2C841B003D4BA8 /* DownTube 1.2.xcdatamodel */,
 				66BF69B31CFD2AE3004FEFF7 /* DownTube.xcdatamodel */,
 			);
-			currentVersion = 66573B5D1F0BF9A400D45DAC /* Downtube 1.3.xcdatamodel */;
+			currentVersion = 668AE00F1F3FD60A00CB7867 /* Downtube 1.3.1.xcdatamodel */;
 			path = DownTube.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

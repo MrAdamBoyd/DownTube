@@ -18,38 +18,43 @@ class NowPlayingHandler {
         //Allows control center title to be set
         UIApplication.shared.beginReceivingRemoteControlEvents()
         
-        MPRemoteCommandCenter.shared().playCommand.addTarget() { _ in
+        MPRemoteCommandCenter.shared().playCommand.addTarget() { [weak self] _ in
+            guard let strongSelf = self else { return .commandFailed }
             //Play
-            self.player.play()
-            self.setNewNowPlayingTime(CMTimeGetSeconds(player.currentTime()))
+            strongSelf.player.play()
+            strongSelf.setNewNowPlayingTime(CMTimeGetSeconds(strongSelf.player.currentTime()))
             return .success
         }
-        MPRemoteCommandCenter.shared().pauseCommand.addTarget() { _ in
+        MPRemoteCommandCenter.shared().pauseCommand.addTarget() { [weak self] _ in
+            guard let strongSelf = self else { return .commandFailed }
             //Pause
-            self.player.pause()
-            self.setNewNowPlayingTime(CMTimeGetSeconds(player.currentTime()))
+            strongSelf.player.pause()
+            strongSelf.setNewNowPlayingTime(CMTimeGetSeconds(strongSelf.player.currentTime()))
             return .success
         }
-        MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget() { _ in
+        MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget() { [weak self] _ in
+            guard let strongSelf = self else { return .commandFailed }
             //Skip backwards 15 seconds
-            let currentSeconds = CMTimeGetSeconds(self.player.currentItem!.currentTime())
-            self.player.seek(to: CMTime(seconds: max(currentSeconds - 15, 0), preferredTimescale: 1))
+            let currentSeconds = CMTimeGetSeconds(strongSelf.player.currentItem!.currentTime())
+            strongSelf.player.seek(to: CMTime(seconds: max(currentSeconds - 15, 0), preferredTimescale: 1))
             let newSeconds = max(currentSeconds - 15, 0)
-            self.setNewNowPlayingTime(newSeconds)
+            strongSelf.setNewNowPlayingTime(newSeconds)
             return .success
         }
-        MPRemoteCommandCenter.shared().skipForwardCommand.addTarget() { _ in
+        MPRemoteCommandCenter.shared().skipForwardCommand.addTarget() { [weak self] _ in
+            guard let strongSelf = self else { return .commandFailed }
             //Skip forward 15 seconds
-            let currentSeconds = CMTimeGetSeconds(self.player.currentItem!.currentTime())
+            let currentSeconds = CMTimeGetSeconds(strongSelf.player.currentItem!.currentTime())
             player.seek(to: CMTime(seconds: currentSeconds + 15, preferredTimescale: 1))
             let newSeconds = currentSeconds + 15
-            self.setNewNowPlayingTime(newSeconds)
+            strongSelf.setNewNowPlayingTime(newSeconds)
             return .success
         }
-        MPRemoteCommandCenter.shared().changePlaybackPositionCommand.addTarget() { event in
+        MPRemoteCommandCenter.shared().changePlaybackPositionCommand.addTarget() { [weak self] event in
             guard let event = event as? MPChangePlaybackPositionCommandEvent else { return .commandFailed }
-            self.player.seek(to: CMTime(seconds: event.positionTime, preferredTimescale: 1))
-            self.setNewNowPlayingTime(event.positionTime)
+            guard let strongSelf = self else { return .commandFailed }
+            strongSelf.player.seek(to: CMTime(seconds: event.positionTime, preferredTimescale: 1))
+            strongSelf.setNewNowPlayingTime(event.positionTime)
             return .success
         }
     }
@@ -94,6 +99,11 @@ class NowPlayingHandler {
     }
     
     deinit {
+        MPRemoteCommandCenter.shared().playCommand.removeTarget(self)
+        MPRemoteCommandCenter.shared().pauseCommand.removeTarget(self)
+        MPRemoteCommandCenter.shared().skipBackwardCommand.removeTarget(self)
+        MPRemoteCommandCenter.shared().skipForwardCommand.removeTarget(self)
+        MPRemoteCommandCenter.shared().changePlaybackPositionCommand.removeTarget(self)
         UIApplication.shared.endReceivingRemoteControlEvents()
     }
 }

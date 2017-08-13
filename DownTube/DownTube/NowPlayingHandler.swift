@@ -11,6 +11,11 @@ import MediaPlayer
 
 class NowPlayingHandler {
     var player: AVPlayer
+    var playCommandTarget: Any!
+    var pauseCommandTarget: Any!
+    var skipBackwardTarget: Any!
+    var skipForwardTarget: Any!
+    var playbackPositionTarget: Any!
     
     init(player: AVPlayer) {
         self.player = player
@@ -18,21 +23,21 @@ class NowPlayingHandler {
         //Allows control center title to be set
         UIApplication.shared.beginReceivingRemoteControlEvents()
         
-        MPRemoteCommandCenter.shared().playCommand.addTarget() { [weak self] _ in
+        self.playCommandTarget = MPRemoteCommandCenter.shared().playCommand.addTarget() { [weak self] _ in
             guard let strongSelf = self else { return .commandFailed }
             //Play
             strongSelf.player.play()
             strongSelf.setNewNowPlayingTime(CMTimeGetSeconds(strongSelf.player.currentTime()))
             return .success
         }
-        MPRemoteCommandCenter.shared().pauseCommand.addTarget() { [weak self] _ in
+        self.pauseCommandTarget = MPRemoteCommandCenter.shared().pauseCommand.addTarget() { [weak self] _ in
             guard let strongSelf = self else { return .commandFailed }
             //Pause
             strongSelf.player.pause()
             strongSelf.setNewNowPlayingTime(CMTimeGetSeconds(strongSelf.player.currentTime()))
             return .success
         }
-        MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget() { [weak self] _ in
+        self.skipBackwardTarget = MPRemoteCommandCenter.shared().skipBackwardCommand.addTarget() { [weak self] _ in
             guard let strongSelf = self else { return .commandFailed }
             //Skip backwards 15 seconds
             let currentSeconds = CMTimeGetSeconds(strongSelf.player.currentItem!.currentTime())
@@ -41,7 +46,7 @@ class NowPlayingHandler {
             strongSelf.setNewNowPlayingTime(newSeconds)
             return .success
         }
-        MPRemoteCommandCenter.shared().skipForwardCommand.addTarget() { [weak self] _ in
+        self.skipForwardTarget = MPRemoteCommandCenter.shared().skipForwardCommand.addTarget() { [weak self] _ in
             guard let strongSelf = self else { return .commandFailed }
             //Skip forward 15 seconds
             let currentSeconds = CMTimeGetSeconds(strongSelf.player.currentItem!.currentTime())
@@ -50,7 +55,7 @@ class NowPlayingHandler {
             strongSelf.setNewNowPlayingTime(newSeconds)
             return .success
         }
-        MPRemoteCommandCenter.shared().changePlaybackPositionCommand.addTarget() { [weak self] event in
+        self.playbackPositionTarget = MPRemoteCommandCenter.shared().changePlaybackPositionCommand.addTarget() { [weak self] event in
             guard let event = event as? MPChangePlaybackPositionCommandEvent else { return .commandFailed }
             guard let strongSelf = self else { return .commandFailed }
             strongSelf.player.seek(to: CMTime(seconds: event.positionTime, preferredTimescale: 1))
@@ -99,11 +104,11 @@ class NowPlayingHandler {
     }
     
     deinit {
-        MPRemoteCommandCenter.shared().playCommand.removeTarget(self)
-        MPRemoteCommandCenter.shared().pauseCommand.removeTarget(self)
-        MPRemoteCommandCenter.shared().skipBackwardCommand.removeTarget(self)
-        MPRemoteCommandCenter.shared().skipForwardCommand.removeTarget(self)
-        MPRemoteCommandCenter.shared().changePlaybackPositionCommand.removeTarget(self)
+        MPRemoteCommandCenter.shared().playCommand.removeTarget(self.playCommandTarget)
+        MPRemoteCommandCenter.shared().pauseCommand.removeTarget(self.pauseCommandTarget)
+        MPRemoteCommandCenter.shared().skipBackwardCommand.removeTarget(self.skipBackwardTarget)
+        MPRemoteCommandCenter.shared().skipForwardCommand.removeTarget(self.skipForwardTarget)
+        MPRemoteCommandCenter.shared().changePlaybackPositionCommand.removeTarget(self.playbackPositionTarget)
         UIApplication.shared.endReceivingRemoteControlEvents()
     }
 }

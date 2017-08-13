@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MediaPlayer
 
 // MARK: - WatchState
 
@@ -39,8 +40,9 @@ func == (lhs: WatchState, rhs: WatchState) -> Bool {
 // MARK: - Watchable
 
 protocol Watchable {
-    var watchProgress: WatchState { get set }
     var userProgress: NSNumber? { get set }
+    var title: String? { get set }
+    var youtubeUrl: String? { get set }
 }
 
 extension Watchable {
@@ -62,6 +64,13 @@ extension Watchable {
             case .partiallyWatched(let number):     self.userProgress = number
             }
         }
-        
+    }
+    
+    var nowPlayingInfo: [String: Any] {
+        return [
+            MPMediaItemPropertyTitle: self.title ?? "Unknown Title",
+            MPMediaItemPropertyArtist: self.youtubeUrl ?? "Unknown URL",
+            MPNowPlayingInfoPropertyElapsedPlaybackTime: self.userProgress ?? NSNumber(value: 0)
+        ]
     }
 }

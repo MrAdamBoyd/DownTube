@@ -25,6 +25,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     let videoEditingHandler = VideoEditingHandler()
     var streamFromSafariVC = false
     weak var presentedSafariVC: SFSafariViewController?
+    var nowPlayingHandler: NowPlayingHandler?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,6 +68,9 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        //Whenever the view controller appears, no media items are playing
+        self.nowPlayingHandler = nil
         
         if let indexPath = self.indexPathToReload {
             self.tableView.reloadRows(at: [indexPath], with: .none)
@@ -263,7 +267,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
                     }
                     
                     //Now that a video has either been found in core data or created, get the watch progress and send it to the AVPlayer
-                    self.playVideo(with: url, nowPlayingInfo: [MPMediaItemPropertyTitle: video?.title ?? "Unknown Title"], watchProgress: videoInCoreData.watchProgress) { newProgress in
+                    self.playVideo(with: url, video: videoInCoreData) { newProgress in
                         videoInCoreData.watchProgress = newProgress
                         CoreDataController.sharedController.saveContext()
                     }
@@ -545,7 +549,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     func playDownload(_ video: Video, atIndexPath indexPath: IndexPath) {
         var video = video
         if let urlString = video.streamUrl, let url = self.videoManager.localFilePathForUrl(urlString) {
-            self.playVideo(with: url, nowPlayingInfo: [MPMediaItemPropertyTitle: video.title ?? "Unknown Title"], watchProgress: video.watchProgress) { [weak self] newProgress in
+            self.playVideo(with: url, video: video) { [weak self] newProgress in
                 
                 video.watchProgress = newProgress
                 CoreDataController.sharedController.saveContext()
@@ -559,47 +563,31 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     ///
     /// - Parameters:
     ///   - url: url of the video, local or remote
-    ///   - nowPlayingInfo: now playing info for the video, shows in control center and home screen
-    ///   - watchProgress: current watch progress of video
+    ///   - video: video object (either streaming or downloaded) that is being played
     ///   - progressCallback: called to update the video watch state, called multiple time
-    private func playVideo(with url: URL, nowPlayingInfo: [String: Any]?, watchProgress: WatchState, progressCallback: @escaping (WatchState) -> Void) {
+    private func playVideo(with url: URL, video: Watchable, progressCallback: @escaping (WatchState) -> Void) {
         let player = AVPlayer(url: url)
         
         let playerViewController = AVPlayerViewController()
+        playerViewController.updatesNowPlayingInfoCenter = false
             
         //Seek to time if the time is saved
-        switch watchProgress {
+        switch video.watchProgress {
         case let .partiallyWatched(seconds):
             player.seek(to: CMTime(seconds: seconds.doubleValue, preferredTimescale: 1))
         default:    break
         }
         
-        player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 10, preferredTimescale: 1), queue: DispatchQueue.main) { time in
-            
-            //Every 10 seconds, update the progress of the video in core data
-            let intTime = Int(CMTimeGetSeconds(time))
-            let totalVideoTime = CMTimeGetSeconds(player.currentItem!.duration)
-            let progressPercent = Double(intTime) / totalVideoTime
-            
-            print("User progress on video in seconds: \(intTime)")
-            
-            let newWatchProgress: WatchState
-            
-            //If user is 95% done with the video, mark it as done
-            if progressPercent > 0.95 {
-                newWatchProgress = .watched
-            } else {
-                newWatchProgress = .partiallyWatched(NSNumber(value: intTime as Int))
-            }
-            
-            progressCallback(newWatchProgress)
-        }
         
         playerViewController.player = player
         self.present(playerViewController, animated: true) {
             playerViewController.player?.play()
             //This sets the name in control center and on the home screen
-            MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+            self.nowPlayingHandler = NowPlayingHandler(player: player)
+            self.nowPlayingHandler?.addTimeObserverToPlayer(progressCallback)
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = video.nowPlayingInfo
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
+            MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = NSNumber(value: CMTimeGetSeconds(player.currentItem!.duration))
         }
     }
     

@@ -39,7 +39,7 @@ class CoreDataController {
     ///
     /// - Parameter fetchRequest: request type that contains the entity
     /// - Returns: fetched results controller
-    private func createControllerWithFetchRequest<T: NSFetchRequestResult>(_ fetchRequest: NSFetchRequest<T>) -> NSFetchedResultsController<T> {
+    private func createControllerWithFetchRequest<T>(_ fetchRequest: NSFetchRequest<T>) -> NSFetchedResultsController<T> {
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
         

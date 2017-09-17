@@ -82,7 +82,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
      
      - parameter sender: button that sent the action
      */
-    func showAppInfo(_ sender: AnyObject) {
+    @objc func showAppInfo(_ sender: AnyObject) {
         self.performSegue(withIdentifier: "ShowAppInfo", sender: self)
     }
     
@@ -206,11 +206,12 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
      
      - returns:  button for accessory keyboard view
     */
+    // swift
     func buildAccessoryButton() -> UIView {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 40))
         button.setTitle("Paste from clipboard", for: UIControlState())
-        button.backgroundColor = UIColor(colorLiteralRed: 150/256, green: 150/256, blue: 150/256, alpha: 1)
-        button.setTitleColor(UIColor(colorLiteralRed: 75/256, green: 75/256, blue: 75/256, alpha: 1), for: .highlighted)
+        button.backgroundColor = #colorLiteral(red: 0.5882352941, green: 0.5882352941, blue: 0.5882352941, alpha: 1)
+        button.setTitleColor(#colorLiteral(red: 0.2941176471, green: 0.2941176471, blue: 0.2941176471, alpha: 1), for: .highlighted)
         button.addTarget(self, action: #selector(self.pasteFromClipboard), for: .touchUpInside)
         
         return button
@@ -219,7 +220,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     /**
      Pastes the text from the clipboard in the showing alert vc, if it exists
     */
-    func pasteFromClipboard() {
+    @objc func pasteFromClipboard() {
         if let alertVC = self.presentedViewController as? UIAlertController {
             alertVC.textFields![0].text = UIPasteboard.general.string
         }
@@ -596,7 +597,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
      
      - parameter gestureRecognizer: gesture recognizer
      */
-    func handleLongTouchWithGestureRecognizer(_ gestureRecognizer: UILongPressGestureRecognizer) {
+    @objc func handleLongTouchWithGestureRecognizer(_ gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == .changed || gestureRecognizer.state == .ended {
             
             let point = gestureRecognizer.location(in: self.tableView)

@@ -28,7 +28,7 @@ class AppInfoViewController: UIViewController {
      
      - parameter sender: button that sent action
      */
-    func dismissInfoViewController(_ sender: AnyObject) {
+    @objc func dismissInfoViewController(_ sender: AnyObject) {
         self.navigationController?.dismiss(animated: true, completion: nil)
     }
     

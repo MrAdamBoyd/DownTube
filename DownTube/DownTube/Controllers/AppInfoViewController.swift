@@ -17,6 +17,11 @@ class AppInfoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if #available(iOS 11.0, *) {
+            self.navigationController?.navigationBar.prefersLargeTitles = true
+            self.navigationItem.largeTitleDisplayMode = .always
+        }
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(self.dismissInfoViewController(_:)))
         
         let versionString = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String

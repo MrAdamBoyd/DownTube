@@ -28,7 +28,13 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        if #available(iOS 11.0, *) {
+            //Setting up the nav bar for iOS 11, with large titles and search
+            self.navigationController?.navigationBar.prefersLargeTitles = true
+            self.navigationItem.largeTitleDisplayMode = .always
+        }
+        
         self.navigationItem.leftBarButtonItem = self.editButtonItem
 
         let infoButton = UIBarButtonItem(title: "About", style: .plain, target: self, action: #selector(self.showAppInfo(_:)))

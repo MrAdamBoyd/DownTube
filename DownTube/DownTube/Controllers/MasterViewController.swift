@@ -246,44 +246,26 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         }
     }
     
+    /// Starts the stream of a video
+    ///
+    /// - Parameter youTubeUrl: youtube url for the video
     func startStreamOfVideoInfoFor(_ youTubeUrl: String) {
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
-        //Gets the video id, which is the last 11 characters of the string
-        XCDYouTubeClient.default().getVideoWithIdentifier(String(youTubeUrl.characters.suffix(11))) { video, error in
+        
+        self.videoManager.getStreamInfo(for: youTubeUrl) { [unowned self] url, streamingVideo, error in
             
-            if let error = error {
-                self.showErrorAlertControllerWithMessage(error.localizedDescription)
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+            
+            guard let url = url, var streamingVideo = streamingVideo, error == nil else {
+                self.showErrorAlertControllerWithMessage(error!.localizedDescription)
                 return
             }
             
-            if let streamUrl = self.videoManager.highestQualityStreamUrlFor(video), let url = URL(string: streamUrl) {
-                
-                //Creating the fetch request, looking for the video with the same streamUrl
-                let fetchRequest: NSFetchRequest<StreamingVideo> = StreamingVideo.fetchRequest()
-                fetchRequest.predicate = NSPredicate(format: "youtubeUrl == %@", youTubeUrl)
-                
-                do {
-                    let existingVideos = try CoreDataController.sharedController.managedObjectContext.fetch(fetchRequest)
-                    var videoInCoreData: StreamingVideo
-                    
-                    if let existingVideo = existingVideos.first {
-                        videoInCoreData = existingVideo
-                    } else {
-                        videoInCoreData = CoreDataController.sharedController.createNewStreamingVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
-                    }
-                    
-                    //Now that a video has either been found in core data or created, get the watch progress and send it to the AVPlayer
-                    self.playVideo(with: url, video: videoInCoreData) { newProgress in
-                        videoInCoreData.watchProgress = newProgress
-                        CoreDataController.sharedController.saveContext()
-                    }
-                } catch let error {
-                    print("An error occurred saving the video: \(error)")
-                }
-            
+            //Now that a video has either been found in core data or created, get the watch progress and send it to the AVPlayer
+            self.playVideo(with: url, video: streamingVideo) { newProgress in
+                streamingVideo.watchProgress = newProgress
+                CoreDataController.sharedController.saveContext()
             }
-            
-            UIApplication.shared.isNetworkActivityIndicatorVisible = false
             
         }
     }

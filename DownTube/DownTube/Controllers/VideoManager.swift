@@ -184,7 +184,7 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
         let high = query.index(match.lowerBound, offsetBy: 21)
         
         //Only use part of the Url for the file name
-        return query.substring(with: low..<high) + ".mp4"
+        return String(query[low..<high]) + ".mp4"
     }
     
     /**
@@ -210,7 +210,9 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
             return nil
         }
         
-        return stringPath.substring(from: stringPath.index(stringPath.startIndex, offsetBy: 7))
+        let startIndex = stringPath.index(stringPath.startIndex, offsetBy: 7)
+        let endIndex = stringPath.endIndex
+        return String(stringPath[startIndex..<endIndex])
     }
     
     /**

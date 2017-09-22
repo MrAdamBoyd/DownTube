@@ -43,8 +43,8 @@ class CoreDataController {
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
         
-        //Order: most recent first
-        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        //Sort by name
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))
         
         fetchRequest.sortDescriptors = [sortDescriptor]
         

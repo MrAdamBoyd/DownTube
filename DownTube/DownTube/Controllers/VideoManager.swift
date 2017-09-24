@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import CoreData
 import XCDYouTubeKit
 
 protocol VideoManagerDelegate: class {
@@ -48,6 +49,48 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
         
         //Need to specifically init this because self has to be used in the argument, which isn't formed until here
         _ = self.downloadsSession
+    }
+    
+    /// Gets the streaming video information for a particular video
+    ///
+    /// - Parameters:
+    ///   - youTubeUrl: youtube url for the video
+    ///   - completion: called when the video info is ready or if there is an error
+    func getStreamInfo(for youTubeUrl: String, completion: @escaping (_ url: URL?, _ video: StreamingVideo?, _ error: Error?) -> Void) {
+        
+        //Gets the video id, which is the last 11 characters of the string
+        XCDYouTubeClient.default().getVideoWithIdentifier(String(youTubeUrl.characters.suffix(11))) { [unowned self] video, error in
+            
+            if let error = error {
+                completion(nil, nil, error)
+                return
+            }
+            
+            if let streamUrl = self.highestQualityStreamUrlFor(video), let url = URL(string: streamUrl) {
+                
+                //Creating the fetch request, looking for the video with the same streamUrl
+                let fetchRequest: NSFetchRequest<StreamingVideo> = StreamingVideo.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "youtubeUrl == %@", youTubeUrl)
+                
+                do {
+                    let existingVideos = try CoreDataController.sharedController.managedObjectContext.fetch(fetchRequest)
+                    var videoInCoreData: StreamingVideo
+                    
+                    if let existingVideo = existingVideos.first {
+                        videoInCoreData = existingVideo
+                    } else {
+                        videoInCoreData = CoreDataController.sharedController.createNewStreamingVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
+                    }
+                    
+                    completion(url, videoInCoreData, nil)
+                    
+                } catch let error {
+                    //Don't alert user
+                    print("An error occurred saving the video: \(error)")
+                }
+                
+            }
+        }
     }
     
     /**

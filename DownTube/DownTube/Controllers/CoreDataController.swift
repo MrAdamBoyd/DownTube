@@ -20,7 +20,7 @@ class CoreDataController {
         if let controller = _fetchedVideosController {
             return controller
         }
-        _fetchedVideosController = self.createControllerWithFetchRequest(Video.fetchRequest())
+        _fetchedVideosController = self.createControllerWithFetchRequest(Video.fetchRequest(), searchForPredicate: nil)
         return _fetchedVideosController!
     }
     private var _fetchedVideosController: NSFetchedResultsController<Video>?
@@ -30,7 +30,7 @@ class CoreDataController {
         if let controller = _fetchedStreamingVideosController {
             return controller
         }
-        _fetchedStreamingVideosController = self.createControllerWithFetchRequest(StreamingVideo.fetchRequest())
+        _fetchedStreamingVideosController = self.createControllerWithFetchRequest(StreamingVideo.fetchRequest(), searchForPredicate: nil)
         return _fetchedStreamingVideosController!
     }
     private var _fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo>?
@@ -39,14 +39,19 @@ class CoreDataController {
     ///
     /// - Parameter fetchRequest: request type that contains the entity
     /// - Returns: fetched results controller
-    private func createControllerWithFetchRequest<T>(_ fetchRequest: NSFetchRequest<T>) -> NSFetchedResultsController<T> {
+    private func createControllerWithFetchRequest<T>(_ fetchRequest: NSFetchRequest<T>, searchForPredicate: String?) -> NSFetchedResultsController<T> {
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
         
-        //Order: most recent first
-        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        //Sort by name
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))
         
         fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        if let search = searchForPredicate, search != "" {
+            let predicate = NSPredicate(format: "title CONTAINS[cd] %@", search)
+            fetchRequest.predicate = predicate
+        }
         
         // Edit the section name key path and cache name if appropriate.
         // nil for section name key path means "no sections".
@@ -59,6 +64,13 @@ class CoreDataController {
         }
         
         return aFetchedResultsController
+    }
+    
+    /// Creates a new fetch result controller with the search provided. If no search, returns all
+    ///
+    /// - Parameter search: search to use as an NSPredicate
+    func createVideosFetchedResultsControllerWithSearch(_ search: String?) {
+        _fetchedVideosController = self.createControllerWithFetchRequest(Video.fetchRequest(), searchForPredicate: search)
     }
     
     //Rest of the core data stack

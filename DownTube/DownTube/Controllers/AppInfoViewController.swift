@@ -14,6 +14,10 @@ class AppInfoViewController: UIViewController {
     
     @IBOutlet weak var versionLabel: UILabel!
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

@@ -26,6 +26,10 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     weak var presentedSafariVC: SFSafariViewController?
     var nowPlayingHandler: NowPlayingHandler?
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

@@ -33,6 +33,14 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
             //Setting up the nav bar for iOS 11, with large titles and search
             self.navigationController?.navigationBar.prefersLargeTitles = true
             self.navigationItem.largeTitleDisplayMode = .always
+            
+            let search = UISearchController(searchResultsController: nil)
+            search.searchResultsUpdater = self
+            search.searchBar.tintColor = .red
+            self.navigationItem.searchController = search
+            
+            UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.foregroundColor.rawValue: UIColor.white]
+
         }
         
         self.navigationItem.leftBarButtonItem = self.editButtonItem
@@ -719,5 +727,15 @@ extension MasterViewController: VideoManagerDelegate {
                 }
             }
         }
+    }
+}
+
+extension MasterViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let search = searchController.searchBar.text else { return }
+        
+        print("Updating search results, search is \"\(search)\"")
+        CoreDataController.sharedController.createVideosFetchedResultsControllerWithSearch(search)
+        self.tableView.reloadData()
     }
 }

@@ -109,7 +109,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     ///   - enterLinkAction: action that takes place if user wants to enter link
     ///   - browseAction: action that takes place if user wants to browse
     private func buildAndShowAlertControllerForNewVideo(enterLinkAction: @escaping (UIAlertAction) -> Void, browseAction: @escaping (UIAlertAction) -> Void) {
-        let alertVC = UIAlertController(title: "How do you want to find the video?", message: nil, preferredStyle: .actionSheet)
+        let alertVC = UIAlertController(title: "How do you want to find the video?", message: nil, preferredStyle: UIDevice.current.userInterfaceIdiom == .phone ? .actionSheet : .alert)
         
         alertVC.addAction(UIAlertAction(title: "Enter Link", style: .default, handler: enterLinkAction))
         
@@ -606,7 +606,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
             
             let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
             
-            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: UIDevice.current.userInterfaceIdiom == .phone ? .actionSheet : .alert)
             
             for action in self.buildActionsForLongPressOn(video: video, at: indexPath) {
                 alertController.addAction(action)

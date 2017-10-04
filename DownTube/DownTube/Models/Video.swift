@@ -16,6 +16,7 @@ class Video: NSManagedObject, Watchable {
     }
     
     @NSManaged var created: Date?
+    @NSManaged var isDoneDownloading: NSNumber?
     @NSManaged var quality: NSNumber?
     @NSManaged var streamUrl: String?
     @NSManaged var title: String?

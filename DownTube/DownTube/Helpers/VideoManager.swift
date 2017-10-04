@@ -308,12 +308,11 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     
     /// Checks if any video files don't exist and need to be downloaded
     func checkIfAnyVideosNeedToBeDownloaded() {
-        guard let allVideos = CoreDataController.sharedController.fetchedVideosController.fetchedObjects else {
+        guard let needToDownload = CoreDataController.sharedController.createVideosFetchedResultsControllerWithSearch(nil, isDownloadedPredicate: false).fetchedObjects, !needToDownload.isEmpty else {
             return
         }
-        let videosNotDownloaded = allVideos.filter({ self.localFileExistsFor($0) })
         var indexesToReload: [Int] = []
-        for video in videosNotDownloaded {
+        for video in needToDownload {
             if let index = self.downloadManager.startDownload(video) {
                 indexesToReload.append(index)
             }

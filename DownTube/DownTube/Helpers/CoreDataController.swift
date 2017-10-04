@@ -20,7 +20,7 @@ class CoreDataController {
         if let controller = _fetchedVideosController {
             return controller
         }
-        _fetchedVideosController = self.createControllerWithFetchRequest(Video.fetchRequest(), searchForPredicate: nil)
+        _fetchedVideosController = self.createControllerWithFetchRequest(Video.fetchRequest(), searchForPredicate: nil, isDownloadedPredicate: nil)
         return _fetchedVideosController!
     }
     private var _fetchedVideosController: NSFetchedResultsController<Video>?
@@ -30,7 +30,7 @@ class CoreDataController {
         if let controller = _fetchedStreamingVideosController {
             return controller
         }
-        _fetchedStreamingVideosController = self.createControllerWithFetchRequest(StreamingVideo.fetchRequest(), searchForPredicate: nil)
+        _fetchedStreamingVideosController = self.createControllerWithFetchRequest(StreamingVideo.fetchRequest(), searchForPredicate: nil, isDownloadedPredicate: nil)
         return _fetchedStreamingVideosController!
     }
     private var _fetchedStreamingVideosController: NSFetchedResultsController<StreamingVideo>?
@@ -39,7 +39,7 @@ class CoreDataController {
     ///
     /// - Parameter fetchRequest: request type that contains the entity
     /// - Returns: fetched results controller
-    private func createControllerWithFetchRequest<T>(_ fetchRequest: NSFetchRequest<T>, searchForPredicate: String?) -> NSFetchedResultsController<T> {
+    private func createControllerWithFetchRequest<T>(_ fetchRequest: NSFetchRequest<T>, searchForPredicate: String?, isDownloadedPredicate: Bool?) -> NSFetchedResultsController<T> {
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
         
@@ -48,9 +48,21 @@ class CoreDataController {
         
         fetchRequest.sortDescriptors = [sortDescriptor]
         
+        var predicates: [NSPredicate] = []
         if let search = searchForPredicate, search != "" {
+            //Searching the title
             let predicate = NSPredicate(format: "title CONTAINS[cd] %@", search)
-            fetchRequest.predicate = predicate
+            predicates.append(predicate)
+        }
+        
+        if let isDownloadedPredicate = isDownloadedPredicate {
+            //Searching if item is downloaded
+            let predicate = NSPredicate(format: "isDoneDownloading == %@", NSNumber(value: isDownloadedPredicate))
+            predicates.append(predicate)
+        }
+        
+        if !predicates.isEmpty {
+            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         }
         
         // Edit the section name key path and cache name if appropriate.
@@ -69,8 +81,15 @@ class CoreDataController {
     /// Creates a new fetch result controller with the search provided. If no search, returns all
     ///
     /// - Parameter search: search to use as an NSPredicate
-    func createVideosFetchedResultsControllerWithSearch(_ search: String?) {
-        _fetchedVideosController = self.createControllerWithFetchRequest(Video.fetchRequest(), searchForPredicate: search)
+    func createVideosFetchedResultsControllerWithSearch(_ search: String?, isDownloadedPredicate: Bool?) -> NSFetchedResultsController<Video> {
+        return self.createControllerWithFetchRequest(Video.fetchRequest(), searchForPredicate: search, isDownloadedPredicate: isDownloadedPredicate)
+    }
+    
+    /// Sets a new fetch result controller with the search provided. If no search, returns all
+    ///
+    /// - Parameter search: search to use as an NSPredicate
+    func setVideosFetchedResultsControllerWithSearch(_ search: String?, isDownloadedPredicate: Bool?) {
+        _fetchedVideosController = self.createVideosFetchedResultsControllerWithSearch(search, isDownloadedPredicate: isDownloadedPredicate)
     }
     
     //Rest of the core data stack
@@ -128,6 +147,7 @@ class CoreDataController {
         var newVideo = NSEntityDescription.insertNewObject(forEntityName: Video.entityName, into: self.managedObjectContext) as! Video
         
         newVideo.created = Date()
+        newVideo.isDoneDownloading = NSNumber(value: false)
         newVideo.youtubeUrl = youTubeUrl
         newVideo.title = videoObject?.title
         newVideo.streamUrl = streamUrl

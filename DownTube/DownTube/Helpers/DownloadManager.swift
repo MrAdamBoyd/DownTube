@@ -156,10 +156,9 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
         print("Startind download")
         if let urlString = video.streamUrl, let download = self.getDownloadWith(streamUrl: urlString) {
             if download.state == .downloading {
+                //TODO: Resuming isn't working
                 download.downloadTask?.cancel() { data in
-                    if data != nil {
-                        download.resumeData = data
-                    }
+                    download.resumeData = data
                 }
                 download.state = .paused
             }

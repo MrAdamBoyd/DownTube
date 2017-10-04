@@ -84,6 +84,7 @@
 		66573B621F0BFA7F00D45DAC /* Watchable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Watchable.swift; sourceTree = "<group>"; };
 		665C0A211DCA2C1E00C68C1D /* VideoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoManager.swift; sourceTree = "<group>"; };
 		666DF0751F8558FE003EB61F /* DownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
+		666DF0771F8588D5003EB61F /* Downtube 1.4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Downtube 1.4.xcdatamodel"; sourceTree = "<group>"; };
 		668AE00D1F3FCB5E00CB7867 /* NowPlayingHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NowPlayingHandler.swift; sourceTree = "<group>"; };
 		668AE00F1F3FD60A00CB7867 /* Downtube 1.3.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Downtube 1.3.1.xcdatamodel"; sourceTree = "<group>"; };
 		6698ABC81D0910AF00985368 /* DownTubeShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DownTubeShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -913,12 +914,13 @@
 		66BF69B21CFD2AE3004FEFF7 /* DownTube.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				666DF0771F8588D5003EB61F /* Downtube 1.4.xcdatamodel */,
 				66EAF6851D2C841B003D4BA8 /* DownTube 1.2.xcdatamodel */,
 				66BF69B31CFD2AE3004FEFF7 /* DownTube.xcdatamodel */,
 				668AE00F1F3FD60A00CB7867 /* Downtube 1.3.1.xcdatamodel */,
 				66573B5D1F0BF9A400D45DAC /* Downtube 1.3.xcdatamodel */,
 			);
-			currentVersion = 668AE00F1F3FD60A00CB7867 /* Downtube 1.3.1.xcdatamodel */;
+			currentVersion = 666DF0771F8588D5003EB61F /* Downtube 1.4.xcdatamodel */;
 			path = DownTube.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

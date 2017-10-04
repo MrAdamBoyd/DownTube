@@ -648,7 +648,11 @@ extension MasterViewController: VideoManagerDelegate {
                 
                 videoTableViewCell.updateProgress(for: download, totalSize: totalSize)
                 if download.isDone {
-                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                    let indexPath = IndexPath(row: index, section: 0)
+                    self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                    let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+                    video.isDoneDownloading = NSNumber(value: true)
+                    CoreDataController.sharedController.saveContext()
                 }
             }
         }
@@ -660,7 +664,7 @@ extension MasterViewController: UISearchResultsUpdating {
         guard let search = searchController.searchBar.text else { return }
         
         print("Updating search results, search is \"\(search)\"")
-        CoreDataController.sharedController.createVideosFetchedResultsControllerWithSearch(search)
+        CoreDataController.sharedController.setVideosFetchedResultsControllerWithSearch(search, isDownloadedPredicate: nil)
         self.tableView.reloadData()
     }
 }

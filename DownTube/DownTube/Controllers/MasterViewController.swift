@@ -59,6 +59,8 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         
         self.videoManager.addVideosFromSharedArray()
         
+        self.registerForPreviewing(with: self, sourceView: self.tableView)
+        
         //Wormhole between extension and app
         self.wormhole.listenForMessage(withIdentifier: "youTubeUrl") { messageObject in
             if let vc = self.presentedSafariVC, let url = messageObject as? String, self.streamFromSafariVC {
@@ -559,18 +561,19 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         }
     }
     
-    /// Plays a video in an AVPlayer and handles all callbacks
+    /// Creates a DownTubePlayerViewController with the url to play from and the video that contains the watch progress
     ///
     /// - Parameters:
-    ///   - url: url of the video, local or remote
-    ///   - video: video object (either streaming or downloaded) that is being played
-    ///   - progressCallback: called to update the video watch state, called multiple time
-    private func playVideo(with url: URL, video: Watchable, progressCallback: @escaping (WatchState) -> Void) {
+    ///   - url: url that the VC will play from
+    ///   - video: video that is playing
+    /// - Returns: set up DownTubePlayerViewController
+    private func createPlaybackViewController(with url: URL, video: Watchable) -> (player: AVPlayer, viewController: DownTubePlayerViewController) {
         let player = AVPlayer(url: url)
         
-        let playerViewController = AVPlayerViewController()
+        let playerViewController = DownTubePlayerViewController()
         playerViewController.updatesNowPlayingInfoCenter = false
-            
+        playerViewController.currentlyPlaying = video
+        
         //Seek to time if the time is saved
         switch video.watchProgress {
         case let .partiallyWatched(seconds):
@@ -578,10 +581,21 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         default:    break
         }
         
-        
         playerViewController.player = player
-        self.present(playerViewController, animated: true) {
-            playerViewController.player?.play()
+        
+        return (player, playerViewController)
+    }
+    
+    /// Presents the DownTubePlayerViewController and sets up the NowPlayingInfoCenter for playback
+    ///
+    /// - Parameters:
+    ///   - player: player set up with video
+    ///   - viewController: DownTubePlayerViewController to display
+    ///   - video: video that's being played
+    ///   - progressCallback: callback for when the progress of the video is updated
+    private func present(videoViewController: DownTubePlayerViewController, andSetUpNowPlayingInfoFor player: AVPlayer, video: Watchable, progressCallback: @escaping (WatchState) -> Void) {
+        self.present(videoViewController, animated: true) {
+            player.play()
             //This sets the name in control center and on the home screen
             self.nowPlayingHandler = NowPlayingHandler(player: player)
             self.nowPlayingHandler?.addTimeObserverToPlayer(progressCallback)
@@ -589,6 +603,18 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = NSNumber(value: CMTimeGetSeconds(player.currentItem!.duration))
         }
+    }
+    
+    /// Plays a video in an AVPlayer and handles all callbacks
+    ///
+    /// - Parameters:
+    ///   - url: url of the video, local or remote
+    ///   - video: video object (either streaming or downloaded) that is being played
+    ///   - progressCallback: called to update the video watch state, called multiple time
+    private func playVideo(with url: URL, video: Watchable, progressCallback: @escaping (WatchState) -> Void) {
+        let playerObjects = self.createPlaybackViewController(with: url, video: video)
+        
+        self.present(videoViewController: playerObjects.viewController, andSetUpNowPlayingInfoFor: playerObjects.player, video: video, progressCallback: progressCallback)
     }
     
     /**
@@ -705,6 +731,36 @@ extension MasterViewController: VideoTableViewCellDelegate {
             self.deleteVideoObject(at: indexPath)
         }
     }
+}
+
+// MARK: 3D Touch
+
+extension MasterViewController: UIViewControllerPreviewingDelegate {
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        guard let indexPath = self.tableView.indexPathForRow(at: location) else { return nil }
+        
+        //Get the index path for the cell
+        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+        if let indexPath = self.tableView.indexPathForRow(at: location), let urlString = video.streamUrl, let url = self.videoManager.localFilePathForUrl(urlString) {
+            //This will show the blur correctly
+            let rectOfCellInTableView = tableView.rectForRow(at: indexPath)
+            let rectOfCellInSuperview = tableView.convert(rectOfCellInTableView, to: tableView.superview)
+            previewingContext.sourceRect = rectOfCellInSuperview
+            return self.createPlaybackViewController(with: url, video: video).viewController
+        }
+    
+        return nil
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        if let vc = viewControllerToCommit as? DownTubePlayerViewController, let player = vc.player, var video = vc.currentlyPlaying {
+            self.present(videoViewController: vc, andSetUpNowPlayingInfoFor: player, video: video) { newProgress in
+                video.watchProgress = newProgress
+                CoreDataController.sharedController.saveContext()
+            }
+        }
+    }
+    
 }
 
 // MARK: - VideoManagerDelegate

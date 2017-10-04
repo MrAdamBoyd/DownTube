@@ -580,7 +580,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     func resumeTapped(_ cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPath(for: cell) {
             let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
-            self.videoManager.downloadManager.resumeDownload(video)
+            self.videoManager.downloadManager.resumeVideoDownload(video)
             self.tableView.reloadRows(at: [indexPath], with: .none)
         }
     }

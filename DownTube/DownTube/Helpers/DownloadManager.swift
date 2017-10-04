@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 
+let maxNumberOfActiveDownloads = 3
+
 protocol DownloadManagerDelegate: class {
     func videoIndexForYouTubeUrl(_ url: String) -> Int?
     func videoIndexForStreamUrl(_ url: String) -> Int?
@@ -54,7 +56,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     ///
     /// - Parameter download: download to add
     private func addDownload(_ download: Download) {
-        if self.activeDownloads.count <= 3 {
+        if self.activeDownloads.count < maxNumberOfActiveDownloads {
             download.downloadTask?.resume()
             download.state = .downloading
             self.activeDownloads.append(download)
@@ -80,11 +82,14 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     /// Removes the download with the specified stream url. If removing an active download, moves an enqueued download into the active downloads list and starts the download
     ///
     /// - Parameter streamUrl: stream url to search for
+    /// - Parameter cancelDownload: if true, cancels the download as well
     /// - Returns: true if download was successfully removed, false otherwise
-    @discardableResult private func removeDownloadWith(streamUrl: String) -> Bool {
+    @discardableResult private func removeDownloadWith(streamUrl: String, cancelDownload: Bool) -> Bool {
         if let index = self.activeDownloads.index(where: { $0.url == streamUrl }) {
             let download = self.activeDownloads.remove(at: index)
-            download.downloadTask?.cancel()
+            if cancelDownload { download.downloadTask?.cancel() }
+            
+            guard self.activeDownloads.count < maxNumberOfActiveDownloads else { return true }
             
             //Gets the first enqueued download that isn't paused
             let firstEnqueuedDownload = self.enqueuedDownloads.first(where: {
@@ -94,14 +99,13 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
                 }
             })
             if let firstEnqueuedDownload = firstEnqueuedDownload {
-                firstEnqueuedDownload.downloadTask?.resume()
-                firstEnqueuedDownload.state = .downloading
-                self.activeDownloads.append(firstEnqueuedDownload)
+                self.resumeDownload(firstEnqueuedDownload)
             }
             
             return true
         } else if let index = self.enqueuedDownloads.index(where: { $0.url == streamUrl }) {
-            self.enqueuedDownloads.remove(at: index)
+            let download = self.enqueuedDownloads.remove(at: index)
+            if cancelDownload { download.downloadTask?.cancel() }
             return true
         }
         
@@ -153,10 +157,9 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
      - parameter video: Video object
      */
     func pauseDownload(_ video: Video) {
-        print("Startind download")
+        print("Pausing download")
         if let urlString = video.streamUrl, let download = self.getDownloadWith(streamUrl: urlString) {
             if download.state == .downloading {
-                //TODO: Resuming isn't working
                 download.downloadTask?.cancel() { data in
                     download.resumeData = data
                 }
@@ -173,7 +176,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     func cancelDownload(_ video: Video) {
         print("Cancelling download of video \(video.title ?? "unknown video")")
         if let urlString = video.streamUrl {
-            self.removeDownloadWith(streamUrl: urlString)
+            self.removeDownloadWith(streamUrl: urlString, cancelDownload: true)
         }
         
     }
@@ -183,23 +186,32 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
      
      - parameter video: Video object
      */
-    func resumeDownload(_ video: Video) {
+    func resumeVideoDownload(_ video: Video) {
         print("Resuming download of video \(video.title ?? "unknown video")")
         if let urlString = video.streamUrl, let download = self.getDownloadWith(streamUrl: urlString) {
-            if let resumeData = download.resumeData {
-                download.downloadTask = self.downloadsSession.downloadTask(withResumeData: resumeData)
-                download.downloadTask?.resume()
-                download.state = .downloading
-            } else if let url = URL(string: download.url) {
-                download.downloadTask = self.downloadsSession.downloadTask(with: url)
-                download.downloadTask?.resume()
-                download.state = .downloading
-            }
-            
-            //In this case, we let the user have more than 3 simultaneous downloads
-            self.removeDownloadWith(streamUrl: urlString)
-            self.activeDownloads.append(download)
+            self.resumeDownload(download)
         }
+    }
+    
+    /// Resumes the download, with resume data, if available
+    ///
+    /// - Parameter download: download to resume
+    func resumeDownload(_ download: Download) {
+        guard !self.activeDownloads.contains(download) else { return }
+        
+        if let resumeData = download.resumeData {
+            download.downloadTask = self.downloadsSession.downloadTask(withResumeData: resumeData)
+            download.downloadTask?.resume()
+            download.state = .downloading
+        } else if let url = URL(string: download.url) {
+            download.downloadTask = self.downloadsSession.downloadTask(with: url)
+            download.downloadTask?.resume()
+            download.state = .downloading
+        }
+        
+        //In this case, we let the user have more than 3 simultaneous downloads
+        self.removeDownloadWith(streamUrl: download.url, cancelDownload: false)
+        self.activeDownloads.append(download)
     }
     
     // MARK: - URLSessionDownloadDelegate
@@ -229,7 +241,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
                 
                 //Updating the cell
                 if let url = downloadTask.originalRequest?.url?.absoluteString {
-                    self.removeDownloadWith(streamUrl: url)
+                    self.removeDownloadWith(streamUrl: url, cancelDownload: true)
                     
                     if let videoIndex = self.videoIndexForDownloadTask(downloadTask) {
                         self.videoManagerDelegate?.reloadRows([IndexPath(row: videoIndex, section: 0)])

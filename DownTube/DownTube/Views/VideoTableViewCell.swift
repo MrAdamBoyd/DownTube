@@ -43,6 +43,8 @@ class VideoTableViewCell: UITableViewCell {
     ///Properly sets up the cell
     func setUp(with video: Video, download: Download?, isDownloaded: Bool, delegate: VideoTableViewCellDelegate?) {
         
+        self.delegate = delegate
+        
         //Setting up date and name labels
         let components = (Calendar.current as NSCalendar).components([.day, .month, .year], from: video.created! as Date)
         
@@ -62,9 +64,8 @@ class VideoTableViewCell: UITableViewCell {
         if let download = download {
             showDownloadControls = true
             self.progressView.progress = download.progress
-            self.progressLabel.text = (download.isDownloading) ? "Downloading..." : "Paused"
-            let title = (download.isDownloading) ? "Pause" : "Resume"
-            self.pauseButton.setTitle(title, for: UIControlState())
+            self.progressLabel.text = download.state.titleForCell
+            self.pauseButton.setTitle(download.state.pauseButtonTitle, for: .normal)
         }
         self.progressView.isHidden = !showDownloadControls
         self.progressLabel.isHidden = !showDownloadControls

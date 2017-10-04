@@ -78,6 +78,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         // Deletes any files that shouldn't be there
         DispatchQueue.global(qos: .background).async {
             self.videoManager.cleanUpDownloadedFiles(from: CoreDataController.sharedController)
+            self.videoManager.checkIfAnyVideosNeedToBeDownloaded()
         }
         
         //Need to initialize so no error when trying to save to them
@@ -299,7 +300,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         let cell = tableView.dequeueReusableCell(withIdentifier: "VideoTableViewCell", for: indexPath) as! VideoTableViewCell
         let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
         var download: Download?
-        if let streamUrl = video.streamUrl, let downloadingVideo = self.videoManager.activeDownloads[streamUrl] {
+        if let streamUrl = video.streamUrl, let downloadingVideo = self.videoManager.downloadManager.getDownloadWith(streamUrl: streamUrl) {
             download = downloadingVideo
         }
         
@@ -374,7 +375,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     func isCellAtIndexPathDownloading(_ indexPath: IndexPath) -> Bool {
         let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
         if let streamUrl = video.streamUrl {
-            return self.videoManager.activeDownloads[streamUrl] != nil
+            return self.videoManager.downloadManager.getDownloadWith(streamUrl: streamUrl) != nil
         }
         
         return false
@@ -571,7 +572,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     func pauseTapped(_ cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPath(for: cell) {
             let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
-            self.videoManager.pauseDownload(video)
+            self.videoManager.downloadManager.pauseDownload(video)
             self.tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
@@ -579,7 +580,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     func resumeTapped(_ cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPath(for: cell) {
             let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
-            self.videoManager.resumeDownload(video)
+            self.videoManager.downloadManager.resumeDownload(video)
             self.tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
@@ -587,7 +588,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     func cancelTapped(_ cell: VideoTableViewCell) {
         if let indexPath = tableView.indexPath(for: cell) {
             let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
-            self.videoManager.cancelDownload(video)
+            self.videoManager.downloadManager.cancelDownload(video)
             tableView.reloadRows(at: [indexPath], with: .none)
             self.videoManager.deleteVideoObject(at: indexPath)
         }

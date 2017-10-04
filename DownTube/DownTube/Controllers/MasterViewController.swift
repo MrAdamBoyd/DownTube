@@ -573,6 +573,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         let playerViewController = DownTubePlayerViewController()
         playerViewController.updatesNowPlayingInfoCenter = false
         playerViewController.currentlyPlaying = video
+        playerViewController.actionItemsDelegate = self
         
         //Seek to time if the time is saved
         switch video.watchProgress {
@@ -761,6 +762,14 @@ extension MasterViewController: UIViewControllerPreviewingDelegate {
         }
     }
     
+}
+
+// MARK: - DownTubePlayerViewControllerDelegate
+
+extension MasterViewController: DownTubePlayerViewControllerDelegate {
+    func viewControllerChangedVideoStatus(for video: Watchable?) {
+        self.tableView.reloadData()
+    }
 }
 
 // MARK: - VideoManagerDelegate

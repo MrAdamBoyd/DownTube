@@ -40,6 +40,7 @@ class VideoTableViewCell: UITableViewCell {
         self.delegate = nil
     }
     
+    ///Properly sets up the cell
     func setUp(with video: Video, download: Download?, isDownloaded: Bool, delegate: VideoTableViewCellDelegate?) {
         
         //Setting up date and name labels
@@ -74,6 +75,14 @@ class VideoTableViewCell: UITableViewCell {
         //Hiding or showing the cancel and pause buttons
         self.pauseButton.isHidden = !showDownloadControls
         self.cancelButton.isHidden = !showDownloadControls
+    }
+    
+    /// Updates the download progress, hides and shows the controls
+    func updateProgress(for download: Download, totalSize: String) {
+        self.progressView.isHidden = download.isDone
+        self.progressLabel.isHidden = download.isDone
+        self.progressView.progress = download.progress
+        self.progressLabel.text = String(format: "%.1f%% of %@", download.progress * 100, totalSize)
     }
     
     /**

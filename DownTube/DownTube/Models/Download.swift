@@ -19,4 +19,8 @@ class Download: NSObject {
     init(url: String) {
         self.url = url
     }
+    
+    var isDone: Bool {
+        return self.progress >= 1
+    }
 }

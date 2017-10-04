@@ -753,14 +753,9 @@ extension MasterViewController: VideoManagerDelegate {
     func updateDownloadProgress(_ download: Download, at index: Int, with totalSize: String) {
         DispatchQueue.main.async() {
             if let videoTableViewCell = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VideoTableViewCell {
-            
-                let done = (download.progress == 1)
                 
-                videoTableViewCell.progressView.isHidden = done
-                videoTableViewCell.progressLabel.isHidden = done
-                videoTableViewCell.progressView.progress = download.progress
-                videoTableViewCell.progressLabel.text = String(format: "%.1f%% of %@", download.progress * 100, totalSize)
-                if done {
+                videoTableViewCell.updateProgress(for: download, totalSize: totalSize)
+                if download.isDone {
                     self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
                 }
             }

@@ -298,35 +298,16 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "VideoTableViewCell", for: indexPath) as! VideoTableViewCell
         let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
-        self.configureCell(cell, withVideo: video)
-        
-        cell.delegate = self
+        var download: Download?
+        if let streamUrl = video.streamUrl, let downloadingVideo = self.videoManager.activeDownloads[streamUrl] {
+            download = downloadingVideo
+        }
         
         let holdGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongTouchWithGestureRecognizer(_:)))
         holdGestureRecognizer.minimumPressDuration = 1
         cell.addGestureRecognizer(holdGestureRecognizer)
         
-        cell.setWatchIndicatorState(video.watchProgress)
-        
-        //Only show the download controls if video is currently downloading
-        var showDownloadControls = false
-        if let streamUrl = video.streamUrl, let download = self.videoManager.activeDownloads[streamUrl] {
-            showDownloadControls = true
-            cell.progressView.progress = download.progress
-            cell.progressLabel.text = (download.isDownloading) ? "Downloading..." : "Paused"
-            let title = (download.isDownloading) ? "Pause" : "Resume"
-            cell.pauseButton.setTitle(title, for: UIControlState())
-        }
-        cell.progressView.isHidden = !showDownloadControls
-        cell.progressLabel.isHidden = !showDownloadControls
-        
-        //Hiding or showing the download button
-        let downloaded = self.videoManager.localFileExistsFor(video)
-        cell.selectionStyle = downloaded ? .gray : .none
-        
-        //Hiding or showing the cancel and pause buttons
-        cell.pauseButton.isHidden = !showDownloadControls
-        cell.cancelButton.isHidden = !showDownloadControls
+        cell.setUp(with: video, download: download, isDownloaded: self.videoManager.localFileExistsFor(video), delegate: self)
         
         return cell
     }
@@ -356,18 +337,6 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         }
     }
 
-    func configureCell(_ cell: VideoTableViewCell, withVideo video: Video) {
-        let components = (Calendar.current as NSCalendar).components([.day, .month, .year], from: video.created! as Date)
-        
-        cell.videoNameLabel.text = video.title
-        
-        var labelText = "Downloaded"
-        if let year = components.year, let month = components.month, let day = components.day {
-            labelText += " on \(year)/\(month)/\(day)"
-        }
-        cell.dateLabel.text = labelText
-    }
-
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         self.tableView.beginUpdates()
     }
@@ -390,7 +359,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
             case .delete:
                 tableView.deleteRows(at: [indexPath!], with: .fade)
             case .update:
-                self.configureCell((tableView.cellForRow(at: indexPath!)! as! VideoTableViewCell), withVideo: anObject as! Video)
+                tableView.reloadRows(at: [indexPath!], with: .automatic)
             case .move:
                 tableView.moveRow(at: indexPath!, to: newIndexPath!)
         }

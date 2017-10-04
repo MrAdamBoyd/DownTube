@@ -37,6 +37,43 @@ class VideoTableViewCell: UITableViewCell {
         super.prepareForReuse()
         
         self.setWatchIndicatorState(.unwatched)
+        self.delegate = nil
+    }
+    
+    func setUp(with video: Video, download: Download?, isDownloaded: Bool, delegate: VideoTableViewCellDelegate?) {
+        
+        //Setting up date and name labels
+        let components = (Calendar.current as NSCalendar).components([.day, .month, .year], from: video.created! as Date)
+        
+        self.videoNameLabel.text = video.title
+        
+        var labelText = "Downloaded"
+        if let year = components.year, let month = components.month, let day = components.day {
+            labelText += " on \(year)/\(month)/\(day)"
+        }
+        self.dateLabel.text = labelText
+        
+        //Setting up showing the cell if downloading or not
+        self.setWatchIndicatorState(video.watchProgress)
+        
+        //Only show the download controls if video is currently downloading
+        var showDownloadControls = false
+        if let download = download {
+            showDownloadControls = true
+            self.progressView.progress = download.progress
+            self.progressLabel.text = (download.isDownloading) ? "Downloading..." : "Paused"
+            let title = (download.isDownloading) ? "Pause" : "Resume"
+            self.pauseButton.setTitle(title, for: UIControlState())
+        }
+        self.progressView.isHidden = !showDownloadControls
+        self.progressLabel.isHidden = !showDownloadControls
+        
+        //Hiding or showing the download button
+        self.selectionStyle = isDownloaded ? .gray : .none
+        
+        //Hiding or showing the cancel and pause buttons
+        self.pauseButton.isHidden = !showDownloadControls
+        self.cancelButton.isHidden = !showDownloadControls
     }
     
     /**

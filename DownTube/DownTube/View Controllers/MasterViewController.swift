@@ -128,7 +128,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
      
      - parameter sender: button
      */
-    @IBAction func downloadVideoAction(_ sender: AnyObject) {
+    @IBAction func startDownloadingVideoAction(_ sender: AnyObject) {
         self.buildAndShowAlertControllerForNewVideo(enterLinkAction: { [unowned self] _ in
             self.buildAndShowUrlGettingAlertController("Download") { text in
                 self.startDownloadOfVideoInfoFor(text)
@@ -143,7 +143,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
      
      - parameter sender: button
      */
-    @IBAction func streamVideoAction(_ sender: AnyObject) {
+    @IBAction func startStreamingVideoAction(_ sender: AnyObject) {
         self.buildAndShowAlertControllerForNewVideo(enterLinkAction: { [unowned self] _ in
             self.buildAndShowUrlGettingAlertController("Stream") { text in
                 self.startStreamOfVideoInfoFor(text)

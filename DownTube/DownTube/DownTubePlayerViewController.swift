@@ -14,6 +14,7 @@ protocol DownTubePlayerViewControllerDelegate: class {
     func viewControllerChangedVideoStatus(for video: Watchable?)
 }
 
+// Yes I know AVPlayerViewController isn't meant to be subclassed, but no methods are overridden here, just the preview action items for 3d touch
 class DownTubePlayerViewController: AVPlayerViewController {
     var currentlyPlaying: Watchable?
     weak var actionItemsDelegate: DownTubePlayerViewControllerDelegate?

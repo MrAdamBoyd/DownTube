@@ -254,7 +254,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         //Gets the video id, which is the last 11 characters of the string
         XCDYouTubeClient.default().getVideoWithIdentifier(String(url.characters.suffix(11))) { video, error in
-            self.videoObject(video, downloadedForVideoAt: url, error: error as NSError?)
+            self.videoManager.videoObject(video, downloadedForVideoAt: url, error: error as NSError?)
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
             
         }
@@ -331,9 +331,9 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            _ = self.deleteDownloadedVideo(at: indexPath)
+            _ = self.videoManager.deleteDownloadedVideo(at: indexPath)
             
-            self.deleteVideoObject(at: indexPath)
+            self.videoManager.deleteVideoObject(at: indexPath)
         }
     }
 
@@ -383,84 +383,6 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     // MARK: - Helper methods
     
     /**
-     Called when the video info for a video is downloaded
-     
-     - parameter video:      optional video object that was downloaded, contains stream info, title, etc.
-     - parameter youTubeUrl: youtube URL of the video
-     - parameter error:      optional error
-     */
-    func videoObject(_ video: XCDYouTubeVideo?, downloadedForVideoAt youTubeUrl: String, error: NSError?) {
-        if let videoTitle = video?.title {
-            print("\(videoTitle)")
-            
-            if let video = video, let streamUrl = self.videoManager.highestQualityStreamUrlFor(video) {
-                self.createObjectInCoreDataAndStartDownloadFor(video, withStreamUrl: streamUrl, andYouTubeUrl: youTubeUrl)
-                
-                return
-            }
-            
-        }
-        
-        //Show error to user and remove all errored out videos
-        self.showErrorAndRemoveErroredVideos(error)
-    }
-    
-    /**
-     Creates new video object in core data, saves the information for that video, and starts the download of the video stream
-     
-     - parameter video:      video object
-     - parameter streamUrl:  streaming URL for the video
-     - parameter youTubeUrl: youtube URL for the video (youtube.com/watch?=v...)
-     */
-    func createObjectInCoreDataAndStartDownloadFor(_ video: XCDYouTubeVideo?, withStreamUrl streamUrl: String, andYouTubeUrl youTubeUrl: String) {
-        
-        //Make sure the stream URL doesn't exist already
-        guard self.videoManager.videoIndexForYouTubeUrl(youTubeUrl) == nil else {
-            self.showErrorAlertControllerWithMessage("Video already downloaded")
-            return
-        }
-        
-        let newVideo = CoreDataController.sharedController.createNewVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
-        
-        //Starts the download of the video
-        self.videoManager.startDownload(newVideo) { index in
-            self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-        }
-    }
-    
-    /**
-     Shows error to user in UIAlertController and then removes all errored out videos from core data
-     
-     - parameter error: error from getting the video info
-     */
-    func showErrorAndRemoveErroredVideos(_ error: NSError?) {
-        //Show error to user, remove all unused cells from list
-        DispatchQueue.main.async {
-            if let error = error {
-                print("Couldn't get video: \(error.localizedDescription)")
-            } else {
-                print("Couldn't get video: unknown error")
-            }
-            
-            let message = error?.localizedDescription
-            self.showErrorAlertControllerWithMessage(message)
-        }
-        
-        //Getting all blank videos with no downloaded data
-        var objectsToRemove: [IndexPath] = []
-        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() where video.streamUrl == nil {
-            objectsToRemove.append(IndexPath(row: index, section: 0))
-        }
-        
-        //Deleting them
-        for indexPath in objectsToRemove {
-            _ = self.deleteDownloadedVideo(at: indexPath)
-            self.deleteVideoObject(at: indexPath)
-        }
-
-    }
-    
-    /**
      Presents UIAlertController error message to user with ok button
      
      - parameter message: message to show
@@ -478,37 +400,6 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
             self.present(alertController, animated: true, completion: nil)
         }
         
-    }
-    
-    /// Deletes the downloaded video at the specified index path
-    ///
-    /// - Parameter indexPath: indexpath of the video to delete
-    /// - Returns: video that was deleted
-    func deleteDownloadedVideo(at indexPath: IndexPath) -> Video {
-        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
-        
-        self.videoManager.cancelDownload(video)
-        _ = self.videoManager.deleteDownloadedVideo(for: video)
-        
-        return video
-    }
-    
-    /**
-     Deletes video object from core data
-     
-     - parameter indexPath: location of the video
-     */
-    func deleteVideoObject(at indexPath: IndexPath) {
-        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
-        
-        let context = CoreDataController.sharedController.fetchedVideosController.managedObjectContext
-        context.delete(video)
-        
-        do {
-            try context.save()
-        } catch {
-            abort()
-        }
     }
     
     /**
@@ -698,7 +589,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
             let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
             self.videoManager.cancelDownload(video)
             tableView.reloadRows(at: [indexPath], with: .none)
-            self.deleteVideoObject(at: indexPath)
+            self.videoManager.deleteVideoObject(at: indexPath)
         }
     }
 }

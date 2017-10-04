@@ -15,6 +15,7 @@ protocol VideoManagerDelegate: class {
     func reloadRows(_ rows: [IndexPath])
     func updateDownloadProgress(_ download: Download, at index: Int, with totalSize: String)
     func startDownloadOfVideoInfoFor(_ url: String)
+    func showErrorAlertControllerWithMessage(_ message: String?)
 }
 
 class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
@@ -93,6 +94,8 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
         }
     }
     
+    // MARK: - Downloading
+    
     /**
      Starts download for video, called when track is added
      
@@ -164,6 +167,119 @@ class VideoManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
             }
         }
     }
+    
+    // MARK: - Managing videos
+    
+    /**
+     Called when the video info for a video is downloaded
+     
+     - parameter video:      optional video object that was downloaded, contains stream info, title, etc.
+     - parameter youTubeUrl: youtube URL of the video
+     - parameter error:      optional error
+     */
+    func videoObject(_ video: XCDYouTubeVideo?, downloadedForVideoAt youTubeUrl: String, error: NSError?) {
+        if let videoTitle = video?.title {
+            print("\(videoTitle)")
+            
+            if let video = video, let streamUrl = self.highestQualityStreamUrlFor(video) {
+                self.createObjectInCoreDataAndStartDownloadFor(video, withStreamUrl: streamUrl, andYouTubeUrl: youTubeUrl)
+                
+                return
+            }
+            
+        }
+        
+        //Show error to user and remove all errored out videos
+        self.showErrorAndRemoveErroredVideos(error)
+    }
+    
+    /**
+     Creates new video object in core data, saves the information for that video, and starts the download of the video stream
+     
+     - parameter video:      video object
+     - parameter streamUrl:  streaming URL for the video
+     - parameter youTubeUrl: youtube URL for the video (youtube.com/watch?=v...)
+     */
+    private func createObjectInCoreDataAndStartDownloadFor(_ video: XCDYouTubeVideo?, withStreamUrl streamUrl: String, andYouTubeUrl youTubeUrl: String) {
+        
+        //Make sure the stream URL doesn't exist already
+        guard self.videoIndexForYouTubeUrl(youTubeUrl) == nil else {
+            self.delegate?.showErrorAlertControllerWithMessage("Video already downloaded")
+            return
+        }
+        
+        let newVideo = CoreDataController.sharedController.createNewVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
+        
+        //Starts the download of the video
+        self.startDownload(newVideo) { index in
+            self.delegate?.reloadRows([IndexPath(row: index, section: 0)])
+        }
+    }
+    
+    /**
+     Shows error to user in UIAlertController and then removes all errored out videos from core data
+     
+     - parameter error: error from getting the video info
+     */
+    func showErrorAndRemoveErroredVideos(_ error: NSError?) {
+        //Show error to user, remove all unused cells from list
+        DispatchQueue.main.async {
+            if let error = error {
+                print("Couldn't get video: \(error.localizedDescription)")
+            } else {
+                print("Couldn't get video: unknown error")
+            }
+            
+            let message = error?.localizedDescription
+            self.delegate?.showErrorAlertControllerWithMessage(message)
+        }
+        
+        //Getting all blank videos with no downloaded data
+        var objectsToRemove: [IndexPath] = []
+        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() where video.streamUrl == nil {
+            objectsToRemove.append(IndexPath(row: index, section: 0))
+        }
+        
+        //Deleting them
+        for indexPath in objectsToRemove {
+            _ = self.deleteDownloadedVideo(at: indexPath)
+            self.deleteVideoObject(at: indexPath)
+        }
+        
+    }
+    
+    /**
+     Deletes video object from core data
+     
+     - parameter indexPath: location of the video
+     */
+    func deleteVideoObject(at indexPath: IndexPath) {
+        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+        
+        let context = CoreDataController.sharedController.fetchedVideosController.managedObjectContext
+        context.delete(video)
+        
+        do {
+            try context.save()
+        } catch {
+            abort()
+        }
+    }
+    
+    /// Deletes the downloaded video at the specified index path
+    ///
+    /// - Parameter indexPath: indexpath of the video to delete
+    /// - Returns: video that was deleted
+    func deleteDownloadedVideo(at indexPath: IndexPath) -> Video {
+        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+        
+        self.cancelDownload(video)
+        _ = self.deleteDownloadedVideo(for: video)
+        
+        return video
+    }
+    
+    // MARK: - Getting indexes
     
     /**
      Gets the index of the video for the current download in the fetched results controller

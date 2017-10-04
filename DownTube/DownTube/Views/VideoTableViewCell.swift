@@ -83,6 +83,7 @@ class VideoTableViewCell: UITableViewCell {
         self.progressView.isHidden = download.isDone
         self.progressLabel.isHidden = download.isDone
         self.progressView.progress = download.progress
+        self.pauseButton.setTitle(download.state.pauseButtonTitle, for: .normal)
         self.progressLabel.text = String(format: "%.1f%% of %@", download.progress * 100, totalSize)
     }
     
@@ -107,7 +108,7 @@ class VideoTableViewCell: UITableViewCell {
     }
     
     @IBAction func pauseOrResumeTapped(_ sender: AnyObject) {
-        if self.pauseButton.titleLabel!.text == "Pause" {
+        if self.pauseButton.titleLabel!.text == DownloadState.paused.pauseButtonTitle {
             self.delegate?.pauseTapped(self)
         } else {
             self.delegate?.resumeTapped(self)

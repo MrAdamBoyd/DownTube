@@ -165,6 +165,10 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
                 }
                 download.state = .paused
             }
+            
+            //In this case, we let the user have more than 3 simultaneous downloads
+            self.removeDownloadWith(streamUrl: urlString, cancelDownload: false)
+            self.enqueuedDownloads.append(download)
         }
     }
     

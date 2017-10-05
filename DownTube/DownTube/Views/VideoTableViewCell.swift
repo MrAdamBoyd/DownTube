@@ -108,7 +108,7 @@ class VideoTableViewCell: UITableViewCell {
     }
     
     @IBAction func pauseOrResumeTapped(_ sender: AnyObject) {
-        if self.pauseButton.titleLabel!.text == DownloadState.paused.pauseButtonTitle {
+        if self.pauseButton.titleLabel!.text == DownloadState.downloading.pauseButtonTitle {
             self.delegate?.pauseTapped(self)
         } else {
             self.delegate?.resumeTapped(self)

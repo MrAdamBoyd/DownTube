@@ -23,7 +23,7 @@ enum DownloadState {
         switch self {
         case .downloading:      return "Pause"
         case .paused:           return "Resume"
-        case .enqueued:         return ""
+        case .enqueued:         return "Start"
         }
     }
 }

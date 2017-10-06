@@ -14,6 +14,9 @@ import XCDYouTubeKit
 import MMWormhole
 import SafariServices
 
+private let normalCellRowHeight: CGFloat = 57
+private let downloadingCellRowHeight: CGFloat = 92
+
 class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, NSFetchedResultsControllerDelegate {
     
     let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
@@ -327,7 +330,8 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return self.isCellAtIndexPathDownloading(indexPath) ? 92 : 57
+        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+        return (video.isDoneDownloading?.boolValue ?? true) ? normalCellRowHeight : downloadingCellRowHeight
     }
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
@@ -368,17 +372,6 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
 
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         self.tableView.endUpdates()
-    }
-    
-    // MARK: - Extension helper methods
-    
-    func isCellAtIndexPathDownloading(_ indexPath: IndexPath) -> Bool {
-        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
-        if let streamUrl = video.streamUrl {
-            return self.videoManager.downloadManager.getDownloadWith(streamUrl: streamUrl) != nil
-        }
-        
-        return false
     }
     
     // MARK: - Helper methods

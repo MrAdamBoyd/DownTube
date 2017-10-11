@@ -598,8 +598,8 @@ extension MasterViewController: UIViewControllerPreviewingDelegate {
         let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
         if let indexPath = self.tableView.indexPathForRow(at: location), let urlString = video.streamUrl, let url = self.videoManager.localFilePathForUrl(urlString) {
             //This will show the blur correctly
-            let rectOfCellInTableView = tableView.rectForRow(at: indexPath)
-            let rectOfCellInSuperview = tableView.convert(rectOfCellInTableView, to: tableView.superview)
+            let rectOfCellInTableView = self.tableView.rectForRow(at: indexPath)
+            let rectOfCellInSuperview = self.tableView.convert(rectOfCellInTableView, to: self.view)
             previewingContext.sourceRect = rectOfCellInSuperview
             return self.createPlaybackViewController(with: url, video: video).viewController
         }

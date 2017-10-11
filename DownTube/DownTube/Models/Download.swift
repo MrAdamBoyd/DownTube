@@ -8,9 +8,29 @@
 
 import Foundation
 
+enum DownloadState {
+    case downloading, paused, enqueued
+    
+    var titleForCell: String {
+        switch self {
+        case .downloading:      return "Downloading..."
+        case .paused:           return "Paused"
+        case .enqueued:         return "Waiting"
+        }
+    }
+    
+    var pauseButtonTitle: String {
+        switch self {
+        case .downloading:      return "Pause"
+        case .paused:           return "Resume"
+        case .enqueued:         return "Start"
+        }
+    }
+}
+
 class Download: NSObject {
     var url: String
-    var isDownloading: Bool = false
+    var state: DownloadState = .enqueued
     var progress: Float = 0.0
     
     var downloadTask: URLSessionDownloadTask?
@@ -18,5 +38,9 @@ class Download: NSObject {
     
     init(url: String) {
         self.url = url
+    }
+    
+    var isDone: Bool {
+        return self.progress >= 1
     }
 }

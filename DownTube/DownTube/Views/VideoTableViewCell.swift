@@ -37,6 +37,54 @@ class VideoTableViewCell: UITableViewCell {
         super.prepareForReuse()
         
         self.setWatchIndicatorState(.unwatched)
+        self.delegate = nil
+    }
+    
+    ///Properly sets up the cell
+    func setUp(with video: Video, download: Download?, isDownloaded: Bool, delegate: VideoTableViewCellDelegate?) {
+        
+        self.delegate = delegate
+        
+        //Setting up date and name labels
+        let components = (Calendar.current as NSCalendar).components([.day, .month, .year], from: video.created! as Date)
+        
+        self.videoNameLabel.text = video.title
+        
+        var labelText = "Downloaded"
+        if let year = components.year, let month = components.month, let day = components.day {
+            labelText += " on \(year)/\(month)/\(day)"
+        }
+        self.dateLabel.text = labelText
+        
+        //Setting up showing the cell if downloading or not
+        self.setWatchIndicatorState(video.watchProgress)
+        
+        //Only show the download controls if video is currently downloading
+        var showDownloadControls = false
+        if let download = download {
+            showDownloadControls = true
+            self.progressView.progress = download.progress
+            self.progressLabel.text = download.state.titleForCell
+            self.pauseButton.setTitle(download.state.pauseButtonTitle, for: .normal)
+        }
+        self.progressView.isHidden = !showDownloadControls
+        self.progressLabel.isHidden = !showDownloadControls
+        
+        //Hiding or showing the download button
+        self.selectionStyle = isDownloaded ? .gray : .none
+        
+        //Hiding or showing the cancel and pause buttons
+        self.pauseButton.isHidden = !showDownloadControls
+        self.cancelButton.isHidden = !showDownloadControls
+    }
+    
+    /// Updates the download progress, hides and shows the controls
+    func updateProgress(for download: Download, totalSize: String) {
+        self.progressView.isHidden = download.isDone
+        self.progressLabel.isHidden = download.isDone
+        self.progressView.progress = download.progress
+        self.pauseButton.setTitle(download.state.pauseButtonTitle, for: .normal)
+        self.progressLabel.text = String(format: "%.1f%% of %@", download.progress * 100, totalSize)
     }
     
     /**
@@ -60,7 +108,7 @@ class VideoTableViewCell: UITableViewCell {
     }
     
     @IBAction func pauseOrResumeTapped(_ sender: AnyObject) {
-        if self.pauseButton.titleLabel!.text == "Pause" {
+        if self.pauseButton.titleLabel!.text == DownloadState.downloading.pauseButtonTitle {
             self.delegate?.pauseTapped(self)
         } else {
             self.delegate?.resumeTapped(self)

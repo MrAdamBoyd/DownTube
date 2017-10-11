@@ -51,7 +51,7 @@
                                         <color key="titleColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
-                                        <action selector="downloadVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="7aw-5K-xQv"/>
+                                        <action selector="startDownloadingVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="vVr-vH-W4h"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GEq-Ew-5Sy">
@@ -62,7 +62,7 @@
                                         <color key="titleColor" red="0.8980392157" green="0.1764705882" blue="0.1529411765" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
-                                        <action selector="streamVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="jvs-yR-xlU"/>
+                                        <action selector="startStreamingVideoAction:" destination="7bK-jq-Zjz" eventType="touchUpInside" id="emG-jP-wT7"/>
                                     </connections>
                                 </button>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sRt-fy-xfj">
@@ -228,7 +228,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ssh-XG-b0D" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1422" y="-630"/>
+            <point key="canvasLocation" x="1506" y="-630"/>
         </scene>
         <!--About-->
         <scene sceneID="NPh-mo-n4N">

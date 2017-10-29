@@ -23,7 +23,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     private(set) var activeDownloads: [Download] = [] //Only allows 3
     private(set) var enqueuedDownloads: [Download] = []
     
-    lazy var downloadsSession: URLSession = {
+    private lazy var downloadsSession: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: "bgSessionConfiguration")
         let session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
         return session

@@ -60,6 +60,9 @@ My website is [adamjboyd.com](http://www.adamjboyd.com).
 1.3.5:
 * Streamed videos will now remember where they left off.
 
+1.4:
+* Better download queue.
+
 ## Contributing
 I'll take all the help I can get! Submit an issue or a pull request and I'll try to get it sorted as soon as I can :)
 

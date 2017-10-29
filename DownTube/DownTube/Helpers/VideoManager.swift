@@ -100,9 +100,6 @@ class VideoManager: NSObject, DownloadManagerDelegate {
             }
             
         }
-        
-        //Show error to user and remove all errored out videos
-        self.showErrorAndRemoveErroredVideos(error)
     }
     
     /**
@@ -129,38 +126,6 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     }
     
     /**
-     Shows error to user in UIAlertController and then removes all errored out videos from core data
-     
-     - parameter error: error from getting the video info
-     */
-    func showErrorAndRemoveErroredVideos(_ error: NSError?) {
-        //Show error to user, remove all unused cells from list
-        DispatchQueue.main.async {
-            if let error = error {
-                print("Couldn't get video: \(error.localizedDescription)")
-            } else {
-                print("Couldn't get video: unknown error")
-            }
-            
-            let message = error?.localizedDescription
-            self.delegate?.showErrorAlertControllerWithMessage(message)
-        }
-        
-        //Getting all blank videos with no downloaded data
-        var objectsToRemove: [IndexPath] = []
-        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() where video.streamUrl == nil {
-            objectsToRemove.append(IndexPath(row: index, section: 0))
-        }
-        
-        //Deleting them
-        for indexPath in objectsToRemove {
-            _ = self.deleteDownloadedVideo(at: indexPath)
-            self.deleteVideoObject(at: indexPath)
-        }
-        
-    }
-    
-    /**
      Deletes video object from core data
      
      - parameter indexPath: location of the video
@@ -171,11 +136,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
         let context = CoreDataController.sharedController.fetchedVideosController.managedObjectContext
         context.delete(video)
         
-        do {
-            try context.save()
-        } catch {
-            abort()
-        }
+        CoreDataController.sharedController.saveContext()
     }
     
     /// Deletes the downloaded video at the specified index path
@@ -201,11 +162,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
      - returns: optional index
      */
     func videoIndexForYouTubeUrl(_ url: String) -> Int? {
-        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() where url == video.youtubeUrl {
-            return index
-        }
-        
-        return nil
+        return CoreDataController.sharedController.fetchedVideosController.fetchedObjects?.index(where: { $0.youtubeUrl == url })
     }
     
     /**
@@ -216,11 +173,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
      - returns: optional index
      */
     func videoIndexForStreamUrl(_ url: String) -> Int? {
-        for (index, video) in CoreDataController.sharedController.fetchedVideosController.fetchedObjects!.enumerated() where url == video.streamUrl {
-            return index
-        }
-        
-        return nil
+        return CoreDataController.sharedController.fetchedVideosController.fetchedObjects?.index(where: { $0.streamUrl == url })
     }
     
     // MARK: - Locations of downloads

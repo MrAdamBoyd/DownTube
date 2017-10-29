@@ -657,7 +657,7 @@ extension MasterViewController: UISearchResultsUpdating {
         guard let search = searchController.searchBar.text else { return }
         
         print("Updating search results, search is \"\(search)\"")
-        CoreDataController.sharedController.setVideosFetchedResultsControllerWithSearch(search, isDownloadedPredicate: nil)
+        CoreDataController.sharedController.setSearchForDownloadedVideos(search, isDownloaded: nil)
         self.tableView.reloadData()
     }
 }

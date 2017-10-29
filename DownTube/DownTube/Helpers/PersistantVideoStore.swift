@@ -10,8 +10,8 @@ import Foundation
 import CoreData
 import XCDYouTubeKit
 
-class VideoStore {
-    static let shared = VideoStore()
+class PersistantVideoStore {
+    static let shared = PersistantVideoStore()
 
     // MARK: - Core Data Stack
     

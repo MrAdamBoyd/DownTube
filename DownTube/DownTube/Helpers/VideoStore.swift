@@ -10,8 +10,8 @@ import Foundation
 import CoreData
 import XCDYouTubeKit
 
-class CoreDataController {
-    static let sharedController = CoreDataController()
+class VideoStore {
+    static let shared = VideoStore()
 
     // MARK: - Core Data Stack
     
@@ -163,7 +163,7 @@ class CoreDataController {
         newVideo.streamUrl = streamUrl
         newVideo.watchProgress = .unwatched
         
-        self.saveContext()
+        self.save()
         
         return newVideo
     }
@@ -176,14 +176,14 @@ class CoreDataController {
         newVideo.streamUrl = streamUrl
         newVideo.watchProgress = .unwatched
         
-        self.saveContext()
+        self.save()
         
         return newVideo
     }
     
     // MARK: - Core Data Saving support
     
-    func saveContext () {
+    func save () {
         if managedObjectContext.hasChanges {
             do {
                 try managedObjectContext.save()

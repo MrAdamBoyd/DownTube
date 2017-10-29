@@ -55,7 +55,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         let infoButton = UIBarButtonItem(title: "About", style: .plain, target: self, action: #selector(self.showAppInfo(_:)))
         self.navigationItem.rightBarButtonItem = infoButton
         
-        CoreDataController.sharedController.fetchedVideosController.delegate = self
+        VideoStore.shared.fetchedVideosController.delegate = self
         
         self.videoEditingHandler.delegate = self
         self.videoManager = VideoManager(delegate: self, fileManager: self.fileManager)
@@ -80,13 +80,13 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         
         // Deletes any files that shouldn't be there
         DispatchQueue.global(qos: .background).async {
-            self.videoManager.cleanUpDownloadedFiles(from: CoreDataController.sharedController)
+            self.videoManager.cleanUpDownloadedFiles(from: VideoStore.shared)
             self.videoManager.checkIfAnyVideosNeedToBeDownloaded()
         }
         
         //Need to initialize so no error when trying to save to them
-        _ = CoreDataController.sharedController.fetchedVideosController
-        _ = CoreDataController.sharedController.fetchedStreamingVideosController
+        _ = VideoStore.shared.fetchedVideosController
+        _ = VideoStore.shared.fetchedStreamingVideosController
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -282,7 +282,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
             //Now that a video has either been found in core data or created, get the watch progress and send it to the AVPlayer
             self.playVideo(with: url, video: streamingVideo) { newProgress in
                 streamingVideo.watchProgress = newProgress
-                CoreDataController.sharedController.saveContext()
+                VideoStore.shared.save()
             }
             
         }
@@ -291,17 +291,17 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     // MARK: - Table View
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return CoreDataController.sharedController.fetchedVideosController.sections?.count ?? 0
+        return VideoStore.shared.fetchedVideosController.sections?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionInfo = CoreDataController.sharedController.fetchedVideosController.sections![section]
+        let sectionInfo = VideoStore.shared.fetchedVideosController.sections![section]
         return sectionInfo.numberOfObjects
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "VideoTableViewCell", for: indexPath) as! VideoTableViewCell
-        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+        let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
         var download: Download?
         if let streamUrl = video.streamUrl, let downloadingVideo = self.videoManager.downloadManager.getDownloadWith(streamUrl: streamUrl) {
             download = downloadingVideo
@@ -317,7 +317,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+        let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
         if self.videoManager.localFileExistsFor(video) {
             self.playDownload(video, atIndexPath: indexPath)
         }
@@ -330,7 +330,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+        let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
         return (video.isDoneDownloading?.boolValue ?? true) ? normalCellRowHeight : downloadingCellRowHeight
     }
 
@@ -408,7 +408,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
             self.playVideo(with: url, video: video) { [weak self] newProgress in
                 
                 video.watchProgress = newProgress
-                CoreDataController.sharedController.saveContext()
+                VideoStore.shared.save()
                 
                 self?.indexPathToReload = indexPath
             }
@@ -485,7 +485,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
                 return
             }
             
-            let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+            let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
             
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: UIDevice.current.userInterfaceIdiom == .phone ? .actionSheet : .alert)
             
@@ -516,7 +516,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         if video.watchProgress != .watched {
             actions.append(UIAlertAction(title: "Mark as Watched", style: .default) { [unowned self] _ in
                 video.watchProgress = .watched
-                CoreDataController.sharedController.saveContext()
+                VideoStore.shared.save()
                 self.tableView.reloadRows(at: [indexPath], with: .none)
             })
         }
@@ -525,7 +525,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         if video.watchProgress != .unwatched {
             actions.append(UIAlertAction(title: "Mark as Unwatched", style: .default) { [unowned self] _ in
                 video.watchProgress = .unwatched
-                CoreDataController.sharedController.saveContext()
+                VideoStore.shared.save()
                 self.tableView.reloadRows(at: [indexPath], with: .none)
             })
         }
@@ -564,7 +564,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
 extension MasterViewController: VideoTableViewCellDelegate {
     func pauseTapped(_ cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPath(for: cell) {
-            let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+            let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
             self.videoManager.downloadManager.pauseDownload(video)
             self.tableView.reloadRows(at: [indexPath], with: .none)
         }
@@ -572,7 +572,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     
     func resumeTapped(_ cell: VideoTableViewCell) {
         if let indexPath = self.tableView.indexPath(for: cell) {
-            let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+            let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
             self.videoManager.downloadManager.resumeVideoDownload(video)
             self.tableView.reloadRows(at: [indexPath], with: .none)
         }
@@ -580,7 +580,7 @@ extension MasterViewController: VideoTableViewCellDelegate {
     
     func cancelTapped(_ cell: VideoTableViewCell) {
         if let indexPath = tableView.indexPath(for: cell) {
-            let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+            let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
             self.videoManager.downloadManager.cancelDownload(video)
             tableView.reloadRows(at: [indexPath], with: .none)
             self.videoManager.deleteVideoObject(at: indexPath)
@@ -595,7 +595,7 @@ extension MasterViewController: UIViewControllerPreviewingDelegate {
         guard let indexPath = self.tableView.indexPathForRow(at: location) else { return nil }
         
         //Get the index path for the cell
-        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+        let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
         if let indexPath = self.tableView.indexPathForRow(at: location), let urlString = video.streamUrl, let url = self.videoManager.localFilePathForUrl(urlString) {
             //This will show the blur correctly
             let rectOfCellInTableView = self.tableView.rectForRow(at: indexPath)
@@ -611,7 +611,7 @@ extension MasterViewController: UIViewControllerPreviewingDelegate {
         if let vc = viewControllerToCommit as? DownTubePlayerViewController, let player = vc.player, var video = vc.currentlyPlaying {
             self.present(videoViewController: vc, andSetUpNowPlayingInfoFor: player, video: video) { newProgress in
                 video.watchProgress = newProgress
-                CoreDataController.sharedController.saveContext()
+                VideoStore.shared.save()
             }
         }
     }
@@ -643,9 +643,9 @@ extension MasterViewController: VideoManagerDelegate {
                 if download.isDone {
                     let indexPath = IndexPath(row: index, section: 0)
                     self.tableView.reloadRows(at: [indexPath], with: .automatic)
-                    let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+                    let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
                     video.isDoneDownloading = NSNumber(value: true)
-                    CoreDataController.sharedController.saveContext()
+                    VideoStore.shared.save()
                 }
             }
         }
@@ -657,7 +657,7 @@ extension MasterViewController: UISearchResultsUpdating {
         guard let search = searchController.searchBar.text else { return }
         
         print("Updating search results, search is \"\(search)\"")
-        CoreDataController.sharedController.setSearchForDownloadedVideos(search, isDownloaded: nil)
+        VideoStore.shared.setSearchForDownloadedVideos(search, isDownloaded: nil)
         self.tableView.reloadData()
     }
 }

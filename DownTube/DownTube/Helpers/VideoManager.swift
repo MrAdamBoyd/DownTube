@@ -60,13 +60,13 @@ class VideoManager: NSObject, DownloadManagerDelegate {
                 fetchRequest.predicate = NSPredicate(format: "youtubeUrl == %@", youTubeUrl)
                 
                 do {
-                    let existingVideos = try CoreDataController.sharedController.managedObjectContext.fetch(fetchRequest)
+                    let existingVideos = try VideoStore.shared.managedObjectContext.fetch(fetchRequest)
                     var videoInCoreData: StreamingVideo
                     
                     if let existingVideo = existingVideos.first {
                         videoInCoreData = existingVideo
                     } else {
-                        videoInCoreData = CoreDataController.sharedController.createNewStreamingVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
+                        videoInCoreData = VideoStore.shared.createNewStreamingVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
                     }
                     
                     completion(url, videoInCoreData, nil)
@@ -117,7 +117,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
             return
         }
         
-        let newVideo = CoreDataController.sharedController.createNewVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
+        let newVideo = VideoStore.shared.createNewVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
         
         //Starts the download of the video
         if let index = self.downloadManager.startDownload(newVideo) {
@@ -131,12 +131,12 @@ class VideoManager: NSObject, DownloadManagerDelegate {
      - parameter indexPath: location of the video
      */
     func deleteVideoObject(at indexPath: IndexPath) {
-        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+        let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
         
-        let context = CoreDataController.sharedController.fetchedVideosController.managedObjectContext
+        let context = VideoStore.shared.fetchedVideosController.managedObjectContext
         context.delete(video)
         
-        CoreDataController.sharedController.saveContext()
+        VideoStore.shared.save()
     }
     
     /// Deletes the downloaded video at the specified index path
@@ -144,7 +144,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     /// - Parameter indexPath: indexpath of the video to delete
     /// - Returns: video that was deleted
     func deleteDownloadedVideo(at indexPath: IndexPath) -> Video {
-        let video = CoreDataController.sharedController.fetchedVideosController.object(at: indexPath)
+        let video = VideoStore.shared.fetchedVideosController.object(at: indexPath)
         
         self.downloadManager.cancelDownload(video)
         _ = self.deleteDownloadedVideo(for: video)
@@ -162,7 +162,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
      - returns: optional index
      */
     func videoIndexForYouTubeUrl(_ url: String) -> Int? {
-        return CoreDataController.sharedController.fetchedVideosController.fetchedObjects?.index(where: { $0.youtubeUrl == url })
+        return VideoStore.shared.fetchedVideosController.fetchedObjects?.index(where: { $0.youtubeUrl == url })
     }
     
     /**
@@ -173,7 +173,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
      - returns: optional index
      */
     func videoIndexForStreamUrl(_ url: String) -> Int? {
-        return CoreDataController.sharedController.fetchedVideosController.fetchedObjects?.index(where: { $0.streamUrl == url })
+        return VideoStore.shared.fetchedVideosController.fetchedObjects?.index(where: { $0.streamUrl == url })
     }
     
     // MARK: - Locations of downloads
@@ -243,7 +243,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     // MARK: - Cleaning up downloads
     
     /// This makes sure that all videos located in the documents folder for DownTube actually have a Video object that they're attached to. This will delete all files not attached to a video.
-    func cleanUpDownloadedFiles(from coreDataController: CoreDataController) {
+    func cleanUpDownloadedFiles(from coreDataController: VideoStore) {
         let streamUrls = coreDataController.fetchedVideosController.fetchedObjects?.flatMap({ $0.streamUrl }) ?? []
         let filesThatShouldExist = Set(streamUrls.flatMap({ self.fileNameForVideo(withStreamUrl: $0) }))
         
@@ -261,7 +261,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     
     /// Checks if any video files don't exist and need to be downloaded
     func checkIfAnyVideosNeedToBeDownloaded() {
-        guard let needToDownload = CoreDataController.sharedController.createVideosFetchedResultsControllerWithSearch(nil, isDownloaded: false).fetchedObjects, !needToDownload.isEmpty else {
+        guard let needToDownload = VideoStore.shared.createVideosFetchedResultsControllerWithSearch(nil, isDownloaded: false).fetchedObjects, !needToDownload.isEmpty else {
             return
         }
         var indexesToReload: [Int] = []
@@ -328,7 +328,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
         default:                        break
         }
         
-        CoreDataController.sharedController.saveContext()
+        VideoStore.shared.save()
         
         if let toUrl = toUrl {
             do {

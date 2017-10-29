@@ -29,7 +29,7 @@ class DownTubePlayerViewController: AVPlayerViewController {
         if video.watchProgress != .watched {
             actions.append(UIPreviewAction(title: "Mark as Watched", style: .default) { [unowned self] _, _ in
                 video.watchProgress = .watched
-                CoreDataController.sharedController.saveContext()
+                VideoStore.shared.save()
                 self.actionItemsDelegate?.viewControllerChangedVideoStatus(for: video)
             })
         }
@@ -38,7 +38,7 @@ class DownTubePlayerViewController: AVPlayerViewController {
         if video.watchProgress != .unwatched {
             actions.append(UIPreviewAction(title: "Mark as Unwatched", style: .default) { [unowned self] _, _ in
                 video.watchProgress = .unwatched
-                CoreDataController.sharedController.saveContext()
+                VideoStore.shared.save()
                 self.actionItemsDelegate?.viewControllerChangedVideoStatus(for: video)
             })
         }

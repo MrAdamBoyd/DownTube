@@ -10,10 +10,11 @@ import Foundation
 import CoreData
 
 class Video: NSManagedObject, Watchable {
-    @nonobjc class var entityName: String { return "Video" }
-    @nonobjc class func fetchRequest() -> NSFetchRequest<Video> {
+    @nonobjc
+    class func fetchRequest() -> NSFetchRequest<Video> {
         return NSFetchRequest<Video>(entityName: self.entityName)
     }
+    @nonobjc class var entityName: String { return "Video" }
     
     @NSManaged var created: Date?
     @NSManaged var isDoneDownloading: NSNumber?

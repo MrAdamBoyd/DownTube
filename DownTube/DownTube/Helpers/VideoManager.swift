@@ -292,7 +292,8 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     /// Uses the filemanager to delete any downloaded video with the stream
     ///
     /// - Parameter fileName: local file name of the file. Shouldn't include any path
-    @discardableResult fileprivate func deleteDownloadedVideo(withFileName fileName: String) -> Bool {
+    @discardableResult
+    fileprivate func deleteDownloadedVideo(withFileName fileName: String) -> Bool {
         let fullPath = (self.downloadManager.documentsPath as NSString).appendingPathComponent(fileName)
         let urlOfFile = URL(fileURLWithPath: fullPath)
         

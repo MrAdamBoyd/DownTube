@@ -11,7 +11,8 @@ import CoreData
 
 class StreamingVideo: NSManagedObject, Watchable {
     @nonobjc class var entityName: String { return "StreamingVideo" }
-    @nonobjc class func fetchRequest() -> NSFetchRequest<StreamingVideo> {
+    @nonobjc
+    class func fetchRequest() -> NSFetchRequest<StreamingVideo> {
         return NSFetchRequest<StreamingVideo>(entityName: self.entityName)
     }
     

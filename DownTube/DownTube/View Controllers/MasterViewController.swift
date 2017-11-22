@@ -105,7 +105,8 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
      
      - parameter sender: button that sent the action
      */
-    @objc func showAppInfo(_ sender: AnyObject) {
+    @objc
+    func showAppInfo(_ sender: AnyObject) {
         self.performSegue(withIdentifier: "ShowAppInfo", sender: self)
     }
     
@@ -243,7 +244,8 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     /**
      Pastes the text from the clipboard in the showing alert vc, if it exists
     */
-    @objc func pasteFromClipboard() {
+    @objc
+    func pasteFromClipboard() {
         if let alertVC = self.presentedViewController as? UIAlertController {
             alertVC.textFields![0].text = UIPasteboard.general.string
         }
@@ -348,25 +350,18 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
 
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
         switch type {
-            case .insert:
-                self.tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
-            case .delete:
-                self.tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)
-            default:
-                return
+        case .insert:       self.tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
+        case .delete:       self.tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)
+        default:            return
         }
     }
 
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         switch type {
-            case .insert:
-                tableView.insertRows(at: [newIndexPath!], with: .fade)
-            case .delete:
-                tableView.deleteRows(at: [indexPath!], with: .fade)
-            case .update:
-                tableView.reloadRows(at: [indexPath!], with: .automatic)
-            case .move:
-                tableView.moveRow(at: indexPath!, to: newIndexPath!)
+        case .insert:       tableView.insertRows(at: [newIndexPath!], with: .fade)
+        case .delete:       tableView.deleteRows(at: [indexPath!], with: .fade)
+        case .update:       tableView.reloadRows(at: [indexPath!], with: .automatic)
+        case .move:         tableView.moveRow(at: indexPath!, to: newIndexPath!)
         }
     }
 
@@ -477,7 +472,8 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
      
      - parameter gestureRecognizer: gesture recognizer
      */
-    @objc func handleLongTouchWithGestureRecognizer(_ gestureRecognizer: UILongPressGestureRecognizer) {
+    @objc
+    func handleLongTouchWithGestureRecognizer(_ gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == .changed || gestureRecognizer.state == .ended {
             
             let point = gestureRecognizer.location(in: self.tableView)

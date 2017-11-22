@@ -46,7 +46,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     func getStreamInfo(for youTubeUrl: String, completion: @escaping (_ url: URL?, _ video: StreamingVideo?, _ error: Error?) -> Void) {
         
         //Gets the video id, which is the last 11 characters of the string
-        XCDYouTubeClient.default().getVideoWithIdentifier(String(youTubeUrl.characters.suffix(11))) { [unowned self] video, error in
+        XCDYouTubeClient.default().getVideoWithIdentifier(String(youTubeUrl.suffix(11))) { [unowned self] video, error in
             
             if let error = error {
                 completion(nil, nil, error)

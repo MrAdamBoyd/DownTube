@@ -202,7 +202,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
             let textField = alertController.textFields![0]
             
             if let text = textField.text {
-                if text.characters.count > 10 {
+                if text.count > 10 {
                     completion(text)
                 } else {
                     self.showErrorAlertControllerWithMessage("URL too short to be valid")
@@ -257,7 +257,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     func startDownloadOfVideoInfoFor(_ url: String) {
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         //Gets the video id, which is the last 11 characters of the string
-        XCDYouTubeClient.default().getVideoWithIdentifier(String(url.characters.suffix(11))) { video, error in
+        XCDYouTubeClient.default().getVideoWithIdentifier(String(url.suffix(11))) { video, error in
             self.videoManager.videoObject(video, downloadedForVideoAt: url, error: error as NSError?)
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
             

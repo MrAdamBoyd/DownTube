@@ -3,26 +3,29 @@ disabled_rules: # rule identifiers to exclude from running
   - line_length
   - trailing_whitespace
   - type_body_length
-  - variable_name
+  - identifier_name
   - vertical_whitespace
   - empty_parentheses_with_trailing_closure
 opt_in_rules:
   #- empty_count
   #- private_outlet
+  - array_init
+  - attributes
   - closure_end_indentation
   - closure_spacing
   - empty_count
-  - explicit_init
   - first_where
   - implicit_return
   - vertical_parameter_alignment_on_call
-  - redundant_nil_coalesing
   - explicit_init
   - number_separator
   - object_literal
   - overridden_super_call
   - prohibited_super_call
   - protocol_property_accessors_order
+  - unneeded_parentheses_in_closure_argument
+  - sorted_first_last
+  - no_extension_access_modifier
 excluded: # paths to ignore during linting. Takes precedence over `included`.
   - Pods
 file_length:

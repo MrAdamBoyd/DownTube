@@ -84,7 +84,8 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     /// - Parameter streamUrl: stream url to search for
     /// - Parameter cancelDownload: if true, cancels the download as well
     /// - Returns: true if download was successfully removed, false otherwise
-    @discardableResult private func removeDownloadWith(streamUrl: String, cancelDownload: Bool) -> Bool {
+    @discardableResult
+    private func removeDownloadWith(streamUrl: String, cancelDownload: Bool) -> Bool {
         if let index = self.activeDownloads.index(where: { $0.url == streamUrl }) {
             let download = self.activeDownloads.remove(at: index)
             if cancelDownload { download.downloadTask?.cancel() }

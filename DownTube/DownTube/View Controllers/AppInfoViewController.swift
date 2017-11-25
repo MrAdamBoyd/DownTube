@@ -49,6 +49,8 @@ class AppInfoViewController: UIViewController {
      */
     @IBAction func goToGitHub(_ sender: AnyObject) {
         let vc = SFSafariViewController(url: URL(string: "https://github.com/MrAdamBoyd/DownTube")!, entersReaderIfAvailable: false)
+        vc.preferredBarTintColor = .black
+        vc.preferredControlTintColor = .white
         self.present(vc, animated: true, completion: nil)
     }
 }

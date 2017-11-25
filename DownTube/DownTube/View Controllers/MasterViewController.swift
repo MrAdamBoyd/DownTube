@@ -187,6 +187,8 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     /// Shows an SFSafariViewController with youtube loaded
     func showSafariVC() -> SFSafariViewController {
         let vc = SFSafariViewController(url: URL(string: "https://youtube.com")!)
+        vc.preferredBarTintColor = .black
+        vc.preferredControlTintColor = .white
         self.present(vc, animated: true, completion: nil)
         return vc
     }

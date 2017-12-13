@@ -219,6 +219,19 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
         self.activeDownloads.append(download)
     }
     
+    /// If the download is done, saves the video's done progress to core data
+    ///
+    /// - Parameters:
+    ///   - download: download for video
+    ///   - index: index of the video in core data
+    private func markDownloadAsDoneIfNeeded(_ download: Download, at index: Int) {
+        if download.isDone {
+            let video = PersistantVideoStore.shared.fetchedVideosController.object(at: IndexPath(item: index, section: 0))
+            video.isDoneDownloading = NSNumber(value: true)
+            PersistantVideoStore.shared.save()
+        }
+    }
+    
     // MARK: - URLSessionDownloadDelegate
     
     //Download finished
@@ -261,7 +274,11 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
         if let downloadUrl = downloadTask.originalRequest?.url?.absoluteString, let download =  self.getDownloadWith(streamUrl: downloadUrl) {
             download.progress = Float(totalBytesWritten)/Float(totalBytesExpectedToWrite)
             let totalSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: ByteCountFormatter.CountStyle.binary)
+            
             if let trackIndex = self.videoIndexForDownloadTask(downloadTask) {
+                self.markDownloadAsDoneIfNeeded(download, at: trackIndex)
+                    
+                //Updating VC
                 self.videoManagerDelegate?.updateDownloadProgress(download, at: trackIndex, with: totalSize)
             }
         }
@@ -270,6 +287,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     // MARK: - URLSessionDelegate
     
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        print("URLSession did finish background download events")
         DispatchQueue.main.async {
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 if let completionHandler = appDelegate.backgroundSessionCompletionHandler {

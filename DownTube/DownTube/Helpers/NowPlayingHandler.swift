@@ -9,7 +9,7 @@
 import Foundation
 import MediaPlayer
 
-class NowPlayingHandler {
+final class NowPlayingHandler {
     var player: AVPlayer
     var playCommandTarget: Any!
     var pauseCommandTarget: Any!
@@ -62,6 +62,11 @@ class NowPlayingHandler {
             strongSelf.setNewNowPlayingTime(event.positionTime)
             return .success
         }
+        
+        //For background playback automatically continuing
+        NotificationCenter.default.addObserver(self, selector: #selector(self.disableVideoTracksInPlayerItem), name: Notification.Name.UIApplicationDidEnterBackground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.enableVideoTracksInPlayerItem), name: Notification.Name.UIApplicationDidBecomeActive, object: nil)
+        
     }
     
     /// Sets the time and if the current item is playing.
@@ -69,7 +74,7 @@ class NowPlayingHandler {
     /// - Parameters:
     ///   - time: current timestamp
     ///   - currentlyPlaying: if true, media item is playing. false otherwise
-    fileprivate func setNewNowPlayingTime(_ time: Double) {
+    private func setNewNowPlayingTime(_ time: Double) {
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = NSNumber(value: time)
         let isPlaying = self.player.timeControlStatus == .playing
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1 : 0
@@ -103,7 +108,40 @@ class NowPlayingHandler {
         }
     }
     
+    // MARK: - Background playback when app opens/closes
+    
+    /// Disables all video tracks. This is necessary if we want to automatically continue playback in background
+    @objc
+    private func disableVideoTracksInPlayerItem() {
+        self.setAllVideoTracksToEnabled(false, forPlayerItem: self.player.currentItem)
+    }
+    
+    /// Enables all video tracks. This is necessary because video tracks are disabled when app enters background due to background play
+    @objc
+    private func enableVideoTracksInPlayerItem() {
+        self.setAllVideoTracksToEnabled(true, forPlayerItem: self.player.currentItem)
+    }
+    
+    /// Goes through all the tracks in the player item, and if they are videos, sets whether or not they are enabled
+    ///
+    /// - Parameter isEnabled: if the tracks should be enabled
+    private func setAllVideoTracksToEnabled(_ shouldBeEnabled: Bool, forPlayerItem playerItem: AVPlayerItem?) {
+        guard let tracks = playerItem?.tracks else { return }
+        
+        for track in tracks {
+            if track.assetTrack.hasMediaCharacteristic(.visual) {
+                track.isEnabled = shouldBeEnabled
+            }
+        }
+    }
+    
+    // MARK: - Deinit
+    
     deinit {
+        //For background playback automatically continuing
+        NotificationCenter.default.removeObserver(self, name: Notification.Name.UIApplicationDidEnterBackground, object: nil)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name.UIApplicationDidBecomeActive, object: nil)
+        
         MPRemoteCommandCenter.shared().playCommand.removeTarget(self.playCommandTarget)
         MPRemoteCommandCenter.shared().pauseCommand.removeTarget(self.pauseCommandTarget)
         MPRemoteCommandCenter.shared().skipBackwardCommand.removeTarget(self.skipBackwardTarget)

@@ -41,8 +41,8 @@ class NowPlayingHandler {
             guard let strongSelf = self else { return .commandFailed }
             //Skip backwards 15 seconds
             let currentSeconds = CMTimeGetSeconds(strongSelf.player.currentItem!.currentTime())
-            strongSelf.player.seek(to: CMTime(seconds: max(currentSeconds - 15, 0), preferredTimescale: 1))
             let newSeconds = max(currentSeconds - 15, 0)
+            strongSelf.player.seek(to: CMTime(seconds: newSeconds, preferredTimescale: 1))
             strongSelf.setNewNowPlayingTime(newSeconds)
             return .success
         }
@@ -50,8 +50,8 @@ class NowPlayingHandler {
             guard let strongSelf = self else { return .commandFailed }
             //Skip forward 15 seconds
             let currentSeconds = CMTimeGetSeconds(strongSelf.player.currentItem!.currentTime())
-            player.seek(to: CMTime(seconds: currentSeconds + 15, preferredTimescale: 1))
             let newSeconds = currentSeconds + 15
+            player.seek(to: CMTime(seconds: newSeconds, preferredTimescale: 1))
             strongSelf.setNewNowPlayingTime(newSeconds)
             return .success
         }
@@ -79,7 +79,7 @@ class NowPlayingHandler {
     ///
     /// - Parameter progressCallback: callback whenever progress should be saved
     func addTimeObserverToPlayer(_ progressCallback: @escaping (WatchState) -> Void) {
-        self.player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 10, preferredTimescale: 1), queue: DispatchQueue.main) { time in
+        self.player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 1), queue: DispatchQueue.main) { time in
             //Set the time on the media center every second
             
             let currentPosition = Int(CMTimeGetSeconds(time))

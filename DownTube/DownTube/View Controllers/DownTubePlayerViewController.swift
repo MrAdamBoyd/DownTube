@@ -14,7 +14,7 @@ protocol DownTubePlayerViewControllerDelegate: class {
     func viewControllerChangedVideoStatus(for video: Watchable?)
 }
 
-// Yes I know AVPlayerViewController isn't meant to be subclassed, but no methods are overridden here, just the preview action items for 3d touch
+/// Custom AVPlayerViewController. Has custom 3d touch actions hides the home indicator on iPhone X
 class DownTubePlayerViewController: AVPlayerViewController {
     var currentlyPlaying: Watchable?
     weak var actionItemsDelegate: DownTubePlayerViewControllerDelegate?

@@ -152,6 +152,23 @@ class VideoManager: NSObject, DownloadManagerDelegate {
         return video
     }
     
+    func checkIfAnyVideosDownloadedSuccessfully() -> [IndexPath] {
+        var changedVideoIndexes: [Int] = [] //All changed videos
+        
+        guard let videos = PersistantVideoStore.shared.fetchedVideosController.fetchedObjects else { return [] }
+        
+        for (index, video) in videos.enumerated() {
+            //If the file is there but the video is not done downloading, then the video finished downloading in the background and needs to be updated
+            if self.localFileExistsFor(video) && !(video.isDoneDownloading?.boolValue ?? true) {
+                video.isDoneDownloading = NSNumber(value: true)
+                changedVideoIndexes.append(index)
+            }
+        }
+        
+        PersistantVideoStore.shared.save()
+        return changedVideoIndexes.map({ IndexPath(item: $0, section: 0) })
+    }
+    
     // MARK: - Getting indexes
     
     /**

@@ -24,7 +24,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     
     var videoManager: VideoManager!
     var fileManager: FileManager = .default
-    var indexPathToReload: IndexPath? //Update the watch status
+    var editVideoIndexPathToReload: IndexPath? //Update the watch and download status from other VCs/background download
     let videoEditingHandler = VideoEditingHandler()
     var streamFromSafariVC = false
     weak var presentedSafariVC: SFSafariViewController?
@@ -88,6 +88,10 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         //Need to initialize so no error when trying to save to them
         _ = PersistantVideoStore.shared.fetchedVideosController
         _ = PersistantVideoStore.shared.fetchedStreamingVideosController
+        
+        //Videos downloaded in background
+        self.checkIfVideosDownloadedInBackground()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.checkIfVideosDownloadedInBackground), name: Notification.Name.UIApplicationDidBecomeActive, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -96,8 +100,10 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         //Whenever the view controller appears, no media items are playing
         self.nowPlayingHandler = nil
         
-        if let indexPath = self.indexPathToReload {
-            self.tableView.reloadRows(at: [indexPath], with: .none)
+        //If video edited
+        if let indexPath = self.editVideoIndexPathToReload {
+            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            self.editVideoIndexPathToReload = nil
         }
     }
 
@@ -127,6 +133,14 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         
         self.present(alertVC, animated: true, completion: nil)
         
+    }
+    
+    /// Checks if any videos downloaded in background, and if they are, reloads the rows
+    @objc
+    func checkIfVideosDownloadedInBackground() {
+        let indexPaths = self.videoManager.checkIfAnyVideosDownloadedSuccessfully()
+        
+        self.tableView.reloadRows(at: indexPaths, with: .none)
     }
 
     /**
@@ -408,7 +422,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
                 video.watchProgress = newProgress
                 PersistantVideoStore.shared.save()
                 
-                self?.indexPathToReload = indexPath
+                self?.editVideoIndexPathToReload = indexPath
             }
         }
     }
@@ -555,6 +569,10 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         return actions
         
     }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 
 }
 
@@ -642,9 +660,6 @@ extension MasterViewController: VideoManagerDelegate {
                 if download.isDone {
                     let indexPath = IndexPath(row: index, section: 0)
                     self.tableView.reloadRows(at: [indexPath], with: .automatic)
-                    let video = PersistantVideoStore.shared.fetchedVideosController.object(at: indexPath)
-                    video.isDoneDownloading = NSNumber(value: true)
-                    PersistantVideoStore.shared.save()
                 }
             }
         }

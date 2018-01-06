@@ -11,6 +11,7 @@ import UIKit
 import AVKit
 
 protocol DownTubePlayerViewControllerDelegate: class {
+    func playerViewController(_ playerViewController: DownTubePlayerViewController, requestsToOpenVideoUrlInYouTube urlString: String)
     func viewControllerChangedVideoStatus(for video: Watchable?)
 }
 
@@ -24,6 +25,12 @@ class DownTubePlayerViewController: AVPlayerViewController {
         guard var video = self.currentlyPlaying else { return [] }
         
         var actions: [UIPreviewAction] = []
+        
+        if let youtubeUrl = video.youtubeUrl {
+            actions.append(UIPreviewAction(title: "Open in YouTube", style: .default) { [unowned self] _, _ in
+                self.actionItemsDelegate?.playerViewController(self, requestsToOpenVideoUrlInYouTube: youtubeUrl)
+            })
+        }
         
         //If the user progress isn't nil, that means that the video is unwatched or partially watched
         if video.watchProgress != .watched {
@@ -42,6 +49,7 @@ class DownTubePlayerViewController: AVPlayerViewController {
                 self.actionItemsDelegate?.viewControllerChangedVideoStatus(for: video)
             })
         }
+        
         return actions
     }
     

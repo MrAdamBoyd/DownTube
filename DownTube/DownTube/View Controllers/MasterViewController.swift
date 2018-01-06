@@ -197,9 +197,9 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         }
     }
     
-    /// Shows an SFSafariViewController with youtube loaded
-    func showSafariVC() -> SFSafariViewController {
-        let vc = SFSafariViewController(url: URL(string: "https://youtube.com")!)
+    /// Shows an SFSafariViewController. Assumes url is valid
+    func showSafariVC(with urlString: String = "https://youtube.com") -> SFSafariViewController {
+        let vc = SFSafariViewController(url: URL(string: urlString)!)
         vc.preferredBarTintColor = .black
         vc.preferredControlTintColor = .white
         self.present(vc, animated: true, completion: nil)
@@ -542,6 +542,13 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
             })
         }
         
+        //Opening in youtube
+        if let youtubeUrl = video.youtubeUrl {
+            actions.append(UIAlertAction(title: "Open in YouTube", style: .default) { [unowned self] _ in
+                self.presentedSafariVC = self.showSafariVC(with: youtubeUrl)
+            })
+        }
+        
         //Sharing the video
         if let streamUrl = video.streamUrl, let localUrl = self.videoManager.localFilePathForUrl(streamUrl) {
             
@@ -637,6 +644,10 @@ extension MasterViewController: UIViewControllerPreviewingDelegate {
 // MARK: - DownTubePlayerViewControllerDelegate
 
 extension MasterViewController: DownTubePlayerViewControllerDelegate {
+    func playerViewController(_ playerViewController: DownTubePlayerViewController, requestsToOpenVideoUrlInYouTube urlString: String) {
+        self.showSafariVC(with: urlString)
+    }
+    
     func viewControllerChangedVideoStatus(for video: Watchable?) {
         self.tableView.reloadData()
     }

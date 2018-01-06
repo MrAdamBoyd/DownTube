@@ -645,7 +645,7 @@ extension MasterViewController: UIViewControllerPreviewingDelegate {
 
 extension MasterViewController: DownTubePlayerViewControllerDelegate {
     func playerViewController(_ playerViewController: DownTubePlayerViewController, requestsToOpenVideoUrlInYouTube urlString: String) {
-        self.showSafariVC(with: urlString)
+        self.presentedSafariVC = self.showSafariVC(with: urlString)
     }
     
     func viewControllerChangedVideoStatus(for video: Watchable?) {

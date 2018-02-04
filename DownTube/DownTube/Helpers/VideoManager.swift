@@ -60,13 +60,13 @@ class VideoManager: NSObject, DownloadManagerDelegate {
                 fetchRequest.predicate = NSPredicate(format: "youtubeUrl == %@", youTubeUrl)
                 
                 do {
-                    let existingVideos = try PersistantVideoStore.shared.managedObjectContext.fetch(fetchRequest)
+                    let existingVideos = try PersistentVideoStore.shared.managedObjectContext.fetch(fetchRequest)
                     var videoInCoreData: StreamingVideo
                     
                     if let existingVideo = existingVideos.first {
                         videoInCoreData = existingVideo
                     } else {
-                        videoInCoreData = PersistantVideoStore.shared.createNewStreamingVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
+                        videoInCoreData = PersistentVideoStore.shared.createNewStreamingVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
                     }
                     
                     completion(url, videoInCoreData, nil)
@@ -117,7 +117,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
             return
         }
         
-        let newVideo = PersistantVideoStore.shared.createNewVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
+        let newVideo = PersistentVideoStore.shared.createNewVideo(youTubeUrl: youTubeUrl, streamUrl: streamUrl, videoObject: video)
         
         //Starts the download of the video
         if let index = self.downloadManager.startDownload(newVideo) {
@@ -131,12 +131,12 @@ class VideoManager: NSObject, DownloadManagerDelegate {
      - parameter indexPath: location of the video
      */
     func deleteVideoObject(at indexPath: IndexPath) {
-        let video = PersistantVideoStore.shared.fetchedVideosController.object(at: indexPath)
+        let video = PersistentVideoStore.shared.fetchedVideosController.object(at: indexPath)
         
-        let context = PersistantVideoStore.shared.fetchedVideosController.managedObjectContext
+        let context = PersistentVideoStore.shared.fetchedVideosController.managedObjectContext
         context.delete(video)
         
-        PersistantVideoStore.shared.save()
+        PersistentVideoStore.shared.save()
     }
     
     /// Deletes the downloaded video at the specified index path
@@ -144,7 +144,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     /// - Parameter indexPath: indexpath of the video to delete
     /// - Returns: video that was deleted
     func deleteDownloadedVideo(at indexPath: IndexPath) -> Video {
-        let video = PersistantVideoStore.shared.fetchedVideosController.object(at: indexPath)
+        let video = PersistentVideoStore.shared.fetchedVideosController.object(at: indexPath)
         
         self.downloadManager.cancelDownload(video)
         _ = self.deleteDownloadedVideo(for: video)
@@ -155,7 +155,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     func checkIfAnyVideosDownloadedSuccessfully() -> [IndexPath] {
         var changedVideoIndexes: [Int] = [] //All changed videos
         
-        guard let videos = PersistantVideoStore.shared.fetchedVideosController.fetchedObjects else { return [] }
+        guard let videos = PersistentVideoStore.shared.fetchedVideosController.fetchedObjects else { return [] }
         
         for (index, video) in videos.enumerated() {
             //If the file is there but the video is not done downloading, then the video finished downloading in the background and needs to be updated
@@ -165,7 +165,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
             }
         }
         
-        PersistantVideoStore.shared.save()
+        PersistentVideoStore.shared.save()
         return changedVideoIndexes.map({ IndexPath(item: $0, section: 0) })
     }
     
@@ -179,7 +179,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
      - returns: optional index
      */
     func videoIndexForYouTubeUrl(_ url: String) -> Int? {
-        return PersistantVideoStore.shared.fetchedVideosController.fetchedObjects?.index(where: { $0.youtubeUrl == url })
+        return PersistentVideoStore.shared.fetchedVideosController.fetchedObjects?.index(where: { $0.youtubeUrl == url })
     }
     
     /**
@@ -190,7 +190,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
      - returns: optional index
      */
     func videoIndexForStreamUrl(_ url: String) -> Int? {
-        return PersistantVideoStore.shared.fetchedVideosController.fetchedObjects?.index(where: { $0.streamUrl == url })
+        return PersistentVideoStore.shared.fetchedVideosController.fetchedObjects?.index(where: { $0.streamUrl == url })
     }
     
     // MARK: - Locations of downloads
@@ -260,7 +260,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     // MARK: - Cleaning up downloads
     
     /// This makes sure that all videos located in the documents folder for DownTube actually have a Video object that they're attached to. This will delete all files not attached to a video.
-    func cleanUpDownloadedFiles(from coreDataController: PersistantVideoStore) {
+    func cleanUpDownloadedFiles(from coreDataController: PersistentVideoStore) {
         let streamUrls = coreDataController.fetchedVideosController.fetchedObjects?.flatMap({ $0.streamUrl }) ?? []
         let filesThatShouldExist = Set(streamUrls.flatMap({ self.fileNameForVideo(withStreamUrl: $0) }))
         
@@ -278,7 +278,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     
     /// Checks if any video files don't exist and need to be downloaded
     func checkIfAnyVideosNeedToBeDownloaded() {
-        guard let needToDownload = PersistantVideoStore.shared.createVideosFetchedResultsControllerWithSearch(nil, isDownloaded: false).fetchedObjects, !needToDownload.isEmpty else {
+        guard let needToDownload = PersistentVideoStore.shared.createVideosFetchedResultsControllerWithSearch(nil, isDownloaded: false).fetchedObjects, !needToDownload.isEmpty else {
             return
         }
         var indexesToReload: [Int] = []
@@ -346,7 +346,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
         default:                        break
         }
         
-        PersistantVideoStore.shared.save()
+        PersistentVideoStore.shared.save()
         
         if let toUrl = toUrl {
             do {

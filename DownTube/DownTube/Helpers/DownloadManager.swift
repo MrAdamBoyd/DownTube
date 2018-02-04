@@ -226,9 +226,9 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     ///   - index: index of the video in core data
     private func markDownloadAsDoneIfNeeded(_ download: Download, at index: Int) {
         if download.isDone {
-            let video = PersistantVideoStore.shared.fetchedVideosController.object(at: IndexPath(item: index, section: 0))
+            let video = PersistentVideoStore.shared.fetchedVideosController.object(at: IndexPath(item: index, section: 0))
             video.isDoneDownloading = NSNumber(value: true)
-            PersistantVideoStore.shared.save()
+            PersistentVideoStore.shared.save()
         }
     }
     

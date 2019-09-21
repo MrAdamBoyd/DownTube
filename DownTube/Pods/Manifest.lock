@@ -2,16 +2,21 @@ PODS:
   - MMWormhole (2.0.0):
     - MMWormhole/Core (= 2.0.0)
   - MMWormhole/Core (2.0.0)
-  - XCDYouTubeKit (2.5.3)
+  - XCDYouTubeKit (2.8.1)
 
 DEPENDENCIES:
   - MMWormhole
   - XCDYouTubeKit
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - MMWormhole
+    - XCDYouTubeKit
+
 SPEC CHECKSUMS:
   MMWormhole: 0cd3fd35a9118b2e2d762b499f54eeaace0be791
-  XCDYouTubeKit: 90690f9e3523735dc93b8024269d991b0cfffe78
+  XCDYouTubeKit: 4ca4e3322fa556ec1c32932d378365c15ce1386e
 
 PODFILE CHECKSUM: 07b87e2cd774d383698b8873bd9a3da701e9874c
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.5.3

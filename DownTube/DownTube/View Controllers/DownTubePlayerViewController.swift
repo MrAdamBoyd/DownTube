@@ -54,7 +54,7 @@ class DownTubePlayerViewController: AVPlayerViewController {
     }
     
     /// If true, the home indicator is automatically hidden a few seconds after the user last touches the screen
-    override func prefersHomeIndicatorAutoHidden() -> Bool {
+    override var prefersHomeIndicatorAutoHidden: Bool {
         return true
     }
 }

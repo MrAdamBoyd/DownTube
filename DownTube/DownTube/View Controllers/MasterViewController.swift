@@ -46,7 +46,8 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
             search.searchBar.tintColor = .red
             self.navigationItem.searchController = search
             
-            UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedStringKey.foregroundColor.rawValue: UIColor.white]
+			
+			UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
 
         }
         
@@ -90,7 +91,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         
         //Videos downloaded in background
         self.checkIfVideosDownloadedInBackground()
-        NotificationCenter.default.addObserver(self, selector: #selector(self.checkIfVideosDownloadedInBackground), name: Notification.Name.UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.checkIfVideosDownloadedInBackground), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -249,7 +250,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
     // swift
     func buildAccessoryButton() -> UIView {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 40))
-        button.setTitle("Paste from clipboard", for: UIControlState())
+        button.setTitle("Paste from clipboard", for: UIControl.State())
         button.backgroundColor = #colorLiteral(red: 0.5882352941, green: 0.5882352941, blue: 0.5882352941, alpha: 1)
         button.setTitleColor(#colorLiteral(red: 0.2941176471, green: 0.2941176471, blue: 0.2941176471, alpha: 1), for: .highlighted)
         button.addTarget(self, action: #selector(self.pasteFromClipboard), for: .touchUpInside)
@@ -352,7 +353,7 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         return (video.isDoneDownloading?.boolValue ?? true) ? normalCellRowHeight : downloadingCellRowHeight
     }
 
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             _ = self.videoManager.deleteDownloadedVideo(at: indexPath)
             

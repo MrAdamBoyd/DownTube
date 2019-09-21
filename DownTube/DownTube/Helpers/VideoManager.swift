@@ -179,7 +179,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
      - returns: optional index
      */
     func videoIndexForYouTubeUrl(_ url: String) -> Int? {
-        return PersistentVideoStore.shared.fetchedVideosController.fetchedObjects?.index(where: { $0.youtubeUrl == url })
+        return PersistentVideoStore.shared.fetchedVideosController.fetchedObjects?.firstIndex(where: { $0.youtubeUrl == url })
     }
     
     /**
@@ -190,7 +190,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
      - returns: optional index
      */
     func videoIndexForStreamUrl(_ url: String) -> Int? {
-        return PersistentVideoStore.shared.fetchedVideosController.fetchedObjects?.index(where: { $0.streamUrl == url })
+        return PersistentVideoStore.shared.fetchedVideosController.fetchedObjects?.firstIndex(where: { $0.streamUrl == url })
     }
     
     // MARK: - Locations of downloads
@@ -261,8 +261,9 @@ class VideoManager: NSObject, DownloadManagerDelegate {
     
     /// This makes sure that all videos located in the documents folder for DownTube actually have a Video object that they're attached to. This will delete all files not attached to a video.
     func cleanUpDownloadedFiles(from coreDataController: PersistentVideoStore) {
-        let streamUrls = coreDataController.fetchedVideosController.fetchedObjects?.flatMap({ $0.streamUrl }) ?? []
-        let filesThatShouldExist = Set(streamUrls.flatMap({ self.fileNameForVideo(withStreamUrl: $0) }))
+        /*
+		let streamUrls = coreDataController.fetchedVideosController.fetchedObjects?.compactMap({ $0.streamUrl }) ?? []
+        let filesThatShouldExist = Set(streamUrls.compactMap({ self.fileNameForVideo(withStreamUrl: $0) }))
         
         let contents = try? self.downloadManager.fileManager.contentsOfDirectory(atPath: self.downloadManager.documentsPath as String)
         let videosInFolder = Set(contents?.filter({ $0.hasSuffix("mp4") }) ?? [])
@@ -273,7 +274,7 @@ class VideoManager: NSObject, DownloadManagerDelegate {
         
         for videoFile in videoFilesToDelete {
             self.deleteDownloadedVideo(withFileName: videoFile)
-        }
+        }*/
     }
     
     /// Checks if any video files don't exist and need to be downloaded

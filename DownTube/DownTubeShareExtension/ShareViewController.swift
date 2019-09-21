@@ -16,7 +16,7 @@ class ShareViewController: UIViewController {
     @IBOutlet weak var textContainer: UIView!
     @IBOutlet weak var mainLabel: UILabel!
     
-    let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
+    let wormhole = MMWormhole(applicationGroupIdentifier: "group.nossa.DownTube", optionalDirectory: nil)
     
     override func viewDidLoad() {
         super.viewDidLoad()

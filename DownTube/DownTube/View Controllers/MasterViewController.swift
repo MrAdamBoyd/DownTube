@@ -552,7 +552,8 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
         
         //Sharing the video
         if let streamUrl = video.streamUrl, let localUrl = self.videoManager.localFilePathForUrl(streamUrl) {
-            
+            let cellView = self.tableView.cellForRow(at: indexPath)
+			
             if let localPath = self.videoManager.localFileLocationForUrl(streamUrl) {
                 actions.append(UIAlertAction(title: "Edit Video", style: .default) { [unowned self] _ in
                     let editor = UIVideoEditorController()
@@ -563,12 +564,17 @@ class MasterViewController: UITableViewController, VideoEditingHandlerDelegate, 
                     
                     self.videoManager.currentlyEditingVideo = video
                     
+					editor.modalPresentationStyle = .popover
+					editor.popoverPresentationController?.sourceView = cellView
+					editor.popoverPresentationController?.sourceRect = cellView?.bounds ?? CGRect.zero
                     self.present(editor, animated: true, completion: nil)
                 })
             }
             
             actions.append(UIAlertAction(title: "Share", style: .default) { [unowned self] _ in
                 let activityViewController = UIActivityViewController(activityItems: [localUrl], applicationActivities: nil)
+				activityViewController.popoverPresentationController?.sourceView = cellView
+				activityViewController.popoverPresentationController?.sourceRect = cellView?.bounds ?? CGRect.zero
                 self.present(activityViewController, animated: true, completion: nil)
             })
         }

@@ -391,11 +391,9 @@
 			};
 			buildConfigurationList = 66BF69A81CFD2AE3004FEFF7 /* Build configuration list for PBXProject "DownTube" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = Base;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
-				en,
 				Base,
 			);
 			mainGroup = 66BF69A41CFD2AE3004FEFF7;

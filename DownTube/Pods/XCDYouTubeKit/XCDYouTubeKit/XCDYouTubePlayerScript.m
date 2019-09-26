@@ -21,6 +21,7 @@
 		return nil; // LCOV_EXCL_LINE
 	
 	_context = [JSContext new];
+	
 	_context.exceptionHandler = ^(JSContext *context, JSValue *exception) {
 		XCDYouTubeLogWarning(@"JavaScript exception: %@", exception);
 	};
@@ -37,6 +38,8 @@
 		},
 	};
 	_context[@"window"] = @{};
+	_context [@"XMLHttpRequest"] = @{};
+	
 	for (NSString *propertyName in environment)
 	{
 		JSValue *value = [JSValue valueWithObject:environment[propertyName] inContext:_context];
@@ -44,7 +47,9 @@
 		_context[@"window"][propertyName] = value;
 	}
 	
+	NSString *matchMediaJsFunction = @"var matchMediaWindow=this;matchMediaWindow.matchMedia=function(a){return false;};";
 	NSString *script = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	script=[matchMediaJsFunction stringByAppendingString:(script)];
 	[_context evaluateScript:script];
 	
 	NSRegularExpression *anonymousFunctionRegularExpression = [NSRegularExpression regularExpressionWithPattern:@"\\(function\\(([^)]*)\\)\\{(.*)\\}\\)\\(([^)]*)\\)" options:NSRegularExpressionDotMatchesLineSeparators error:NULL];
@@ -68,15 +73,53 @@
 		XCDYouTubeLogWarning(@"Unexpected player script (no anonymous function found)");
 	}
 	
-	NSRegularExpression *signatureRegularExpression = [NSRegularExpression regularExpressionWithPattern:@"[\"']signature[\"']\\s*,\\s*([^\\(]+)" options:NSRegularExpressionCaseInsensitive error:NULL];
-	NSTextCheckingResult *signatureResult = [signatureRegularExpression firstMatchInString:script options:(NSMatchingOptions)0 range:NSMakeRange(0, script.length)];
-	NSString *signatureFunctionName = signatureResult.numberOfRanges > 1 ? [script substringWithRange:[signatureResult rangeAtIndex:1]] : nil;
+   //See list of regex patterns here https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/youtube.py#L1179
+    NSArray<NSString *>*patterns = @[@"\\b[cs]\\s*&&\\s*[adf]\\.set\\([^,]+\\s*,\\s*encodeURIComponent\\s*\\(\\s*([a-zA-Z0-9$]+)\\(",
+                                     @"\\b[a-zA-Z0-9]+\\s*&&\\s*[a-zA-Z0-9]+\\.set\\([^,]+\\s*,\\s*encodeURIComponent\\s*\\(\\s*([a-zA-Z0-9$]+)\\(",
+									 @"([a-zA-Z0-9$]+)\\s*=\\s*function\\(\\s*a\\s*\\)\\s*\\{\\s*a\\s*=\\s*a\\.split\\(\\s*\"\"\\s*\\)",
+                                     @"([\"\\\'])signature\\1\\s*,\\s*([a-zA-Z0-9$]+)\\(",
+                                     @"\\.sig\\|\\|([a-zA-Z0-9$]+)\\(",
+								     @"yt\\.akamaized\\.net/\\)\\s*\\|\\|\\s*.*?\\s*[cs]\\s*&&\\s*[adf]\\.set\\([^,]+\\s*,\\s*(?:encodeURIComponent\\s*\\()?\\s*([a-zA-Z0-9$]+)\\(",
+									 @"\\b[cs]\\s*&&\\s*[adf]\\.set\\([^,]+\\s*,\\s*([a-zA-Z0-9$]+)\\(",
+									 @"\\b[a-zA-Z0-9]+\\s*&&\\s*[a-zA-Z0-9]+\\.set\\([^,]+\\s*,\\s*([a-zA-Z0-9$]+)\\(",
+									 @"\\bc\\s*&&\\s*a\\.set\\([^,]+\\s*,\\s*\\([^)]*\\)\\s*\\(\\s*([a-zA-Z0-9$]+)\\(",
+									 @"\\bc\\s*&&\\s*[a-zA-Z0-9]+\\.set\\([^,]+\\s*,\\s*\\([^)]*\\)\\s*\\(\\s*([a-zA-Z0-9$]+)\\(",
+									 @"\\bc\\s*&&\\s*[a-zA-Z0-9]+\\.set\\([^,]+\\s*,\\s*\\([^)]*\\)\\s*\\(\\s*([a-zA-Z0-9$]+)\\("
+                                     ];
+
+    NSMutableArray<NSRegularExpression *>*validRegularExpressions = [NSMutableArray new];
+
+    for (NSString *pattern in patterns) {
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:NULL];
+        if (regex != nil)
+        {
+            [validRegularExpressions addObject:regex];
+        }
+    }
 	
-	if (signatureFunctionName)
-		_signatureFunction = self.context[signatureFunctionName];
+    for (NSRegularExpression *regularExpression in validRegularExpressions) {
+		if (_signatureFunction)
+			break;
+		
+        NSArray<NSTextCheckingResult *> *regexResults =  [regularExpression matchesInString:script options:(NSMatchingOptions)0 range:NSMakeRange(0, script.length)];
+		
+        for (NSTextCheckingResult *signatureResult in regexResults)
+        {
+			NSString *signatureFunctionName = signatureResult.numberOfRanges > 1 ? [script substringWithRange:[signatureResult rangeAtIndex:1]] : nil;
+			if (!signatureFunctionName)
+				continue;
+		
+            JSValue *signatureFunction = self.context[signatureFunctionName];
+            if (signatureFunction.isObject)
+            {
+                _signatureFunction = signatureFunction;
+                break;
+            }
+        }
+    }
 	
 	if (!_signatureFunction)
-		XCDYouTubeLogWarning(@"No signature function in player script");
+		XCDYouTubeLogWarning(@"No signature function in player script: \n%@. Regular Expressions: \n%@", script, validRegularExpressions);
 	
 	return self;
 }

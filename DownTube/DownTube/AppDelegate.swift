@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import AVFoundation
+import MMWormhole
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,12 +17,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var backgroundSessionCompletionHandler: (() -> Void)? //For the background downloading
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
         //Background playback
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+			try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
         } catch {
             print("Background audio not enabled")
         }
@@ -55,4 +56,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         self.backgroundSessionCompletionHandler = completionHandler
     }
+	
+	func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+		if let scheme = url.scheme,
+			scheme.localizedCaseInsensitiveCompare("downtube") == .orderedSame,
+			let view = url.host {
+			
+			var parameters: [String: String] = [:]
+			URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.forEach {
+				parameters[$0.name] = $0.value
+			}
+			
+			redirect(to: view, with: parameters)
+			
+			return true
+		} else {
+			return false
+		}
+	}
+	
+	func redirect(to view: String, with parms: [String: String]) {
+		switch view {
+		case "download":
+			guard let videoId = parms["videoId"], videoId.count == 11 else { return }
+			let youtubeUrl = URL(string: "https://www.youtube.com/watch?v=\(videoId)")!
+			
+			//Just in case the app was't running in the background, write the URL to the shared NSUserDefaults
+			var existingItems = Constants.sharedDefaults.value(forKey: Constants.videosToAdd) as! [String]
+			existingItems.append(youtubeUrl.absoluteString)
+			Constants.sharedDefaults.set(existingItems, forKey: Constants.videosToAdd)
+			Constants.sharedDefaults.synchronize()
+			
+			let wormhole = MMWormhole(applicationGroupIdentifier: "group.nossa.DownTube", optionalDirectory: nil)
+			
+			//Passing YouTube URL
+			wormhole.passMessageObject(youtubeUrl.absoluteString as NSCoding?, identifier: "youTubeUrl")
+		default:
+			return
+		}
+	}
 }

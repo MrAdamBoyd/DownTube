@@ -86,7 +86,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     /// - Returns: true if download was successfully removed, false otherwise
     @discardableResult
     private func removeDownloadWith(streamUrl: String, cancelDownload: Bool) -> Bool {
-        if let index = self.activeDownloads.index(where: { $0.url == streamUrl }) {
+        if let index = self.activeDownloads.firstIndex(where: { $0.url == streamUrl }) {
             let download = self.activeDownloads.remove(at: index)
             if cancelDownload { download.downloadTask?.cancel() }
             
@@ -104,7 +104,7 @@ class DownloadManager: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
             }
             
             return true
-        } else if let index = self.enqueuedDownloads.index(where: { $0.url == streamUrl }) {
+        } else if let index = self.enqueuedDownloads.firstIndex(where: { $0.url == streamUrl }) {
             let download = self.enqueuedDownloads.remove(at: index)
             if cancelDownload { download.downloadTask?.cancel() }
             return true

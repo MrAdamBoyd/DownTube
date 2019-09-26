@@ -16,7 +16,7 @@ class ShareViewController: UIViewController {
     @IBOutlet weak var textContainer: UIView!
     @IBOutlet weak var mainLabel: UILabel!
     
-    let wormhole = MMWormhole(applicationGroupIdentifier: "group.adam.DownTube", optionalDirectory: nil)
+    let wormhole = MMWormhole(applicationGroupIdentifier: "group.nossa.DownTube", optionalDirectory: nil)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,19 +26,17 @@ class ShareViewController: UIViewController {
             if let item = item as? NSExtensionItem {
                 for itemProvider in item.attachments! {
                     //Going through each item in each input item
-                    if let itemProvider = itemProvider as? NSItemProvider {
-                        if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeURL as String) {
-                            //If the item contains a URL
-                            itemProvider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil, completionHandler: { content, _ in
-                                
-                                DispatchQueue.main.async {
-                                    if !self.addVideoUrlToDownloadQueue(content) {
-                                        self.setTitleOfTextView("Invalid URL. DownTube only works with YouTube.")
-                                    }
-                                }
-                            })
-                        }
-                    }
+                    if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeURL as String) {
+						//If the item contains a URL
+						itemProvider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil, completionHandler: { content, _ in
+							
+							DispatchQueue.main.async {
+								if !self.addVideoUrlToDownloadQueue(content) {
+									self.setTitleOfTextView("Invalid URL. DownTube only works with YouTube.")
+								}
+							}
+						})
+					}
                 }
             }
         }

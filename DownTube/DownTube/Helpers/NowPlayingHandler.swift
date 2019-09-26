@@ -64,8 +64,8 @@ final class NowPlayingHandler {
         }
         
         //For background playback automatically continuing
-        NotificationCenter.default.addObserver(self, selector: #selector(self.disableVideoTracksInPlayerItem), name: Notification.Name.UIApplicationDidEnterBackground, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.enableVideoTracksInPlayerItem), name: Notification.Name.UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.disableVideoTracksInPlayerItem), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.enableVideoTracksInPlayerItem), name: UIApplication.didBecomeActiveNotification, object: nil)
         
     }
     
@@ -129,7 +129,7 @@ final class NowPlayingHandler {
         guard let tracks = playerItem?.tracks else { return }
         
         for track in tracks {
-            if track.assetTrack.hasMediaCharacteristic(.visual) {
+			if track.assetTrack!.hasMediaCharacteristic(.visual) {
                 track.isEnabled = shouldBeEnabled
             }
         }
@@ -139,8 +139,8 @@ final class NowPlayingHandler {
     
     deinit {
         //For background playback automatically continuing
-        NotificationCenter.default.removeObserver(self, name: Notification.Name.UIApplicationDidEnterBackground, object: nil)
-        NotificationCenter.default.removeObserver(self, name: Notification.Name.UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
         
         MPRemoteCommandCenter.shared().playCommand.removeTarget(self.playCommandTarget)
         MPRemoteCommandCenter.shared().pauseCommand.removeTarget(self.pauseCommandTarget)

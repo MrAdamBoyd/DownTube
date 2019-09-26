@@ -404,9 +404,11 @@ class VideoManager: NSObject, DownloadManagerDelegate {
             
             //Remove the item at the end of the list from the list of items to add when the app opens
             var existingItems = Constants.sharedDefaults.object(forKey: Constants.videosToAdd) as! [String]
-            existingItems.removeLast()
-            Constants.sharedDefaults.set(existingItems, forKey: Constants.videosToAdd)
-            Constants.sharedDefaults.synchronize()
+			if existingItems.count != 0 {
+				existingItems.removeLast()
+				Constants.sharedDefaults.set(existingItems, forKey: Constants.videosToAdd)
+				Constants.sharedDefaults.synchronize()
+			}
             
             self.delegate?.startDownloadOfVideoInfoFor(message)
         }
